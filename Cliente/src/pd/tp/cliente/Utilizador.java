@@ -7,9 +7,14 @@ public class Utilizador implements Serializable {
     private String nome;
     private String password;
 
-    public Utilizador(String username, String nome, String password) {
+    public Utilizador(String username, String password, String nome) {
         this.username = username;
+        this.password = password;
         this.nome = nome;
+    }
+
+    public Utilizador(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
@@ -23,5 +28,14 @@ public class Utilizador implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String toString() {
+        return "Utilizador{" +
+                "username='" + username + '\'' +
+                ", nome='" + nome + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
