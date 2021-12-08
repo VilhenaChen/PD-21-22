@@ -14,11 +14,13 @@ public class ThreadComunicacao extends Thread{
     ArrayList<Servidor> servidores;
     String tipo;
     int porto;
+    int indiceUltimoServidorAtribuido;
 
-    public ThreadComunicacao(DatagramPacket dp, DatagramSocket ds, ArrayList<Servidor> servidores) {
+    public ThreadComunicacao(DatagramPacket dp, DatagramSocket ds, ArrayList<Servidor> servidores, int indiceUltimoServidorAtribuido) {
         this.dp = dp;
         this.ds = ds;
         this.servidores = servidores;
+        this.indiceUltimoServidorAtribuido = indiceUltimoServidorAtribuido;
     }
 
     @Override
@@ -50,9 +52,12 @@ public class ThreadComunicacao extends Thread{
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(baos);
+            getIndiceServidorAAtribuir();
+            Servidor server = servidores.get(indiceUltimoServidorAtribuido);
+
             HashMap<String,String> IP_SERVER = new HashMap<>();
-            IP_SERVER.put("IP","192.168.1.1");
-            IP_SERVER.put("PORTO","9001");
+            IP_SERVER.put("IP",server.getIp());
+            IP_SERVER.put("PORTO", String.valueOf(server.getPorto()));
             out.writeUnshared(IP_SERVER);
             out.flush();
             byte[] msgBytes = baos.toByteArray();
@@ -61,14 +66,21 @@ public class ThreadComunicacao extends Thread{
             dp.setLength(msgBytes.length);
             ds.send(dp);
 
-            System.out.println("Enviei mensagem ao novo cliente");
+            System.out.println("Enviei mensagem ao novo cliente com o servidor: " + server.getId() + " com o Porto: " + server.getPorto() + " e o IP: " + server.getIp());
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
+    public void getIndiceServidorAAtribuir(){
+        if(indiceUltimoServidorAtribuido == (servidores.size() - 1)){
+            indiceUltimoServidorAtribuido = 0;
+        }
+        else {
+            indiceUltimoServidorAtribuido++;
+        }
+    }
 
     //Funções Novo Servidor
 

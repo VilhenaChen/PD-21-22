@@ -14,10 +14,11 @@ public class GRDS {
         DatagramSocket ds = new DatagramSocket(9001);
         System.out.println("---- GRDS INICIADO ----");
         ArrayList<Servidor> servidores = new ArrayList<>();
+        int indiceUltimoServidorAtribuido = -1;
         while(true) {
             DatagramPacket dp = new DatagramPacket(new byte[256], 256);
             ds.receive(dp);
-            ThreadComunicacao tc = new ThreadComunicacao(dp,ds,servidores);
+            ThreadComunicacao tc = new ThreadComunicacao(dp,ds,servidores,indiceUltimoServidorAtribuido);
             tc.start();
         }
 
