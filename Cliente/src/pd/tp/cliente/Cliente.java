@@ -22,11 +22,11 @@ public class Cliente {
         out.flush();
         byte[] msgEnBytes = baos.toByteArray();
 
-
         InetAddress ip = InetAddress.getByName(IP_GRDS);
         DatagramPacket dp = new DatagramPacket(msgEnBytes, msgEnBytes.length, ip, PORTO_GRDS);
         ds.send(dp);
 
+        //Reutilizar o DatagramPacket
         dp.setData(new byte[256]);
         dp.setLength(256);
         ds.receive(dp);
