@@ -10,6 +10,7 @@ public class GRDS {
 
     public static void main(String[] args) throws IOException {
         DatagramSocket ds = new DatagramSocket(9001);
+        System.out.println("---- GRDS INICIADO ----");
 
         while(true) {
             DatagramPacket dp = new DatagramPacket(new byte[256], 256);

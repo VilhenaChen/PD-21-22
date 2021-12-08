@@ -3,6 +3,7 @@ package pd.tp.grds.threads;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.HashMap;
 
 public class ThreadClientes extends Thread {
 
@@ -24,7 +25,10 @@ public class ThreadClientes extends Thread {
             if(msgRecebida.startsWith("NOVO_CLI")) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(baos);
-                String IP_SERVER = new String("192.168.1.1");
+                //String IP_SERVER = "192.168.1.1:9001";
+                HashMap<String,String> IP_SERVER = new HashMap<>();
+                IP_SERVER.put("IP","192.168.1.1");
+                IP_SERVER.put("PORTO","9001");
                 out.writeUnshared(IP_SERVER);
                 out.flush();
                 byte[] msgBytes = baos.toByteArray();
