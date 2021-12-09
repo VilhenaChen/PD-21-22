@@ -6,11 +6,13 @@ public class Utilizador implements Serializable {
     private String username;
     private String nome;
     private String password;
+    private Boolean logged;
 
     public Utilizador(String username, String password, String nome) {
         this.username = username;
         this.password = password;
         this.nome = nome;
+        this.logged = false;
     }
 
     public Utilizador(String username, String password) {
@@ -28,6 +30,14 @@ public class Utilizador implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public Boolean getLogged() {
+        return logged;
+    }
+
+    public void setLogged(Boolean logged) {
+        this.logged = logged;
     }
 
     @Override

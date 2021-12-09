@@ -101,7 +101,7 @@ public class ThreadComunicacao extends Thread{
             dp.setLength(msgBytes.length);
             ds.send(dp);
 
-            System.out.println("Criei o novo Servidor de Id: " + novoId + "e Porto: " + porto);
+            System.out.println("Criei o novo Servidor de Id: " + novoId + " e Porto: " + porto);
 
         } catch (IOException e) {
             e.printStackTrace();

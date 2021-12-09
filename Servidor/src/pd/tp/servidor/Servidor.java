@@ -1,12 +1,10 @@
 package pd.tp.servidor;
 
+import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.*;
 import java.util.Timer;
 
 public class Servidor {
@@ -67,6 +65,12 @@ public class Servidor {
         ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss.getLocalPort(), servidor.ID_SERVIDOR);
         Timer timer = new Timer("InformaPorto");
         timer.schedule(informaPortoThread, 1000, 2000); //Mudar para 20secondos
+
+        while(true) {
+            Socket sCli = servidor.ss.accept();
+            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli);
+            tc.start();
+        }
 
     }
 }

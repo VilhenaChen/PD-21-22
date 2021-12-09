@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class Cliente {
@@ -55,9 +56,12 @@ public class Cliente {
             System.exit(1);
         }
         System.out.println("IP = " + cli.IP_GRDS + " PORTO = " + cli.PORTO_GRDS);
+
         cli.pedeIPGRDS();
 
-        UiTexto ui = new UiTexto();
+        Socket sCli = new Socket(cli.infoServidor.get("IP"), Integer.parseInt(cli.infoServidor.get("PORTO")));
+
+        UiTexto ui = new UiTexto(sCli);
         ui.run();
         System.exit(0);
     }
