@@ -71,7 +71,10 @@ public class Servidor {
 
         //comBD.insereUser("Diogo", "Vilhena", "1234", 0);
         comBD.listaUsers();
-        comBD.updateUser("Ines", "batata", "Teixas", "1234", 0);
+        comBD.updateUserName("Sofia", "Teixas");
+        comBD.updateUserLogin("Teixas", 0);
+        comBD.updateUserPassword("666", "Teixas");
+        comBD.updateUserUsername("Teixas", "Guida");
         comBD.listaUsers();
         while(true) {
             Socket sCli = servidor.ss.accept();

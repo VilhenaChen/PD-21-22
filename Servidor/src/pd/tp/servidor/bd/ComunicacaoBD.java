@@ -44,10 +44,34 @@ public class ComunicacaoBD {
         statement.close();
     }
 
-    public void updateUser(String name, String old_username, String new_username, String password, int logado) throws SQLException{
+    public void updateUserName(String name, String username) throws SQLException{
         Statement statement = dbConn.createStatement();
 
-        String sqlQuery = "UPDATE User SET username='" + new_username + "'," + "name='" + name + "'," + "password='" + password  + "'," + "login='" + logado + "'WHERE username='" + old_username + "'";
+        String sqlQuery = "UPDATE User SET name='" + name + "'WHERE username='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+    }
+
+    public void updateUserUsername(String old_username, String new_username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+
+        String sqlQuery = "UPDATE User SET username='" + new_username + "'WHERE username='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+    }
+
+    public void updateUserPassword(String password, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+
+        String sqlQuery = "UPDATE User SET password='" + password  + "'WHERE username='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+    }
+
+    public void updateUserLogin(String username,int logado) throws SQLException{
+        Statement statement = dbConn.createStatement();
+
+        String sqlQuery = "UPDATE User SET login='" + logado + "'WHERE username='" + username + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
     }
