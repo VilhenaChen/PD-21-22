@@ -1,10 +1,12 @@
 package pd.tp.servidor;
 
+import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
 
 import java.io.*;
 import java.net.*;
+import java.sql.SQLException;
 import java.util.Timer;
 
 public class Servidor {
@@ -42,7 +44,7 @@ public class Servidor {
 
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
         Servidor servidor = new Servidor();
 
         if(args.length <= 0) {
@@ -60,12 +62,17 @@ public class Servidor {
 
         servidor.ss = new ServerSocket(0);
         System.out.println("Estou na porta: " + servidor.ss.getLocalPort());
+        ComunicacaoBD comBD = new ComunicacaoBD();
 
         servidor.InicioGRDS();
         ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss.getLocalPort(), servidor.ID_SERVIDOR);
         Timer timer = new Timer("InformaPorto");
         timer.schedule(informaPortoThread, 1000, 2000); //Mudar para 20secondos
 
+        //comBD.insereUser("Diogo", "Vilhena", "1234", 0);
+        comBD.listaUsers();
+        comBD.updateUser("Ines", "batata", "Teixas", "1234", 0);
+        comBD.listaUsers();
         while(true) {
             Socket sCli = servidor.ss.accept();
             ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli);

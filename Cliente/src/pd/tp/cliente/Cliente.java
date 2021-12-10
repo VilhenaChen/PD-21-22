@@ -55,6 +55,7 @@ public class Cliente {
             System.out.println("ERRO!!! O Porto passado não é um Inteiro");
             System.exit(1);
         }
+
         System.out.println("IP = " + cli.IP_GRDS + " PORTO = " + cli.PORTO_GRDS);
 
         cli.pedeIPGRDS();

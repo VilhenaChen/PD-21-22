@@ -78,6 +78,80 @@ public class UiTexto {
         user = new Utilizador(username,password, nome);
     }
 
+    private void menuPrincipal() { //Menu Principal da aplicacao
+        System.out.println("---- MENU PRINCIPAL ----");
+        System.out.println("1 - Mensagens");
+        System.out.println("2 - Ficheiros");
+        System.out.println("3 - Grupos");
+        System.out.println("4 - Contactos");
+        System.out.println("5 - Minhas Informações");
+        System.out.println("0 - Sair");
+        System.out.println("> ");
+    }
+
+    private void menuMensagens() { //Menu com as Opcoes das Mensagens
+        System.out.println("---- MENU MENSAGENS ----");
+        System.out.println("1 - Enviar Mensagem");
+        System.out.println("2 - Listar Mensagens");
+        System.out.println("3 - Eliminar Mensagens do Historico");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
+    private void menuFicheiros() { //Menu com as Opcoes das Mensagens
+        System.out.println("---- MENU FICHEIROS ----");
+        System.out.println("1 - Enviar Ficheiro");
+        System.out.println("2 - Listar Ficheiros");
+        System.out.println("3 - Eliminar Ficheiros do Historico");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
+    private void menuGrupos() { //Menu com as Opcoes dos grupos
+        System.out.println("---- MENU GRUPOS ----");
+        System.out.println("1 - Aderir a um grupo");
+        System.out.println("2 - Sair de um grupo");
+        System.out.println("3 - Listar grupos");
+        System.out.println("4 - Criar um grupo");
+        System.out.println("5 - Grupos Administrados");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
+    private void menuGruposAdministrados() { //Menu com as Opcoes dos Contactos
+        System.out.println("---- MENU GRUPOS ADMINISTRADOS ----");
+        System.out.println("1 - Excluir Membro");
+        System.out.println("2 - Eliminar Grupo");
+        System.out.println("3 - Listar Membros");
+        System.out.println("4 - Alterar nome do grupo");
+        System.out.println("5 - Aceitar membros");
+        System.out.println("6 - Listar grupos administrados");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
+    private void menuContactos() { //Menu com as Opcoes dos Contactos
+        System.out.println("---- MENU CONTACTOS ----");
+        System.out.println("1 - Listar Contactos");
+        System.out.println("2 - Eliminar Contacto");
+        System.out.println("3 - Pesquisar Utilizadores");
+        System.out.println("4 - Listar Utilizadores");
+        System.out.println("5 - Adicionar Contacto");
+        System.out.println("6 - Aceitar Contactos");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
+    private void menuInformacoes() { //Menu com as infos do user
+        System.out.println("---- MENU INFORMACOES ----");
+        System.out.println("1 - Ver as minhas Informacoes");
+        System.out.println("2 - Modificar Nome");
+        System.out.println("3 - Modificar Username");
+        System.out.println("4 - Modificar Password");
+        System.out.println("0 - Voltar atras");
+        System.out.println("> ");
+    }
+
     private boolean LoginComSucesso(String mensagem) {
         if(mensagem.equals(SUCESSO)){
             System.out.println("Login efetuado com sucesso!");
