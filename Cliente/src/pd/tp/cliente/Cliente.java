@@ -35,7 +35,7 @@ public class Cliente {
         ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
         ObjectInputStream in = new ObjectInputStream(bais);
         infoServidor = (HashMap<String,String>) in.readObject();
-        System.out.println(infoServidor.get("IP"));
+        System.out.println(infoServidor.get("IP") + ":" + infoServidor.get("PORTO"));
 
         ds.close();
     }
@@ -47,7 +47,6 @@ public class Cliente {
             System.out.println("Falta de IP e Porto do GRDS por parametros");
             System.exit(1);
         }
-
         cli.IP_GRDS = args[0];
         try {
             cli.PORTO_GRDS = Integer.parseInt(args[1]);
@@ -57,8 +56,9 @@ public class Cliente {
         }
 
         System.out.println("IP = " + cli.IP_GRDS + " PORTO = " + cli.PORTO_GRDS);
-
+        System.out.println("--- À ESPERA DE SERVIDOR ----");
         cli.pedeIPGRDS();
+        System.out.println("--- A INICIAR ----");
 
         Socket sCli = new Socket(cli.infoServidor.get("IP"), Integer.parseInt(cli.infoServidor.get("PORTO")));
 

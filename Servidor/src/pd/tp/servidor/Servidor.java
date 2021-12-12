@@ -65,21 +65,25 @@ public class Servidor {
         ComunicacaoBD comBD = new ComunicacaoBD();
 
         servidor.InicioGRDS();
-        ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss.getLocalPort(), servidor.ID_SERVIDOR);
+        ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss, servidor.ID_SERVIDOR);
         Timer timer = new Timer("InformaPorto");
-        timer.schedule(informaPortoThread, 1000, 2000); //Mudar para 20secondos
+        timer.schedule(informaPortoThread, 1000, 20000); //Mudar para 20secondos
 
         //comBD.insereUser("Diogo", "Vilhena", "1234", 0);
         comBD.listaUsers();
-        comBD.updateUserName("Sofia", "Teixas");
-        comBD.updateUserLogin("Teixas", 0);
-        comBD.updateUserPassword("666", "Teixas");
-        comBD.updateUserUsername("Teixas", "Guida");
-        comBD.listaUsers();
+
         while(true) {
+            if (servidor.ss.isClosed())
+                System.out.println("Fechado aqui!");
             Socket sCli = servidor.ss.accept();
-            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli);
+            if (servidor.ss.isClosed())
+                System.out.println("Fechado aqui tambem!");
+            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD);
+            if (servidor.ss.isClosed())
+                System.out.println("Fechado aqui fogo!");
             tc.start();
+            if (servidor.ss.isClosed())
+                System.out.println("Fechado aqui finalmente!");
         }
 
     }

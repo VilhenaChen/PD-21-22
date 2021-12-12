@@ -3,6 +3,9 @@ package pd.tp.cliente.ui;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -18,6 +21,8 @@ public class UiTexto {
 
     public UiTexto(Socket sCli) {
         this.sCli = sCli;
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui!");
     }
 
     public void menuInicial() { //Menu chamado quando o User se connecta ao servidor
@@ -153,19 +158,21 @@ public class UiTexto {
     }
 
     private boolean LoginComSucesso(String mensagem) {
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui dentro LoginSucesso!");
         if(mensagem.equals(SUCESSO)){
-            System.out.println("Login efetuado com sucesso!");
-            user.setLogged(true);
-            return true;
+             System.out.println("Login efetuado com sucesso!");
+             user.setLogged(true);
+             return true;
         }
         else {
-            if (mensagem.equals(PASSWORD_ERRADA)) {
-                System.out.println("ERRO! Password Errada! Login não efetuado!");
-            }
-            if (mensagem.equals(UTILIZADOR_INEXISTENTE)) {
-                System.out.println("ERRO! Utilizador Inexistente! Login não efetuado!");
-            }
-            return false;
+             if (mensagem.equals(PASSWORD_ERRADA)) {
+                 System.out.println("ERRO! Password Errada! Login não efetuado!");
+             }
+             if (mensagem.equals(UTILIZADOR_INEXISTENTE)) {
+                 System.out.println("ERRO! Utilizador Inexistente! Login não efetuado!");
+             }
+             return false;
         }
     }
 
@@ -186,10 +193,17 @@ public class UiTexto {
         }
     }
 
-    public void run() {
+    public void run() throws IOException {
         int op;
         boolean exit = false;
-        ComunicacaoServidor cs = new ComunicacaoServidor(sCli);
+        ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui Run!");
+
+        ComunicacaoServidor cs = new ComunicacaoServidor(sCli, in, out);
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui depois criar comserv!");
         while(!exit) {
             menuInicial();
             op = scanner.nextInt();
@@ -203,7 +217,11 @@ public class UiTexto {
                         break;
                     case 2:
                         uiLogin();
+                        if (sCli.isClosed())
+                            System.out.println("Fechado aqui antes LoginSucesso!");
                         LoginComSucesso(cs.efetuaLogin(user));
+                        if (sCli.isClosed())
+                            System.out.println("Fechado aqui depois LOGINSucesso!");
                         System.out.println(user);
                         //LOGIN
                         break;
@@ -215,5 +233,8 @@ public class UiTexto {
                         break;
                 }
         }
+        out.close();
+        in.close();
+        sCli.close();
     }
 }

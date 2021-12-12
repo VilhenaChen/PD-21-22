@@ -12,24 +12,39 @@ public class ComunicacaoServidor {
     ObjectOutputStream out;
     ObjectInputStream in;
 
-    public ComunicacaoServidor(Socket sCli) {
+    public ComunicacaoServidor(Socket sCli, ObjectInputStream in, ObjectOutputStream out) {
         this.sCli = sCli;
+        this.in = in;
+        this.out = out;
+
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui dentro ComServ!");
     }
 
-    public String efetuaLogin(Utilizador user){ //Manda o Login do User ao Servidor
+    public String efetuaLogin(Utilizador user){
+        if (sCli.isClosed())
+            System.out.println("Fechado aqui EfetuaLogin 1!");
+        //Manda o Login do User ao Servidor
         String resultado = "";
         try {
-            out = new ObjectOutputStream(sCli.getOutputStream());
-            in = new ObjectInputStream(sCli.getInputStream());
-            out.writeUnshared("LOGIN|" + user.getUsername() + "|" + user.getPassword());
+            if (sCli.isClosed())
+                System.out.println("Fechado aqui EfetuaLogin 2!");
+            out.writeObject("LOGIN," + user.getUsername() + "," + user.getPassword());
             out.flush();
+            if (sCli.isClosed())
+                System.out.println("Fechado aqui EfetuaLogin 3!");
+
 
             resultado = (String) in.readObject();
 
-            in.close();
-            out.close();
 
-        }catch(IOException|ClassNotFoundException e){
+
+            if (sCli.isClosed())
+                System.out.println("Fechado aqui EfetuaLogin 4!");
+
+
+
+        }catch(IOException|ClassNotFoundException e) {
             e.printStackTrace();
         }
         return resultado;
@@ -38,19 +53,21 @@ public class ComunicacaoServidor {
     public String efetuaRegisto(Utilizador user) { //Manda o Registo do User ao Servidor
                 String resultado = "";
         try {
-            out = new ObjectOutputStream(sCli.getOutputStream());
-            in = new ObjectInputStream(sCli.getInputStream());
-            out.writeUnshared("REGISTO|" + user.getUsername() +"|" + user.getPassword() + "|" + user.getNome());
+            out.writeUnshared("REGISTO," + user.getUsername() +"," + user.getPassword() + "," + user.getNome());
             out.flush();
 
-            resultado = (String) in.readObject();
+            if(in.readObject()==null){
+                System.out.println("cenas horriveis");
+            }
+            //resultado = (String) in.readObject();
 
-            in.close();
-            out.close();
+
+
         }catch(IOException|ClassNotFoundException e){
             e.printStackTrace();
         }
         return resultado;
     }
+
 
 }
