@@ -24,7 +24,6 @@ public class ThreadInformaPortoGRDS extends TimerTask {
     @Override
     public void run() {
         try {
-            System.out.println("Is Closed: " + ss.isClosed());
             System.out.println("Informei o GRDS do Porto " + ss.getLocalPort());
             String msg = "INFO_PORT," + id + "," + ss.getLocalPort();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -3,9 +3,19 @@ package pd.tp.servidor.bd;
 import java.sql.*;
 
 public class ComunicacaoBD {
+
     private final String BD_URL = "jdbc:mysql://localhost:13306/sgbd";
     private final String USERNAME = "sgbd_user";
     private final String PASSWORD = "c4s#fk9bpw2x";
+    private static final String SUCESSO = "SUCESSO";
+    private static final String PASSWORD_ERRADA = "PASSWORD_ERRADA";
+    private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
+    private static final String NOME_REPETIDO = "NOME_REPETIDO";
+    private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
+    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
+    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
+    private static final String NOT_ADMIN = "NOT_ADMIN";
+    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
 
     private Connection dbConn;
 
@@ -69,14 +79,6 @@ public class ComunicacaoBD {
         statement.close();
     }
 
-    public void updateUserLogin(String username,int logado) throws SQLException {
-        Statement statement = dbConn.createStatement();
-
-        String sqlQuery = "UPDATE User SET login='" + logado + "'WHERE username='" + username + "'";
-        statement.executeUpdate(sqlQuery);
-        statement.close();
-    }
-
     public void deleteUser(String username) throws SQLException {
         Statement statement = dbConn.createStatement();
 
@@ -86,31 +88,60 @@ public class ComunicacaoBD {
     }
 
     public String loginUser(String username, String password) throws SQLException {
-        Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT password FROM User WHERE username='" + username + "'";
+        Statement statementSelect = dbConn.createStatement();
+        String sqlQuerySelect = "SELECT password FROM User WHERE username='" + username + "'";
         String DBPassword;
 
-        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        ResultSet resultSet = statementSelect.executeQuery(sqlQuerySelect);
 
-        if(resultSet.next() == false) {
+
+
+        if(!resultSet.next()) {
             System.out.println("O utilizador não existe!");
             resultSet.close();
-            statement.close();
-            return "UTILIZADOR_INEXISTENTE";
+            statementSelect.close();
+            return UTILIZADOR_INEXISTENTE;
         }
+
         DBPassword = resultSet.getString("password");
-        if(DBPassword.equals(password)){
+
+        if(DBPassword.equals(password)) {
             System.out.println("Password certa!");
             resultSet.close();
-            statement.close();
-            return "SUCESSO";
+            statementSelect.close();
+            Statement statementUpdate = dbConn.createStatement();
+            int login = 1;
+            String sqlQueryUpdate = "UPDATE User SET login='" + login + "' WHERE username='" + username + "'";
+            statementUpdate.executeUpdate(sqlQueryUpdate);
+
+            statementUpdate.close();
+            return SUCESSO;
         }
         else{
             System.out.println("Password errada!");
             resultSet.close();
-            statement.close();
-            return "PASSWORD_ERRADA";
+            statementSelect.close();
+            return PASSWORD_ERRADA;
         }
+    }
+
+    public String logoutUser(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT login FROM User WHERE username='" + username + "'";
+
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(!resultSet.next()) {
+            System.out.println("O utilizador não existe!");
+            resultSet.close();
+            statement.close();
+            return UTILIZADOR_INEXISTENTE;
+        }
+        int logout = 0;
+        sqlQuery = "UPDATE User SET login='" + logout + "'WHERE username='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        resultSet.close();
+        statement.close();
+        return SUCESSO;
     }
 
     public boolean verificaExistenciaUser(String username) throws SQLException {
@@ -144,12 +175,12 @@ public class ComunicacaoBD {
             }
             else {
                 statement.close();
-                return "NOME_E_ADMIN_JA_EXISTENTES";
+                return NOME_E_ADMIN_JA_EXISTENTES;
             }
         }
         else{
             statement.close();
-            return "ADMINISTRADOR_INEXISTENTE";
+            return ADMIN_INEXISTENTE;
         }
     }
 
@@ -202,26 +233,26 @@ public class ComunicacaoBD {
                         String sqlQuery = "UPDATE Group SET name='" + name + "'WHERE idGroup='" + idGroup + "'";
                         statement.executeUpdate(sqlQuery);
                         statement.close();
-                        return "SUCESSO";
+                        return SUCESSO;
                     }
                     else {
                         statement.close();
-                        return "NOME_E_ADMIN_JA_EXISTENTES";
+                        return NOME_E_ADMIN_JA_EXISTENTES;
                     }
                 }
                 else {
                     statement.close();
-                    return "NAO_E_O_ADMIN";
+                    return NOT_ADMIN;
                 }
             }
             else {
                 statement.close();
-                return "GRUPO_INEXISTENTE";
+                return GRUPO_INEXISTENTE;
             }
         }
         else {
             statement.close();
-            return "ADMINISTRADOR_INEXISTENTE";
+            return ADMIN_INEXISTENTE;
         }
 
     }

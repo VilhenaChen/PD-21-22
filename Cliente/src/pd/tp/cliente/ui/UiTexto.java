@@ -15,6 +15,11 @@ public class UiTexto {
     private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
     private static final String NOME_REPETIDO = "NOME_REPETIDO";
     private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
+    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
+    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
+    private static final String NOT_ADMIN = "NOT_ADMIN";
+    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
+
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
     private Socket sCli;
@@ -198,12 +203,8 @@ public class UiTexto {
         boolean exit = false;
         ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
-        if (sCli.isClosed())
-            System.out.println("Fechado aqui Run!");
-
         ComunicacaoServidor cs = new ComunicacaoServidor(sCli, in, out);
-        if (sCli.isClosed())
-            System.out.println("Fechado aqui depois criar comserv!");
+
         while(!exit) {
             menuInicial();
             op = scanner.nextInt();
@@ -217,24 +218,22 @@ public class UiTexto {
                         break;
                     case 2:
                         uiLogin();
-                        if (sCli.isClosed())
-                            System.out.println("Fechado aqui antes LoginSucesso!");
                         LoginComSucesso(cs.efetuaLogin(user));
-                        if (sCli.isClosed())
-                            System.out.println("Fechado aqui depois LOGINSucesso!");
                         System.out.println(user);
                         //LOGIN
                         break;
                     case 0:
                         exit = true;
-                        return;
+                        break;
                     default:
                         System.out.println("Escolha um opcao Valida");
                         break;
                 }
         }
+        cs.logout();
         out.close();
         in.close();
         sCli.close();
+
     }
 }

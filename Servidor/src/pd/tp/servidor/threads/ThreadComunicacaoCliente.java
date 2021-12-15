@@ -17,6 +17,10 @@ public class ThreadComunicacaoCliente extends Thread{
     private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
     private static final String NOME_REPETIDO = "NOME_REPETIDO";
     private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
+    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
+    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
+    private static final String NOT_ADMIN = "NOT_ADMIN";
+    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private HashMap<String, String> dadosUser;
 
     public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD) {
@@ -36,39 +40,57 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void login(ObjectOutputStream out, String msgRecebida){
+        System.out.println(msgRecebida);
+        separaDadosUser(msgRecebida);
+        try {
+            String login = comBD.loginUser(dadosUser.get("username"), dadosUser.get("password"));
+            out.writeUnshared(login);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void signIn(ObjectOutputStream out, String msgRecebida){
+        System.out.println(msgRecebida);
+        separaDadosUser(msgRecebida);
+        try {
+            comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
+            out.writeUnshared(SUCESSO);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
-        try {
             dadosUser = new HashMap<>();
+        try {
             ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
             ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
+            String msgRecebida;
 
-            String msgRecebida = (String) in.readObject();
+            do {
+                msgRecebida = (String) in.readObject();
 
-            if (msgRecebida.startsWith("LOGIN")) {
-                //Ligacao a BD
-                System.out.println(msgRecebida);
-                separaDadosUser(msgRecebida);
-                String login = comBD.loginUser(dadosUser.get("username"), dadosUser.get("password"));
-                out.writeObject(login);
-                out.flush();
+                if (msgRecebida.startsWith("LOGIN")) {
+                    login(out,msgRecebida);
+                } else if (msgRecebida.startsWith("REGISTO")) {
+                    signIn(out,msgRecebida);
+                }
 
-            } else if (msgRecebida.startsWith("REGISTO")) {
-                //Ligacao a BD
-                separaDadosUser(msgRecebida);
-                comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"), 0);
-                System.out.println(msgRecebida);
-                out.writeUnshared(SUCESSO);
-                out.flush();
-            }
+            }while (!msgRecebida.equals("LOGOUT"));
 
-
+            comBD.logoutUser(dadosUser.get("username"));
             out.close();
             in.close();
-
+            sCli.close();
         } catch (IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-
         }
+
     }
 }

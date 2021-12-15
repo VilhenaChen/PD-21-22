@@ -73,17 +73,9 @@ public class Servidor {
         comBD.listaUsers();
 
         while(true) {
-            if (servidor.ss.isClosed())
-                System.out.println("Fechado aqui!");
             Socket sCli = servidor.ss.accept();
-            if (servidor.ss.isClosed())
-                System.out.println("Fechado aqui tambem!");
             ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD);
-            if (servidor.ss.isClosed())
-                System.out.println("Fechado aqui fogo!");
             tc.start();
-            if (servidor.ss.isClosed())
-                System.out.println("Fechado aqui finalmente!");
         }
 
     }
