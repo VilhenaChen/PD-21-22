@@ -55,5 +55,47 @@ public class ComunicacaoServidor {
         }
     }
 
+    public String trocaNome(Utilizador user, String nome) {
+        String resultado = "";
+        try {
+            out.writeObject("UPDATE_NAME," + user.getUsername() + "," + nome );
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch(IOException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
+
+    public String trocaPassword(Utilizador user, String password) {
+        String resultado = "";
+        try {
+            out.writeObject("UPDATE_PASSWORD," + user.getUsername() + "," + password );
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch(IOException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
+
+    public String trocaUsername(Utilizador user, String username) {
+        String resultado = "";
+        try {
+            out.writeObject("UPDATE_USERNAME," + user.getUsername() + "," + username );
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch(IOException|ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
+
 
 }

@@ -63,7 +63,7 @@ public class Cliente {
         Socket sCli = new Socket(cli.infoServidor.get("IP"), Integer.parseInt(cli.infoServidor.get("PORTO")));
 
         UiTexto ui = new UiTexto(sCli);
-        ui.run();
+        ui.start();
         System.exit(0);
     }
 }

@@ -57,8 +57,50 @@ public class ThreadComunicacaoCliente extends Thread{
         System.out.println(msgRecebida);
         separaDadosUser(msgRecebida);
         try {
-            comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
-            out.writeUnshared(SUCESSO);
+            String resultado = comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateName(ObjectOutputStream out, String msgRecebida){
+        System.out.println(msgRecebida);
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String name = array[2];
+        try {
+            String resultado = comBD.updateUserName(name, username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateUsername(ObjectOutputStream out, String msgRecebida){
+        System.out.println(msgRecebida);
+        String[] array = msgRecebida.split(",");
+        String old_username = array[1];
+        String new_username = array[2];
+        try {
+            String resultado = comBD.updateUserUsername(new_username, old_username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updatePassword(ObjectOutputStream out, String msgRecebida){
+        System.out.println(msgRecebida);
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String password = array[2];
+        try {
+            String resultado = comBD.updateUserPassword(password, username);
+            out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
             e.printStackTrace();
@@ -78,9 +120,27 @@ public class ThreadComunicacaoCliente extends Thread{
 
                 if (msgRecebida.startsWith("LOGIN")) {
                     login(out,msgRecebida);
-                } else if (msgRecebida.startsWith("REGISTO")) {
-                    signIn(out,msgRecebida);
+                } else {
+                    if (msgRecebida.startsWith("REGISTO")) {
+                        signIn(out,msgRecebida);
+                    }
+                    else{
+                        if (msgRecebida.startsWith("UPDATE_NAME")) {
+                            updateName(out,msgRecebida);
+                        }
+                        else{
+                            if (msgRecebida.startsWith("UPDATE_USERNAME")) {
+                                updateUsername(out, msgRecebida);
+                            }
+                            else{
+                                if (msgRecebida.startsWith("UPDATE_PASSWORD")) {
+                                    updatePassword(out,msgRecebida);
+                                }
+                            }
+                        }
+                    }
                 }
+
 
             }while (!msgRecebida.equals("LOGOUT"));
 

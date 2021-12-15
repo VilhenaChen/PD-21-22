@@ -32,6 +32,18 @@ public class Utilizador implements Serializable {
         return password;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Boolean getLogged() {
         return logged;
     }

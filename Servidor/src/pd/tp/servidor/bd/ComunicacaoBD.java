@@ -47,59 +47,76 @@ public class ComunicacaoBD {
         statement.close();
     }
 
-    public void insereUser(String name, String username, String password, int logado) throws SQLException {
+    public String insereUser(String name, String username, String password, int logado) throws SQLException {
         Statement statement = dbConn.createStatement();
-
+        if(verificaExistenciaUser(username)){
+            return USERNAME_REPETIDO;
+        }
         String sqlQuery = "INSERT INTO User (username, name, password, login) VALUES ('" + username + "','" + name + "','" + password + "','" + logado + "')";
         statement.executeUpdate(sqlQuery);
         statement.close();
+        return SUCESSO;
     }
 
-    public void updateUserName(String name, String username) throws SQLException {
+    public String updateUserName(String name, String username) throws SQLException {
         Statement statement = dbConn.createStatement();
-
+        if(!verificaExistenciaUser(username)){
+            return UTILIZADOR_INEXISTENTE;
+        }
         String sqlQuery = "UPDATE User SET name='" + name + "'WHERE username='" + username + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
+        return SUCESSO;
     }
 
-    public void updateUserUsername(String old_username, String new_username) throws SQLException {
+    public String updateUserUsername(String new_username, String old_username) throws SQLException {
         Statement statement = dbConn.createStatement();
+        if(!verificaExistenciaUser(old_username)){
+            return UTILIZADOR_INEXISTENTE;
+        }
 
+        if(verificaExistenciaUser(new_username)){
+            return USERNAME_REPETIDO;
+        }
         String sqlQuery = "UPDATE User SET username='" + new_username + "'WHERE username='" + old_username + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
+        return SUCESSO;
     }
 
-    public void updateUserPassword(String password, String username) throws SQLException {
+    public String updateUserPassword(String password, String username) throws SQLException {
         Statement statement = dbConn.createStatement();
-
+        if(!verificaExistenciaUser(username)){
+            return UTILIZADOR_INEXISTENTE;
+        }
         String sqlQuery = "UPDATE User SET password='" + password  + "'WHERE username='" + username + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
+        return SUCESSO;
     }
 
-    public void deleteUser(String username) throws SQLException {
+    public String deleteUser(String username) throws SQLException {
         Statement statement = dbConn.createStatement();
-
+        if(!verificaExistenciaUser(username)){
+            return UTILIZADOR_INEXISTENTE;
+        }
         String sqlQuery = "DELETE FROM User WHERE username='" + username + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
+        return SUCESSO;
     }
 
     public String loginUser(String username, String password) throws SQLException {
-        Statement statementSelect = dbConn.createStatement();
-        String sqlQuerySelect = "SELECT password FROM User WHERE username='" + username + "'";
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT password FROM User WHERE username='" + username + "'";
         String DBPassword;
 
-        ResultSet resultSet = statementSelect.executeQuery(sqlQuerySelect);
-
-
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(!resultSet.next()) {
             System.out.println("O utilizador não existe!");
             resultSet.close();
-            statementSelect.close();
+            statement.close();
             return UTILIZADOR_INEXISTENTE;
         }
 
@@ -107,20 +124,25 @@ public class ComunicacaoBD {
 
         if(DBPassword.equals(password)) {
             System.out.println("Password certa!");
-            resultSet.close();
-            statementSelect.close();
-            Statement statementUpdate = dbConn.createStatement();
             int login = 1;
-            String sqlQueryUpdate = "UPDATE User SET login='" + login + "' WHERE username='" + username + "'";
-            statementUpdate.executeUpdate(sqlQueryUpdate);
+            sqlQuery = "UPDATE User SET login='" + login + "' WHERE username='" + username + "'";
+            statement.executeUpdate(sqlQuery);
+            sqlQuery = "SELECT name FROM User WHERE username='" + username + "'";
+            String DBName;
 
-            statementUpdate.close();
-            return SUCESSO;
+            resultSet = statement.executeQuery(sqlQuery);
+
+            resultSet.next();
+            DBName = resultSet.getString("name");
+
+            resultSet.close();
+            statement.close();
+            return SUCESSO + "," + DBName;
         }
         else{
             System.out.println("Password errada!");
             resultSet.close();
-            statementSelect.close();
+            statement.close();
             return PASSWORD_ERRADA;
         }
     }
@@ -148,7 +170,7 @@ public class ComunicacaoBD {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "SELECT name FROM User WHERE username='" + username + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-        if(resultSet.next()==false) {
+        if(!resultSet.next()) {
             resultSet.close();
             statement.close();
             return false;
