@@ -123,6 +123,34 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void listaMembrosGrupo(ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String idGrupo = array[2];
+
+        try {
+            String resultado = comBD.listaMembrosGrupos(Integer.parseInt(idGrupo));
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador " + username + " alterou o nome do grupo " + idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listaGruposAdmin(ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        try {
+            String resultado = comBD.listaGruposAdmin(username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
             dadosUser = new HashMap<>();
@@ -155,6 +183,11 @@ public class ThreadComunicacaoCliente extends Thread{
                                 else {
                                     if(msgRecebida.startsWith("NOVO_GRUPO")) {
                                         criaGrupo(out, msgRecebida);
+                                    }
+                                    else {
+                                        if(msgRecebida.startsWith("LISTA_GRUPOS_ADMIN")) {
+                                            listaGruposAdmin(out, msgRecebida);
+                                        }
                                     }
                                 }
                             }

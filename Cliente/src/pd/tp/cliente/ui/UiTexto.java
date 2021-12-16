@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class UiTexto {
@@ -23,6 +24,7 @@ public class UiTexto {
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
     private Socket sCli;
+    private  ComunicacaoServidor cs;
 
     public UiTexto(Socket sCli) {
         this.sCli = sCli;
@@ -128,14 +130,13 @@ public class UiTexto {
         System.out.println("> ");
     }
 
-    private void menuGruposAdministrados() { //Menu com as Opcoes dos Contactos
-        System.out.println("---- MENU GRUPOS ADMINISTRADOS ----");
+    private void menuGruposAdministrados(String nomeGrupo) { //Menu com as Opcoes dos Contactos
+        System.out.println("---- ADMINISTRACAO DO GRUPO: " + nomeGrupo + " ----");
         System.out.println("1 - Excluir Membro");
         System.out.println("2 - Eliminar Grupo");
         System.out.println("3 - Listar Membros");
         System.out.println("4 - Alterar nome do grupo");
         System.out.println("5 - Aceitar membros");
-        System.out.println("6 - Listar grupos administrados");
         System.out.println("0 - Voltar atras");
         System.out.println("> ");
     }
@@ -198,7 +199,7 @@ public class UiTexto {
         }
     }
 
-    private void trataMenuMensagens( ComunicacaoServidor cs) {
+    private void trataMenuMensagens() {
         int op = 0;
         while (true) {
             menuMensagens();
@@ -220,7 +221,7 @@ public class UiTexto {
         }
     }
 
-    private void trataMenuFicheiros( ComunicacaoServidor cs) {
+    private void trataMenuFicheiros() {
         int op = 0;
         while (true) {
             menuFicheiros();
@@ -242,7 +243,7 @@ public class UiTexto {
         }
     }
 
-    private void trataMenuGrupos( ComunicacaoServidor cs) {
+    private void trataMenuGrupos() {
         int op = 0;
         while (true) {
             menuGrupos();
@@ -260,10 +261,10 @@ public class UiTexto {
                     String nome = scanner.nextLine();
                     String resultado = cs.criaGrupo(user, nome);
                     if(resultado.equals(SUCESSO))
-                        System.out.println("Gruupo criado com sucesso");
+                        System.out.println("Grupo criado com sucesso");
                     break;
                 case 5:
-                    trataMenuGruposAdmin(cs);
+                    trataMenuGruposAdmin();
                     break;
                 case 0: //back
                     return;
@@ -273,35 +274,75 @@ public class UiTexto {
             }
         }
     }
-    private void trataMenuGruposAdmin(ComunicacaoServidor cs) {
+    private void trataMenuGruposAdmin() {
         int op = 0;
-        while (true) {
-            menuGruposAdministrados();
+        int idGrupo = -1;
+        String resultado = cs.listaGruposAdmin(user);
+        if(resultado.isEmpty()) {
+            System.out.println("O Utilizador nao tem grupos administrados");
+            return;
+        }
+        String[] array = resultado.split(",");
+        int numero = Integer.parseInt(array[0]);
+        int[] ids = new int[numero];
+        String[] nomes = new String[numero];
+        for(int i = 0, j = 0; j < numero; i++, j++) {
+            ids[j] = Integer.parseInt(array[i + 1]);
+            nomes[j] = array[i + 2];
+            i++;
+        }
+        System.out.println("---- GRUPOS DO ADMIN ----");
+        for(int i = 0; i < numero; i++) {
+            System.out.println(ids[i] + " - " + nomes[i]);
+        }
+        System.out.println("-1 - Voltar Atras");
+
+        while(op != -1){
+            System.out.println("> ");
             op = scanner.nextInt();
             scanner.nextLine();
-            switch (op) {
-                case 1: //Excluir membro
-                    break;
-                case 2: //Eliminar grupo
-                    break;
-                case 3: //Listar membros
-                    break;
-                case 4: //Alterar nome grupo
-                    break;
-                case 5: //Aceitar membros
-                    break;
-                case 6: //Listar grupos administrados
-                    break;
-                case 0: //back
-                    return;
-                default:
-                    System.out.println("Opcao Invalida!! Insira uma opcao valida");
-                    break;
+            for(int i = 0; i < numero; i++) {
+                if(ids[i] == op) {
+                    idGrupo = op;
+                    while (true) {
+                        menuGruposAdministrados(nomes[i]);
+                        op = scanner.nextInt();
+                        scanner.nextLine();
+                        switch (op) {
+                            case 1: //Excluir membro
+                                break;
+                            case 2: //Eliminar grupo
+                                break;
+                            case 3: //Listar membros
+                                resultado = cs.listaMembrosGrupos(user, idGrupo);
+                                System.out.println(resultado);
+                                break;
+                            case 4: //Alterar nome grupo
+                                System.out.println("Insira o novo nome para o grupo: ");
+                                String novo_nome = scanner.nextLine();
+                                //Maybe trocar o ID
+                                resultado = cs.trocaNomeGroup(user, novo_nome, idGrupo);
+                                if(resultado.equals(SUCESSO))
+                                    System.out.println("Nome do grupo " + idGrupo + " trocado para '" + novo_nome + "'");
+                                break;
+                            case 5: //Aceitar membros
+                                break;
+                            case 0: //back
+                                return;
+                            default:
+                                System.out.println("Opcao Invalida!! Insira uma opcao valida");
+                                break;
+                        }
+                    }
+                }
             }
+            if(op != -1)
+                System.out.println("Erro! Por favor insira uma opcao valida");
+
         }
     }
 
-    private void trataMenuContactos(ComunicacaoServidor cs) {
+    private void trataMenuContactos() {
         int op = 0;
         while (true) {
             menuContactos();
@@ -329,7 +370,7 @@ public class UiTexto {
         }
     }
 
-    private void trataMenuInformacoes(ComunicacaoServidor cs) {
+    private void trataMenuInformacoes() {
         int op = 0;
         String resultado;
         while (true) {
@@ -379,7 +420,7 @@ public class UiTexto {
         }
     }
     
-    private boolean menuSecundario(ComunicacaoServidor cs) {
+    private boolean menuSecundario() {
         int op = 0;
         boolean exit = false;
         while(!exit){
@@ -388,19 +429,19 @@ public class UiTexto {
             scanner.nextLine();
             switch (op) {
                 case 1:
-                    trataMenuMensagens(cs);
+                    trataMenuMensagens();
                     break;
                 case 2:
-                    trataMenuFicheiros(cs);
+                    trataMenuFicheiros();
                     break;
                 case 3:
-                    trataMenuGrupos(cs);
+                    trataMenuGrupos();
                     break;
                 case 4:
-                    trataMenuContactos(cs);
+                    trataMenuContactos();
                     break;
                 case 5:
-                    trataMenuInformacoes(cs);
+                    trataMenuInformacoes();
                     break;
                 case 0:
                     exit = true;
@@ -418,7 +459,7 @@ public class UiTexto {
         boolean exit = false;
         ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
-        ComunicacaoServidor cs = new ComunicacaoServidor(sCli, in, out);
+        cs = new ComunicacaoServidor(sCli, in, out);
 
         while(!exit) {
             menuInicial();
@@ -434,7 +475,7 @@ public class UiTexto {
                         uiLogin();
                         if(LoginComSucesso(cs.efetuaLogin(user))) {
                             System.out.println("Bem-vindo " + user.getUsername());
-                            exit = menuSecundario(cs);
+                            exit = menuSecundario();
                         }
                         break;
                     case 0:

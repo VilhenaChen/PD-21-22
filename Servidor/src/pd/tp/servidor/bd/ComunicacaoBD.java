@@ -301,7 +301,7 @@ public class ComunicacaoBD {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "SELECT name FROM `Group` WHERE idGroup='" + idGroup + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-        if(resultSet.next()==false) {
+        if(!resultSet.next()) {
             resultSet.close();
             statement.close();
             return false;
@@ -312,4 +312,63 @@ public class ComunicacaoBD {
             return true;
         }
     }
-}
+
+    public String listaGrupos() throws SQLException {
+        String resultado = "";
+        Statement statement = dbConn.createStatement();
+        String sqlQuery;
+        sqlQuery = "SELECT name, idGroup FROM `Group`";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        statement.close();
+        return resultado;
+    }
+
+    public String listaGruposAdmin(String username) throws SQLException {
+        String resultado = "";
+        int count = 0;
+        Statement statement = dbConn.createStatement();
+        String sqlQuery;
+        sqlQuery = "SELECT name, idGroup FROM `Group` WHERE admin='" +  username + "'" ;
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while(resultSet.next()) {
+            count++;
+            resultado = resultado + resultSet.getString("idGroup") + "," + resultSet.getString("name") + ",";
+        }
+        resultado = count + "," + resultado;
+        resultSet.close();
+        statement.close();
+        return resultado;
+    }
+
+    public String listaMembrosGrupos(int idGrupo) throws SQLException {
+        String resultado = getNomeGrupobyID(idGrupo);
+        if(!resultado.equals(GRUPO_INEXISTENTE)) {
+            Statement statement = dbConn.createStatement();
+            String sqlQuery;
+            sqlQuery = "SELECT user FROM `Joins` WHERE accepted= 1 AND group='" + resultado + "'";
+            ResultSet resultSet = statement.executeQuery(sqlQuery);
+            while (!resultSet.next()) {
+                resultado = resultSet.getString("user") + "\n";
+            }
+            resultSet.close();
+            statement.close();
+            return resultado;
+        }
+        return GRUPO_INEXISTENTE;
+    }
+
+    public String getNomeGrupobyID(int idGrupo) throws SQLException {
+        String resultado = "";
+        Statement statement = dbConn.createStatement();
+        String sqlQuery;
+        sqlQuery = "SELECT name FROM `Group` WHERE idGroup='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(resultSet == null)
+            resultado = GRUPO_INEXISTENTE;
+        else
+            resultado = resultSet.getString("name");
+        resultSet.close();
+        statement.close();
+        return resultado;
+    }
+ }

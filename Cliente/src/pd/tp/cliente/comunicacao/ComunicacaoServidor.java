@@ -97,10 +97,56 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
+    //GRUPOS
     public String criaGrupo(Utilizador user, String nome) {
         String resultado = "";
         try {
             out.writeObject("NOVO_GRUPO," + user.getUsername() + "," + nome);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String trocaNomeGroup(Utilizador user, String novo_nome, int idGrupo) {
+        String resultado = "";
+        try {
+            out.writeObject("UPDATE_NOME_GRUPO," + idGrupo + "," + novo_nome);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaGruposAdmin(Utilizador user) {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_GRUPOS_ADMIN," + user.getUsername());
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaMembrosGrupos(Utilizador user, int idGrupo) {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_MEMBROS_GRUPO," + user.getUsername() + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
