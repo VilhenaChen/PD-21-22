@@ -188,9 +188,9 @@ public class ComunicacaoBD {
     public String createGroup(String name, String username) throws SQLException {
         Statement statement = dbConn.createStatement();
         String sqlQuery;
-        if(verificaExistenciaUser(username)){
+        if(verificaExistenciaUser(username)) {
             if (!verificaSeExisteGrupoComNomeEAdmin(name,username)){
-                sqlQuery = "INSERT INTO Group (idGroup,name,admin) VALUES ('" + getNextIdGroup() + "','" + name + "','" + username + "')";
+                sqlQuery = "INSERT INTO `Group` (idGroup,name,admin) VALUES ('" + getNextIdGroup() + "','" + name + "','" + username + "')";
                 statement.executeUpdate(sqlQuery);
                 statement.close();
                 return "SUCESSO";
@@ -208,7 +208,8 @@ public class ComunicacaoBD {
 
     public boolean verificaSeExisteGrupoComNomeEAdmin(String name, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT name FROM Group WHERE admin='" + admin + "'";
+        String sqlQuery = "SELECT name FROM `Group` WHERE admin='" + admin + "'";
+        System.out.println(sqlQuery);
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(!resultSet.next()) {
@@ -235,7 +236,7 @@ public class ComunicacaoBD {
         ResultSet resultSet;
         do{
             idAtribuir++;
-            String sqlQuery = "SELECT name FROM Group WHERE id='" + idAtribuir + "'";
+            String sqlQuery = "SELECT name FROM `Group` WHERE idGroup='" + idAtribuir + "'";
             resultSet = statement.executeQuery(sqlQuery);
         }while (resultSet.next());
 
@@ -252,7 +253,7 @@ public class ComunicacaoBD {
             if(verificaExistenciaGrupo(idGroup)){
                 if(verificaAdminGrupo(idGroup,admin)){
                     if(verificaSeExisteGrupoComNomeEAdmin(name,admin)){
-                        String sqlQuery = "UPDATE Group SET name='" + name + "'WHERE idGroup='" + idGroup + "'";
+                        String sqlQuery = "UPDATE `Group` SET name='" + name + "'WHERE idGroup='" + idGroup + "'";
                         statement.executeUpdate(sqlQuery);
                         statement.close();
                         return SUCESSO;
@@ -281,7 +282,7 @@ public class ComunicacaoBD {
 
     public boolean verificaAdminGrupo(int idGroup, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT admin FROM Group WHERE idGroup='" + idGroup + "'";
+        String sqlQuery = "SELECT admin FROM `Group` WHERE idGroup='" + idGroup + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(resultSet.getString("admin").equals(admin)) {
@@ -298,7 +299,7 @@ public class ComunicacaoBD {
 
     public boolean verificaExistenciaGrupo(int idGroup) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT name FROM Group WHERE idGroup='" + idGroup + "'";
+        String sqlQuery = "SELECT name FROM `Group` WHERE idGroup='" + idGroup + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
         if(resultSet.next()==false) {
             resultSet.close();

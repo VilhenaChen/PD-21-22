@@ -107,6 +107,22 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void criaGrupo(ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String nomeGrupo = array[2];
+
+        try {
+            String resultado = comBD.createGroup(nomeGrupo, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador " + username + " criou o grupo " + nomeGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
             dadosUser = new HashMap<>();
@@ -135,6 +151,11 @@ public class ThreadComunicacaoCliente extends Thread{
                             else{
                                 if (msgRecebida.startsWith("UPDATE_PASSWORD")) {
                                     updatePassword(out,msgRecebida);
+                                }
+                                else {
+                                    if(msgRecebida.startsWith("NOVO_GRUPO")) {
+                                        criaGrupo(out, msgRecebida);
+                                    }
                                 }
                             }
                         }

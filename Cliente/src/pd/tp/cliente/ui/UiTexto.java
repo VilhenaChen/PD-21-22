@@ -163,8 +163,6 @@ public class UiTexto {
     }
 
     private boolean LoginComSucesso(String mensagem) {
-        if (sCli.isClosed())
-            System.out.println("Fechado aqui dentro LoginSucesso!");
         if(mensagem.startsWith(SUCESSO)){
             System.out.println("Login efetuado com sucesso!");
             String[] array = mensagem.split(",");
@@ -258,6 +256,11 @@ public class UiTexto {
                 case 3: //Listar grupos
                     break;
                 case 4: //Criar um grupo
+                    System.out.println("Insira nome do Grupo: ");
+                    String nome = scanner.nextLine();
+                    String resultado = cs.criaGrupo(user, nome);
+                    if(resultado.equals(SUCESSO))
+                        System.out.println("Gruupo criado com sucesso");
                     break;
                 case 5:
                     trataMenuGruposAdmin(cs);
@@ -429,9 +432,10 @@ public class UiTexto {
                         break;
                     case 2: //Login do User
                         uiLogin();
-                        LoginComSucesso(cs.efetuaLogin(user));
-                        System.out.println("Bem-vindo " + user.getUsername());
-                        exit = menuSecundario(cs);
+                        if(LoginComSucesso(cs.efetuaLogin(user))) {
+                            System.out.println("Bem-vindo " + user.getUsername());
+                            exit = menuSecundario(cs);
+                        }
                         break;
                     case 0:
                         exit = true;

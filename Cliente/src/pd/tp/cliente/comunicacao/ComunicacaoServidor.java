@@ -97,5 +97,19 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
+    public String criaGrupo(Utilizador user, String nome) {
+        String resultado = "";
+        try {
+            out.writeObject("NOVO_GRUPO," + user.getUsername() + "," + nome);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
 
 }
