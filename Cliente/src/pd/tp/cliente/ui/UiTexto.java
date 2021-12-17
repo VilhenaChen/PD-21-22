@@ -20,11 +20,13 @@ public class UiTexto {
     private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
     private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
+    private static final String NOT_MEMBRO = "NOT_MEMBRO";
+    private static final String JA_PERTENCE = "JA_PERTENCE";
 
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
     private Socket sCli;
-    private  ComunicacaoServidor cs;
+    private ComunicacaoServidor cs;
 
     public UiTexto(Socket sCli) {
         this.sCli = sCli;
@@ -47,18 +49,18 @@ public class UiTexto {
         do {
             System.out.println("Insira o Username: ");
             username = scanner.nextLine();
-            if(username.isEmpty()){
+            if (username.isEmpty()) {
                 System.out.println("Erro! O username não pode estar vazio");
             }
-        }while(username.isEmpty());
-        do{
+        } while (username.isEmpty());
+        do {
             System.out.println("Insira a Password: ");
             password = scanner.nextLine();
-            if(password.isEmpty()){
+            if (password.isEmpty()) {
                 System.out.println("Erro! A password não pode estar vazia");
             }
-        }while (password.isEmpty());
-        user = new Utilizador(username,password);
+        } while (password.isEmpty());
+        user = new Utilizador(username, password);
     }
 
     public void uiRegisto() { //Ui de Registo de Utilizador
@@ -66,7 +68,7 @@ public class UiTexto {
         String nome = null, username = null, password = null;
         boolean igual = false;
         System.out.println("---- Registo de Utilizador ----");
-        do{
+        do {
             System.out.println("Insira o Nome: ");
             nome = scanner.nextLine();
             System.out.println("Insira o Username: ");
@@ -82,12 +84,12 @@ public class UiTexto {
                     igual = true;
                 }
             } while (!igual);
-            if(username.isEmpty() || nome.isEmpty()) {
+            if (username.isEmpty() || nome.isEmpty()) {
                 System.out.println("ERRO!!!! O nome e o username nao podem estar vazios.");
             }
-        }while(username.isEmpty() || nome.isEmpty());
+        } while (username.isEmpty() || nome.isEmpty());
 
-        user = new Utilizador(username,password, nome);
+        user = new Utilizador(username, password, nome);
     }
 
     private void menuPrincipal() { //Menu Principal da aplicacao
@@ -164,14 +166,13 @@ public class UiTexto {
     }
 
     private boolean LoginComSucesso(String mensagem) {
-        if(mensagem.startsWith(SUCESSO)){
+        if (mensagem.startsWith(SUCESSO)) {
             System.out.println("Login efetuado com sucesso!");
             String[] array = mensagem.split(",");
             user.setNome(array[1]);
             user.setLogged(true);
             return true;
-        }
-        else {
+        } else {
             if (mensagem.equals(PASSWORD_ERRADA)) {
                 System.out.println("ERRO! Password Errada! Login não efetuado!");
             }
@@ -183,12 +184,11 @@ public class UiTexto {
     }
 
     private boolean RegistoComSucesso(String mensagem) {
-        if(mensagem.equals(SUCESSO)){
+        if (mensagem.equals(SUCESSO)) {
             System.out.println("Registo efetuado com sucesso!");
             user.setLogged(true);
             return true;
-        }
-        else {
+        } else {
             if (mensagem.equals(NOME_REPETIDO)) {
                 System.out.println("ERRO! O nome inserido já existe! Registo não efetuado!");
             }
@@ -243,25 +243,64 @@ public class UiTexto {
         }
     }
 
+
     private void trataMenuGrupos() {
         int op = 0;
+        String resultado = "";
+        int idGrupo;
         while (true) {
             menuGrupos();
             op = scanner.nextInt();
             scanner.nextLine();
             switch (op) {
                 case 1: //Aderir grupo
+                    System.out.println("Insira o ID do grupo ao qual pretende aderir: ");
+                    idGrupo = scanner.nextInt();
+                    scanner.nextLine();
+                    resultado = cs.adereAGrupo(user, idGrupo);
+                    if(resultado.equals(GRUPO_INEXISTENTE)){
+                        System.out.println("Erro! Não existe nenhum grupo com o id inserido");
+                    }
+                    if(resultado.equals(JA_PERTENCE)){
+                        System.out.println("Erro! Já pertence ao grupo ao qual está a tentar aderir");
+                    }
+                    else
+                        System.out.println("Aderiu com sucesso ao Grupo " + idGrupo);
                     break;
                 case 2: //Sair grupo
+                    System.out.println("Insira o ID do grupo do qual pretende sair: ");
+                    idGrupo = scanner.nextInt();
+                    scanner.nextLine();
+                    resultado = cs.saiDeGrupo(user, idGrupo);
+                    if(resultado.equals(GRUPO_INEXISTENTE)){
+                        System.out.println("ERRO!! Nao existe nenhum grupo com o ID inserido");
+                    }
+                    if(resultado.equals(NOT_MEMBRO)){
+                        System.out.println("ERRO!! Nao pertence a este grupo");
+                    }
+                    else
+                        System.out.println("Saiu com sucesso do Grupo " + idGrupo);
                     break;
                 case 3: //Listar grupos
+                    resultado = cs.listaGrupos();
+                    if(resultado.isEmpty())
+                        System.out.println("Nao existem grupos criados!");
+                    else {
+                        System.out.println("---- GRUPOS EXISTENTES ----");
+                        System.out.println(resultado);
+                    }
                     break;
                 case 4: //Criar um grupo
                     System.out.println("Insira nome do Grupo: ");
                     String nome = scanner.nextLine();
-                    String resultado = cs.criaGrupo(user, nome);
-                    if(resultado.equals(SUCESSO))
+                    resultado = cs.criaGrupo(user, nome);
+                    if(resultado.equals(SUCESSO)) {
                         System.out.println("Grupo criado com sucesso");
+                    }
+                    else{
+                        System.out.println("Erro! O já criou um grupo com este nome!");
+                    }
+
                     break;
                 case 5:
                     trataMenuGruposAdmin();

@@ -107,6 +107,8 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    //Grupos
+
     private void criaGrupo(ObjectOutputStream out, String msgRecebida) {
         String[] array = msgRecebida.split(",");
         String username = array[1];
@@ -116,6 +118,38 @@ public class ThreadComunicacaoCliente extends Thread{
             String resultado = comBD.createGroup(nomeGrupo, username);
             if(resultado.equals(SUCESSO))
                 System.out.println("O Utilizador " + username + " criou o grupo " + nomeGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void adereAGrupo(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        int idGrupo = Integer.parseInt(array[2]);
+
+        try {
+            String resultado = comBD.joinGroup(idGrupo, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador " + username + " pediu para aderir ao grupo com o id: " + idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saiDeGrupo(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        int idGrupo = Integer.parseInt(array[2]);
+
+        try {
+            String resultado = comBD.leaveGroup(idGrupo, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador " + username + " saiu do grupo " + idGrupo);
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -144,6 +178,16 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         try {
             String resultado = comBD.listaGruposAdmin(username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listaGrupos(ObjectOutputStream out, String msgRecebida) {
+        try {
+            String resultado = comBD.listaGrupos();
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -187,6 +231,21 @@ public class ThreadComunicacaoCliente extends Thread{
                                     else {
                                         if(msgRecebida.startsWith("LISTA_GRUPOS_ADMIN")) {
                                             listaGruposAdmin(out, msgRecebida);
+                                        }
+                                        else {
+                                            if(msgRecebida.startsWith("LISTA_GRUPOS")) {
+                                                listaGrupos(out, msgRecebida);
+                                            }
+                                            else{
+                                                if(msgRecebida.startsWith("ADERE_A_GRUPO")){
+                                                    adereAGrupo(out,msgRecebida);
+                                                }
+                                                else{
+                                                    if(msgRecebida.startsWith("SAI_DE_GRUPO")){
+                                                        saiDeGrupo(out,msgRecebida);
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }

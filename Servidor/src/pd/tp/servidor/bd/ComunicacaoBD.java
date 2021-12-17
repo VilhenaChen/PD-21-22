@@ -16,6 +16,8 @@ public class ComunicacaoBD {
     private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
     private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
+    private static final String NOT_MEMBRO = "NOT_MEMBRO";
+    private static final String JA_PERTENCE = "JA_PERTENCE";
 
     private Connection dbConn;
 
@@ -206,6 +208,49 @@ public class ComunicacaoBD {
         }
     }
 
+    public String joinGroup(int idGrupo, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        if(!verificaExistenciaGrupo(idGrupo)){
+            return GRUPO_INEXISTENTE;
+        }
+        if (verificaMembroGrupo(idGrupo, username)){
+            return JA_PERTENCE;
+        }
+
+        String sqlQuery = "INSERT INTO `Joins` (user,`group`,accepted) VALUES ('" + username + "','" + idGrupo + "','" + 0 + "')";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String leaveGroup(int idGrupo, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        if(!verificaExistenciaGrupo(idGrupo)){
+            return GRUPO_INEXISTENTE;
+        }
+        if(!verificaMembroGrupo(idGrupo,username)){
+            return NOT_MEMBRO;
+        }
+        String sqlQuery = "DELETE FROM `Joins` WHERE user='" + username + "'AND `group`='" + idGrupo +"'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public boolean verificaMembroGrupo(int idGrupo, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE user='" + username + "'AND `group`='" + idGrupo +"'";
+        System.out.println(sqlQuery);
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        if(!resultSet.next()) {
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+        return true;
+    }
+
     public boolean verificaSeExisteGrupoComNomeEAdmin(String name, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "SELECT name FROM `Group` WHERE admin='" + admin + "'";
@@ -319,6 +364,9 @@ public class ComunicacaoBD {
         String sqlQuery;
         sqlQuery = "SELECT name, idGroup FROM `Group`";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while(resultSet.next()) {
+            resultado = resultado + resultSet.getString("idGroup") + " - " + resultSet.getString("name") + "\n";
+        }
         statement.close();
         return resultado;
     }
@@ -341,34 +389,17 @@ public class ComunicacaoBD {
     }
 
     public String listaMembrosGrupos(int idGrupo) throws SQLException {
-        String resultado = getNomeGrupobyID(idGrupo);
-        if(!resultado.equals(GRUPO_INEXISTENTE)) {
-            Statement statement = dbConn.createStatement();
-            String sqlQuery;
-            sqlQuery = "SELECT user FROM `Joins` WHERE accepted= 1 AND group='" + resultado + "'";
-            ResultSet resultSet = statement.executeQuery(sqlQuery);
-            while (!resultSet.next()) {
-                resultado = resultSet.getString("user") + "\n";
-            }
-            resultSet.close();
-            statement.close();
-            return resultado;
-        }
-        return GRUPO_INEXISTENTE;
-    }
-
-    public String getNomeGrupobyID(int idGrupo) throws SQLException {
         String resultado = "";
         Statement statement = dbConn.createStatement();
         String sqlQuery;
-        sqlQuery = "SELECT name FROM `Group` WHERE idGroup='" + idGrupo + "'";
+        sqlQuery = "SELECT user FROM `Joins` WHERE accepted=1 AND group='" + idGrupo + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-        if(resultSet == null)
-            resultado = GRUPO_INEXISTENTE;
-        else
-            resultado = resultSet.getString("name");
+        while (!resultSet.next()) {
+            resultado = resultado + resultSet.getString("user") + "\n";
+        }
         resultSet.close();
         statement.close();
         return resultado;
     }
+
  }
