@@ -159,13 +159,23 @@ public class ThreadComunicacaoCliente extends Thread{
 
     private void listaMembrosGrupo(ObjectOutputStream out, String msgRecebida) {
         String[] array = msgRecebida.split(",");
-        String username = array[1];
         String idGrupo = array[2];
 
         try {
             String resultado = comBD.listaMembrosGrupos(Integer.parseInt(idGrupo));
-            if(resultado.equals(SUCESSO))
-                System.out.println("O Utilizador " + username + " alterou o nome do grupo " + idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listaMembrosGrupoPorAceitar(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        String idGrupo = array[1];
+
+        try {
+            String resultado = comBD.listaMembrosGrupoPorAceitar(Integer.parseInt(idGrupo));
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -191,6 +201,20 @@ public class ThreadComunicacaoCliente extends Thread{
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void aceitaMembro(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        String username = array[2];
+        try{
+            String resultado = comBD.aceitaMembro(username,idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+
+        } catch(IOException | SQLException e){
             e.printStackTrace();
         }
     }
@@ -243,6 +267,16 @@ public class ThreadComunicacaoCliente extends Thread{
                                                 else{
                                                     if(msgRecebida.startsWith("SAI_DE_GRUPO")){
                                                         saiDeGrupo(out,msgRecebida);
+                                                    }
+                                                    else{
+                                                        if(msgRecebida.startsWith("LISTA_MEMBROS_GRUPO_POR_ACEITAR")) {
+                                                            listaMembrosGrupoPorAceitar(out, msgRecebida);
+                                                        }
+                                                        else{
+                                                            if(msgRecebida.startsWith("ACEITA_MEMBRO")){
+                                                                aceitaMembro(out,msgRecebida);
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class UiTexto {
@@ -22,6 +21,7 @@ public class UiTexto {
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private static final String NOT_MEMBRO = "NOT_MEMBRO";
     private static final String JA_PERTENCE = "JA_PERTENCE";
+    private static final String EMPTY = "EMPTY";
 
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
@@ -353,7 +353,7 @@ public class UiTexto {
                             case 2: //Eliminar grupo
                                 break;
                             case 3: //Listar membros
-                                resultado = cs.listaMembrosGrupos(user, idGrupo);
+                                resultado = cs.listaMembrosGrupos(idGrupo);
                                 System.out.println(resultado);
                                 break;
                             case 4: //Alterar nome grupo
@@ -365,6 +365,28 @@ public class UiTexto {
                                     System.out.println("Nome do grupo " + idGrupo + " trocado para '" + novo_nome + "'");
                                 break;
                             case 5: //Aceitar membros
+                                boolean parar = false;
+
+                                resultado = cs.listaMembrosGrupoPorAceitar(idGrupo);
+                                if(resultado.equals(EMPTY)){
+                                    System.out.println("Não existem membros por aceitar");
+                                    break;
+                                }
+                                System.out.println(resultado);
+                                System.out.println("Insira o username dos membros que pretende aceitar (separados por virgulas): ");
+                                String usernames = scanner.nextLine();
+                                resultado = cs.aceitaMembros(usernames,idGrupo);
+                                if(resultado.startsWith("ERRO")){
+                                    System.out.println("Erro! Os usernames seguintes não foram inseridos por não estarem na lista de membros a aceitar: ");
+                                    String[] arrayFalhas = resultado.split(",");
+                                    for(int j = 0; j< arrayFalhas.length; j++){
+                                        System.out.println(arrayFalhas[j]);
+                                    }
+                                }
+                                else{
+                                    System.out.println("Os membros (" + usernames + ") Foram aceites com sucesso");
+                                }
+
                                 break;
                             case 0: //back
                                 return;

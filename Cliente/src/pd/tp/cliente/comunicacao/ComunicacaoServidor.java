@@ -189,10 +189,10 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
-    public String listaMembrosGrupos(Utilizador user, int idGrupo) {
+    public String listaMembrosGrupos(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_MEMBROS_GRUPO," + user.getUsername() + "," + idGrupo);
+            out.writeObject("LISTA_MEMBROS_GRUPO," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -202,6 +202,50 @@ public class ComunicacaoServidor {
         }
 
         return resultado;
+    }
+
+    public String listaMembrosGrupoPorAceitar(int idGrupo) {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_MEMBROS_GRUPO_POR_ACEITAR," + idGrupo);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String aceitaMembros(String usernames, int idGrupo){
+        String resultado = "";
+        String[] array = usernames.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("ACEITA_MEMBRO," + idGrupo + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+
     }
 
 }

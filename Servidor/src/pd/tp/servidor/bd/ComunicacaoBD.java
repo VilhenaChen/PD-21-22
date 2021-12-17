@@ -18,6 +18,7 @@ public class ComunicacaoBD {
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private static final String NOT_MEMBRO = "NOT_MEMBRO";
     private static final String JA_PERTENCE = "JA_PERTENCE";
+    private static final String EMPTY = "EMPTY";
 
     private Connection dbConn;
 
@@ -400,6 +401,45 @@ public class ComunicacaoBD {
         resultSet.close();
         statement.close();
         return resultado;
+    }
+
+    public String listaMembrosGrupoPorAceitar(int idGrupo) throws SQLException {
+        String resultado = "";
+        Statement statement = dbConn.createStatement();
+        String sqlQuery;
+        boolean vazio = true;
+        sqlQuery = "SELECT user FROM `Joins` WHERE accepted='0' AND `group`='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()) {
+            vazio = false;
+            resultado = resultado + resultSet.getString("user") + "\n";
+        }
+        resultSet.close();
+        statement.close();
+        if(vazio){
+            System.out.println("Não existem membros por aceitar!");
+            return EMPTY;
+        }
+        return resultado;
+    }
+
+    public String aceitaMembro(String username,int idGrupo) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user='" + username + "'";
+
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(!resultSet.next()) {
+            System.out.println("O utilizador não existe!");
+            resultSet.close();
+            statement.close();
+            return UTILIZADOR_INEXISTENTE;
+        }
+        sqlQuery = "UPDATE `Joins` SET accepted=1 WHERE `group`='" + idGrupo + "'AND user='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        resultSet.close();
+        statement.close();
+        return SUCESSO;
     }
 
  }
