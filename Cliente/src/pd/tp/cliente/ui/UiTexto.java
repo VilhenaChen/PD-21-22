@@ -335,16 +335,16 @@ public class UiTexto {
             System.out.println(ids[i] + " - " + nomes[i]);
         }
         System.out.println("-1 - Voltar Atras");
-
-        while(op != -1){
+        while(op != -1) {
             System.out.println("> ");
             op = scanner.nextInt();
             scanner.nextLine();
             for(int i = 0; i < numero; i++) {
                 if(ids[i] == op) {
                     idGrupo = op;
+                    String nomeGrupo = nomes[i];
                     while (true) {
-                        menuGruposAdministrados(nomes[i]);
+                        menuGruposAdministrados(nomeGrupo);
                         op = scanner.nextInt();
                         scanner.nextLine();
                         switch (op) {
@@ -359,10 +359,16 @@ public class UiTexto {
                             case 4: //Alterar nome grupo
                                 System.out.println("Insira o novo nome para o grupo: ");
                                 String novo_nome = scanner.nextLine();
-                                //Maybe trocar o ID
-                                resultado = cs.trocaNomeGroup(user, novo_nome, idGrupo);
-                                if(resultado.equals(SUCESSO))
+                                resultado = cs.trocaNomeGroup(novo_nome, idGrupo);
+                                if(resultado.equals(SUCESSO)) {
                                     System.out.println("Nome do grupo " + idGrupo + " trocado para '" + novo_nome + "'");
+                                    nomeGrupo = novo_nome;
+                                }
+                                else{
+                                    if(resultado.equals(NOME_E_ADMIN_JA_EXISTENTES)){
+                                        System.out.println("Erro! Já possui um grupo com o nome: " + novo_nome);
+                                    }
+                                }
                                 break;
                             case 5: //Aceitar membros
                                 boolean parar = false;

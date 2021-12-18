@@ -35,16 +35,14 @@ public class ThreadComunicacaoCliente extends Thread{
         dadosUser.put("password", array[2]);
         if(array.length > 3)
             dadosUser.put("name", array[3]);
-        for(String a : array) {
-            System.out.println(a);
-        }
     }
 
     private void login(ObjectOutputStream out, String msgRecebida){
-        System.out.println(msgRecebida);
         separaDadosUser(msgRecebida);
         try {
             String login = comBD.loginUser(dadosUser.get("username"), dadosUser.get("password"));
+            if(login.equals(SUCESSO))
+                System.out.println("O Utilizador '" + dadosUser.get("username") + "' efetou login com Sucesso");
             out.writeUnshared(login);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -54,10 +52,11 @@ public class ThreadComunicacaoCliente extends Thread{
     }
 
     private void signIn(ObjectOutputStream out, String msgRecebida){
-        System.out.println(msgRecebida);
         separaDadosUser(msgRecebida);
         try {
             String resultado = comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + dadosUser.get("username") + "' registou-se com Sucesso");
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -66,12 +65,13 @@ public class ThreadComunicacaoCliente extends Thread{
     }
 
     private void updateName(ObjectOutputStream out, String msgRecebida){
-        System.out.println(msgRecebida);
         String[] array = msgRecebida.split(",");
         String username = array[1];
         String name = array[2];
         try {
             String resultado = comBD.updateUserName(name, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + dadosUser.get("username") + "' mudou o seu nome com Sucesso");
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -80,12 +80,13 @@ public class ThreadComunicacaoCliente extends Thread{
     }
 
     private void updateUsername(ObjectOutputStream out, String msgRecebida){
-        System.out.println(msgRecebida);
         String[] array = msgRecebida.split(",");
         String old_username = array[1];
         String new_username = array[2];
         try {
             String resultado = comBD.updateUserUsername(new_username, old_username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + old_username + "' alterou o seu username para '" + new_username + "'");
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -94,12 +95,13 @@ public class ThreadComunicacaoCliente extends Thread{
     }
 
     private void updatePassword(ObjectOutputStream out, String msgRecebida){
-        System.out.println(msgRecebida);
         String[] array = msgRecebida.split(",");
         String username = array[1];
         String password = array[2];
         try {
             String resultado = comBD.updateUserPassword(password, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + username + "' mudou a sua password com sucesso");
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -121,6 +123,23 @@ public class ThreadComunicacaoCliente extends Thread{
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void alteraNomeGrupo(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        String novoNome = array[2];
+
+        try{
+            String resultado = comBD.updateGroupName(novoNome,idGrupo);
+            if(resultado.equals(SUCESSO)){
+                System.out.println("O nome do grupo " + idGrupo + " foi trocado para: " + novoNome);
+            }
+            out.writeUnshared(resultado);
+            out.flush();
+        }catch (IOException | SQLException e){
             e.printStackTrace();
         }
     }
@@ -211,6 +230,8 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[2];
         try{
             String resultado = comBD.aceitaMembro(username,idGrupo);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + username + "' foi aceite no grupo: " + idGrupo);
             out.writeUnshared(resultado);
             out.flush();
 
@@ -276,6 +297,11 @@ public class ThreadComunicacaoCliente extends Thread{
                                                             if(msgRecebida.startsWith("ACEITA_MEMBRO")){
                                                                 aceitaMembro(out,msgRecebida);
                                                             }
+                                                            else{
+                                                                if(msgRecebida.startsWith("UPDATE_NOME_GRUPO")){
+                                                                    alteraNomeGrupo(out,msgRecebida);
+                                                                }
+                                                           }
                                                         }
                                                     }
                                                 }

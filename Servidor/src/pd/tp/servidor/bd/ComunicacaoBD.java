@@ -1,5 +1,6 @@
 package pd.tp.servidor.bd;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 public class ComunicacaoBD {
@@ -126,7 +127,6 @@ public class ComunicacaoBD {
         DBPassword = resultSet.getString("password");
 
         if(DBPassword.equals(password)) {
-            System.out.println("Password certa!");
             int login = 1;
             sqlQuery = "UPDATE User SET login='" + login + "' WHERE username='" + username + "'";
             statement.executeUpdate(sqlQuery);
@@ -255,14 +255,7 @@ public class ComunicacaoBD {
     public boolean verificaSeExisteGrupoComNomeEAdmin(String name, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "SELECT name FROM `Group` WHERE admin='" + admin + "'";
-        System.out.println(sqlQuery);
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-
-        if(!resultSet.next()) {
-            resultSet.close();
-            statement.close();
-            return false;
-        }
 
         while (resultSet.next()){
             if (resultSet.getString("name").equals(name)){
@@ -292,37 +285,42 @@ public class ComunicacaoBD {
     }
 
 
-    public String updateGroupName(String name, int idGroup, String admin) throws SQLException{
+    public String updateGroupName(String name, int idGroup) throws SQLException{
         Statement statement = dbConn.createStatement();
-        if(verificaExistenciaUser(admin))
-        {
-            if(verificaExistenciaGrupo(idGroup)){
-                if(verificaAdminGrupo(idGroup,admin)){
-                    if(verificaSeExisteGrupoComNomeEAdmin(name,admin)){
-                        String sqlQuery = "UPDATE `Group` SET name='" + name + "'WHERE idGroup='" + idGroup + "'";
-                        statement.executeUpdate(sqlQuery);
-                        statement.close();
-                        return SUCESSO;
-                    }
-                    else {
-                        statement.close();
-                        return NOME_E_ADMIN_JA_EXISTENTES;
-                    }
+        String admin = "";
+        admin = getAdminFromIDGoup(idGroup);
+        if(verificaExistenciaGrupo(idGroup)){
+                if(!verificaSeExisteGrupoComNomeEAdmin(name,admin)){
+                    String sqlQuery = "UPDATE `Group` SET name='" + name + "'WHERE idGroup='" + idGroup + "'";
+                    statement.executeUpdate(sqlQuery);
+                    statement.close();
+                    return SUCESSO;
                 }
                 else {
                     statement.close();
-                    return NOT_ADMIN;
+                    return NOME_E_ADMIN_JA_EXISTENTES;
                 }
-            }
-            else {
-                statement.close();
-                return GRUPO_INEXISTENTE;
-            }
         }
         else {
             statement.close();
-            return ADMIN_INEXISTENTE;
+            return GRUPO_INEXISTENTE;
         }
+    }
+
+    public String getAdminFromIDGoup(int idGrupo) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT admin FROM `Group` WHERE idGroup='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        if(resultSet.next()){
+            String admin = resultSet.getString("admin");
+            resultSet.close();
+            statement.close();
+            return admin;
+        }
+        resultSet.close();
+        statement.close();
+        return GRUPO_INEXISTENTE;
 
     }
 

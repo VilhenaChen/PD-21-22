@@ -144,7 +144,7 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
-    public String trocaNomeGroup(Utilizador user, String novo_nome, int idGrupo) {
+    public String trocaNomeGroup(String novo_nome, int idGrupo) {
         String resultado = "";
         try {
             out.writeObject("UPDATE_NOME_GRUPO," + idGrupo + "," + novo_nome);
