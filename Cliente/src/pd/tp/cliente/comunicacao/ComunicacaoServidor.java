@@ -245,7 +245,110 @@ public class ComunicacaoServidor {
         else{
             return "ERRO" + "," + falhas;
         }
+    }
 
+    public String listaContactos(Utilizador user) {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_CONTACTOS," + user.getUsername());
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaContactosPorAceitar(Utilizador user) {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_POR_ACEITAR_CONTACTOS," + user.getUsername());
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+
+    public String adicionaContacto(Utilizador user, String friend) {
+        String resultado = "";
+        try {
+            out.writeObject("NOVO_CONTACTO," + user.getUsername() + "," +friend);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String aceitaContactos(Utilizador user, String usernames){
+        String resultado = "";
+        String[] array = usernames.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("ACEITA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
+    public String pesquisaUsers(String pesquisa) {
+        String resultado = "";
+        try {
+            out.writeObject("PESQUISA_USER," + pesquisa);
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaUsers() {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_USERS");
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
     }
 
 }

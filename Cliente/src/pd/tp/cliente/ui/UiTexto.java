@@ -354,6 +354,7 @@ public class UiTexto {
                                 break;
                             case 3: //Listar membros
                                 resultado = cs.listaMembrosGrupos(idGrupo);
+                                //acrescentar admin
                                 System.out.println(resultado);
                                 break;
                             case 4: //Alterar nome grupo
@@ -372,7 +373,6 @@ public class UiTexto {
                                 break;
                             case 5: //Aceitar membros
                                 boolean parar = false;
-
                                 resultado = cs.listaMembrosGrupoPorAceitar(idGrupo);
                                 if(resultado.equals(EMPTY)){
                                     System.out.println("Não existem membros por aceitar");
@@ -411,22 +411,76 @@ public class UiTexto {
 
     private void trataMenuContactos() {
         int op = 0;
+        String resultado;
         while (true) {
             menuContactos();
             op = scanner.nextInt();
             scanner.nextLine();
             switch (op) {
                 case 1: //Listar Contactos
+                    resultado = cs.listaContactos(user);
+                    if(resultado.length() == 0)
+                        System.out.println("Nao tem contactos");
+                    else {
+                        System.out.println("---- LISTA DE CONTACTOS ----");
+                        System.out.println(resultado);
+                    }
                     break;
                 case 2: //Eliminar contacto
                     break;
                 case 3: //Pesquisar Utilizadores
+                    System.out.println("Insira o username do user que pretende pesquisar: ");
+                    String pesquisa = scanner.nextLine();
+                    resultado = cs.pesquisaUsers(pesquisa);
+                    if(resultado.length() == 0)
+                        System.out.println("O utilizador '" + pesquisa + "' nao existe na Base de Dados");
+                    else {
+                        System.out.println("---- LISTA DE USERS ----");
+                        System.out.println(resultado);
+                    }
                     break;
                 case 4: //Listar Utilizadores
+                    resultado = cs.listaUsers();
+                    if(resultado.length() == 0)
+                        System.out.println("Nao existem utilizadores na Base de dados");
+                    else {
+                        System.out.println("---- LISTA DE USERS ----");
+                        System.out.println(resultado);
+                    }
                     break;
                 case 5: //Adicionar Contacto
+                    System.out.println("Insira o username do user que pretende adicionar aos contacto: ");
+                    String friend = scanner.nextLine();
+                    resultado = cs.adicionaContacto(user, friend);
+                    if(resultado.equals(SUCESSO))
+                        System.out.println("Pedido de contacto enviado com sucesso para o user '" + friend +"'");
+                    else if(resultado.equals(UTILIZADOR_INEXISTENTE))
+                        System.out.println("O Utilizador '" + friend + "' nao existe na base de dados");
+                    else if(resultado.equals(USERNAME_REPETIDO))
+                        System.out.println("O Utilizador '" + friend + "' ja faz parte da sua lista de contactos ou já tem um pedido de amizade seu");
                     break;
                 case 6: //Aceitar contactos
+
+                    resultado = cs.listaContactosPorAceitar(user);
+                    if(resultado.length()==0) {
+                        System.out.println("Não existem contactos por aceitar");
+                        break;
+                    }
+                    System.out.println("---- LISTA DE CONTACTOS POR ACEITAR ----");
+                    System.out.println(resultado);
+                    System.out.println("Insira o username dos contactos que pretende aceitar (separados por virgulas): ");
+                    String usernames = scanner.nextLine();
+                    resultado = cs.aceitaContactos(user,usernames);
+                    if(resultado.startsWith("ERRO")){
+                        System.out.println("Erro! Os usernames seguintes não foram aceites por não estarem na lista de contactos a aceitar: ");
+                        String[] arrayFalhas = resultado.split(",");
+                        for (int i = 1; i < arrayFalhas.length; i++) {
+                            System.out.println(arrayFalhas[i]);
+                        }
+                    }
+                    else{
+                        System.out.println("Os contactos (" + usernames + ") foram aceites com sucesso");
+                    }
                     break;
                 case 0: //Back
                     return;

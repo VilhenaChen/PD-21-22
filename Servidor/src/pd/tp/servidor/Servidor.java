@@ -69,9 +69,6 @@ public class Servidor {
         Timer timer = new Timer("InformaPorto");
         timer.schedule(informaPortoThread, 1000, 20000); //Mudar para 20secondos
 
-        //comBD.insereUser("Diogo", "Vilhena", "1234", 0);
-        comBD.listaUsers();
-
         while(true) {
             Socket sCli = servidor.ss.accept();
             ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD);

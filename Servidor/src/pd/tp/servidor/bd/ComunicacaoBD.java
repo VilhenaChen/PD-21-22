@@ -33,22 +33,28 @@ public class ComunicacaoBD {
     }
 
     //Funções User
-    public void listaUsers() throws SQLException {
+    public String pesquisaeListaUsers(String username) throws SQLException {
         Statement statement = dbConn.createStatement();
+        StringBuilder resultado = new StringBuilder();
+        String sqlQuery;
 
-        String sqlQuery = "SELECT username, name, password FROM User";
-
-        ResultSet resultSet = statement.executeQuery(sqlQuery);
-
-        while(resultSet.next()) {
-            String username = resultSet.getString("username");
-            String nome = resultSet.getString("name");
-            String password = resultSet.getString("password");
-            System.out.println("Username: " + username + " Nome: " + nome + " Password: " + password);
+        if(!username.isEmpty()) {
+            sqlQuery = "SELECT username, login FROM User WHERE username='" + username + "";
         }
+        else
+            sqlQuery = "SELECT username, login FROM User";
 
-        resultSet.close();
-        statement.close();
+            ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+            while(resultSet.next()) {
+                if(Integer.parseInt(resultSet.getString("login")) == 1)
+                    resultado.append(resultSet.getString("username")).append("[Online]\n");
+                else
+                    resultado.append(resultSet.getString("username")).append("[Offline]\n");
+            }
+            resultSet.close();
+            statement.close();
+            return resultado.toString();
     }
 
     public String insereUser(String name, String username, String password, int logado) throws SQLException {
@@ -185,8 +191,22 @@ public class ComunicacaoBD {
         }
     }
 
-    //Funções Grupo
+    public boolean isuserOnline(String username) throws SQLException {
+        if(!verificaExistenciaUser(username))
+            return false;
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT login FROM User WHERE username='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(!resultSet.next()) {
+            if(resultSet.getInt("login") == 1)
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
 
+    //Funções Grupo
 
     public String createGroup(String name, String username) throws SQLException {
         Statement statement = dbConn.createStatement();
@@ -438,6 +458,108 @@ public class ComunicacaoBD {
         resultSet.close();
         statement.close();
         return SUCESSO;
+    }
+
+    //Funcoes Contactos
+
+    public String adicionaContacto(String username, String friend) throws SQLException {
+        if(!verificaExistenciaUser(friend))
+            return UTILIZADOR_INEXISTENTE;
+        if(verificaSeContacto(friend, username)){
+            return USERNAME_REPETIDO;
+        }
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "INSERT INTO `Has_Contact` (user,friend,accepted) VALUES ('" + username + "','" + friend + "','" + 0 + "')";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public boolean verificaSeContacto(String username_amigo, String username_eu) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT accepted FROM `Has_Contact` WHERE (user='" + username_eu + "' AND friend ='" + username_amigo +  "') OR (friend='" + username_eu + "' AND user='" + username_amigo +  "')";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        if(resultSet.next()){
+            resultSet.close();
+            statement.close();
+            return true;
+        }
+        else{
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+    }
+
+    public String aceitaContacto(String username_mandou, String myUsername) throws SQLException {
+        if(!verificaExistenciaUser(username_mandou))
+            return UTILIZADOR_INEXISTENTE;
+        if (verificaSeContacto(myUsername, username_mandou)){
+            return USERNAME_REPETIDO;
+        }
+        Statement statement = dbConn.createStatement();
+
+        String sqlQuery = "UPDATE `Has_Contact` SET accepted=1 WHERE `user`='" + username_mandou + "'AND friend='" + myUsername + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String eliminaContacto(String username, String friend) throws SQLException {
+        if(!verificaExistenciaUser(friend))
+            return UTILIZADOR_INEXISTENTE;
+        Statement statement = dbConn.createStatement();
+
+        String sqlQuery = "DELETE FROM `Has_Contact` WHERE username='" + username + "' AND friend='" + friend + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+        //Falta eliminar o historico de msgs e de ficheiros
+    }
+
+    public String listarContactos(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        StringBuilder resultado = new StringBuilder();
+
+        String sqlQuery = "SELECT friend FROM `Has_Contact` WHERE accepted=1" + " AND user='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while(resultSet.next()) {
+            if(isuserOnline(resultSet.getString("friend")))
+                resultado.append(resultSet.getString("friend")).append("[Online]");
+            else
+                resultado.append(resultSet.getString("friend")).append("[Offline]");
+        }
+
+        sqlQuery = "SELECT user FROM `Has_Contact` WHERE accepted=1" + " AND friend='" + username + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+        while(resultSet.next()) {
+            if(isuserOnline(resultSet.getString("user")))
+                resultado.append(resultSet.getString("user")).append("[Online]");
+            else
+                resultado.append(resultSet.getString("user")).append("[Offline]");
+        }
+
+        resultSet.close();
+        statement.close();
+        return resultado.toString();
+    }
+
+    public String listarContactosPorAceitar(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        StringBuilder resultado = new StringBuilder();
+
+        String sqlQuery = "SELECT user FROM `Has_Contact` WHERE accepted=0" + " AND friend='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while(resultSet.next()) {
+            System.out.println(resultSet.getString("user"));
+            resultado.append(resultSet.getString("user"));
+        }
+
+        resultSet.close();
+        statement.close();
+        return resultado.toString();
     }
 
  }
