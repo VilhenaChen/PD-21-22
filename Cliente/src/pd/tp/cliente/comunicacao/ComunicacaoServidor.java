@@ -247,6 +247,47 @@ public class ComunicacaoServidor {
         }
     }
 
+    public String excluiMembros(String usernames_excluir, int idGrupo) {
+        String resultado = "";
+        String[] array = usernames_excluir.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("EXCLUI_MEMBRO," + idGrupo + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
+    public String eliminaGrupo(int idGrupo){
+        String resultado = "";
+        try{
+            out.writeObject("ELIMINA_GRUPO," + idGrupo);
+            out.flush();
+
+            resultado = (String) in.readObject();
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return  resultado;
+    }
+
     public String listaContactos(Utilizador user) {
         String resultado = "";
         try {

@@ -240,6 +240,37 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void excluiMembroGrupo(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        String username = array[2];
+        try{
+            String resultado = comBD.leaveGroup(idGrupo,username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + username + "' foi excluido do grupo: " + idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+
+        } catch(IOException | SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void eliminaGrupo(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        try{
+            String resultado = comBD.deleteGroup(idGrupo);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Grupo" + idGrupo + "foi eliminado");
+            out.writeUnshared(resultado);
+            out.flush();
+
+        } catch(IOException | SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     private void novoContacto(ObjectOutputStream out, String msgRecebida) {
         String[] array = msgRecebida.split(",");
         String username = array[1];
@@ -373,7 +404,7 @@ public class ThreadComunicacaoCliente extends Thread{
                                                     }
                                                     else{
                                                         if(msgRecebida.startsWith("KICK_MEMBRO_GRUPO")) {
-
+                                                            excluiMembroGrupo(out, msgRecebida);
                                                         }
                                                         else{
                                                             if(msgRecebida.startsWith("LISTA_MEMBROS_GRUPO_POR_ACEITAR")){
@@ -389,7 +420,7 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                     }
                                                                     else {
                                                                         if(msgRecebida.startsWith("ELIMINA_GRUPO")) {
-                                                                            //Elimina Grupo
+                                                                            eliminaGrupo(out,msgRecebida);
                                                                         }
                                                                         else {
                                                                             if(msgRecebida.startsWith("NOVO_CONTACTO")) {
@@ -419,6 +450,13 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                                     if(msgRecebida.startsWith("LISTA_USERS")) {
                                                                                                         listaUsers(out, msgRecebida);
                                                                                                     }
+                                                                                                    else{
+                                                                                                        if(msgRecebida.startsWith("LISTA_TODOS_MEMBROS")){
+                                                                                                            System.out.println("kkkkkkkkkkk");
+                                                                                                            listaMembrosGrupo(out,msgRecebida);
+                                                                                                        }
+                                                                                                    }
+
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -453,4 +491,6 @@ public class ThreadComunicacaoCliente extends Thread{
         }
 
     }
+
+
 }

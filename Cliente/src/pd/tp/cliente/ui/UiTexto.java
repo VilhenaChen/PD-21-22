@@ -348,9 +348,34 @@ public class UiTexto {
                         op = scanner.nextInt();
                         scanner.nextLine();
                         switch (op) {
-                            case 1: //Excluir membro
+                            case 1: //Excluir membs
+                                resultado = cs.listaMembrosGrupos(idGrupo);
+                                if(resultado.length()==0){
+                                    System.out.println("ERRO! Não existem membros do grupo para além de si mesmo");
+                                    break;
+                                }
+                                System.out.println(resultado);
+                                System.out.println("Insira o username dos membros que pretende excluir (separados por virgulas): ");
+                                String usernames_excluir = scanner.nextLine();
+                                resultado = cs.excluiMembros(usernames_excluir,idGrupo);
+                                if(resultado.startsWith("ERRO")){
+                                    System.out.println("Erro! Os usernames seguintes não foram excluidos por não estarem na lista de membros atuais do grupo: ");
+                                    String[] arrayFalhas = resultado.split(",");
+                                    for(int j = 0; j< arrayFalhas.length; j++){
+                                        System.out.println(arrayFalhas[j]);
+                                    }
+                                }
+                                else{
+                                    System.out.println("Os membros (" + usernames_excluir + ") Foram excluidos com sucesso");
+                                }
+
                                 break;
                             case 2: //Eliminar grupo
+                                resultado = cs.eliminaGrupo(idGrupo);
+                                if(resultado.equals(SUCESSO)){
+                                    System.out.println("O grupo " + idGrupo + " foi eliminado com sucesso!");
+                                    return;
+                                }
                                 break;
                             case 3: //Listar membros
                                 resultado = cs.listaMembrosGrupos(idGrupo);
@@ -372,9 +397,9 @@ public class UiTexto {
                                 }
                                 break;
                             case 5: //Aceitar membros
-                                boolean parar = false;
+
                                 resultado = cs.listaMembrosGrupoPorAceitar(idGrupo);
-                                if(resultado.equals(EMPTY)){
+                                if(resultado.length()==0){
                                     System.out.println("Não existem membros por aceitar");
                                     break;
                                 }
