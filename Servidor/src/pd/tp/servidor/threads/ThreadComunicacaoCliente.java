@@ -178,10 +178,10 @@ public class ThreadComunicacaoCliente extends Thread{
 
     private void listaMembrosGrupo(ObjectOutputStream out, String msgRecebida) {
         String[] array = msgRecebida.split(",");
-        String idGrupo = array[2];
+        int idGrupo =Integer.parseInt(array[1]);
 
         try {
-            String resultado = comBD.listaMembrosGrupos(Integer.parseInt(idGrupo));
+            String resultado = comBD.listaMembrosGrupos(idGrupo);
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -191,10 +191,10 @@ public class ThreadComunicacaoCliente extends Thread{
 
     private void listaMembrosGrupoPorAceitar(ObjectOutputStream out, String msgRecebida){
         String[] array = msgRecebida.split(",");
-        String idGrupo = array[1];
+        int idGrupo =Integer.parseInt(array[1]);
 
         try {
-            String resultado = comBD.listaMembrosGrupoPorAceitar(Integer.parseInt(idGrupo));
+            String resultado = comBD.listaMembrosGrupoPorAceitar(idGrupo);
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {

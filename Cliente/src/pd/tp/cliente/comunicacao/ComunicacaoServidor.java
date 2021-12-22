@@ -1,5 +1,6 @@
 package pd.tp.cliente.comunicacao;
 
+import pd.tp.cliente.Mensagem;
 import pd.tp.cliente.Utilizador;
 
 import java.io.IOException;
@@ -192,7 +193,7 @@ public class ComunicacaoServidor {
     public String listaMembrosGrupos(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_MEMBROS_GRUPO," + idGrupo);
+            out.writeObject("LISTA_TODOS_MEMBROS," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -288,6 +289,8 @@ public class ComunicacaoServidor {
         return  resultado;
     }
 
+    //Contactos
+
     public String listaContactos(Utilizador user) {
         String resultado = "";
         try {
@@ -378,6 +381,23 @@ public class ComunicacaoServidor {
     }
 
     public String listaUsers() {
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_USERS");
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    //Mensagens
+
+    public String enviaMensagem(Mensagem msg) {
         String resultado = "";
         try {
             out.writeObject("LISTA_USERS");

@@ -1,5 +1,6 @@
 package pd.tp.cliente.ui;
 
+import pd.tp.cliente.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
 
@@ -7,6 +8,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 public class UiTexto {
@@ -201,12 +206,25 @@ public class UiTexto {
 
     private void trataMenuMensagens() {
         int op = 0;
+        String resultado;
         while (true) {
             menuMensagens();
             op = scanner.nextInt();
             scanner.nextLine();
             switch (op) {
                 case 1: //Enviar Msg
+                    Date date = Calendar.getInstance().getTime();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                    String strDate = dateFormat.format(date);
+                    System.out.println("Assunto (Max 50 carateres): ");
+                    String assunto = scanner.nextLine();
+                    System.out.println("Corpo  (Max 250 carateres): ");
+                    String corpo = scanner.nextLine();
+                    System.out.println("Destinatario (Username ou ID do grupo): ");
+                    String destino = scanner.nextLine();
+                    Mensagem msg = new Mensagem(assunto, corpo, user.getUsername(), destino, strDate);
+                    resultado = cs.enviaMensagem(msg);
+                    System.out.println(msg);
                     break;
                 case 2: //Listar msg
                     break;
@@ -378,9 +396,12 @@ public class UiTexto {
                                 }
                                 break;
                             case 3: //Listar membros
+
                                 resultado = cs.listaMembrosGrupos(idGrupo);
-                                //acrescentar admin
                                 System.out.println(resultado);
+                                if(resultado.equals(EMPTY)){
+                                    System.out.println("Erro! E o unico membro deste grupo!");
+                                }
                                 break;
                             case 4: //Alterar nome grupo
                                 System.out.println("Insira o novo nome para o grupo: ");

@@ -411,13 +411,19 @@ public class ComunicacaoBD {
         String resultado = "";
         Statement statement = dbConn.createStatement();
         String sqlQuery;
-        sqlQuery = "SELECT user FROM `Joins` WHERE accepted=1 AND group='" + idGrupo + "'";
+        boolean vazio = true;
+        sqlQuery = "SELECT user FROM `Joins` WHERE accepted='1' AND `group`='" + idGrupo + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-        while (!resultSet.next()) {
+        while (resultSet.next()) {
+            vazio=false;
             resultado = resultado + resultSet.getString("user") + "\n";
         }
         resultSet.close();
         statement.close();
+        if(vazio){
+            System.out.println("Não existem membros neste grupo!");
+            return EMPTY;
+        }
         return resultado;
     }
 
@@ -456,6 +462,16 @@ public class ComunicacaoBD {
         sqlQuery = "UPDATE `Joins` SET accepted=1 WHERE `group`='" + idGrupo + "'AND user='" + username + "'";
         statement.executeUpdate(sqlQuery);
         resultSet.close();
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String deleteGroup(int idGrupo) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "DELETE FROM `Joins` WHERE `group`='" + idGrupo + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "DELETE FROM `Group` WHERE idGroup='" + idGrupo + "'";
+        statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
     }
