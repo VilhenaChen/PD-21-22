@@ -327,8 +327,19 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
-    private void eliminaContactos(ObjectOutputStream out, String msgRecebida) {
-
+    private void eliminaContacto(ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String contacto = array[2];
+        try {
+            String resultado = comBD.eliminaContacto(username,contacto);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O contacto " + contacto + " do user " + username + "foi eliminado com sucesso");
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void pesquisaUsers(ObjectOutputStream out, String msgRecebida) {
@@ -441,6 +452,7 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                         else {
                                                                                             if(msgRecebida.startsWith("ELIMINA_CONTACTO")) {
                                                                                                 //Eliminar contacto e o historico de troca de msgs e ficheiros entre eles
+                                                                                                eliminaContacto(out,msgRecebida);
                                                                                             }
                                                                                             else {
                                                                                                 if(msgRecebida.startsWith("PESQUISA_USER")) {

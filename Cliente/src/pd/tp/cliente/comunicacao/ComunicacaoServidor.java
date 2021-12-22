@@ -365,6 +365,34 @@ public class ComunicacaoServidor {
         }
     }
 
+    public String eliminaContactos(Utilizador user, String usernames){
+        String resultado = "";
+        String[] array = usernames.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("ELIMINA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
     public String pesquisaUsers(String pesquisa) {
         String resultado = "";
         try {

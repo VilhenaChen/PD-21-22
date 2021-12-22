@@ -18,6 +18,7 @@ public class ComunicacaoBD {
     private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private static final String NOT_MEMBRO = "NOT_MEMBRO";
+    private static final String NOT_CONTACT = "NOT_CONTACT";
     private static final String JA_PERTENCE = "JA_PERTENCE";
     private static final String EMPTY = "EMPTY";
 
@@ -525,9 +526,12 @@ public class ComunicacaoBD {
     public String eliminaContacto(String username, String friend) throws SQLException {
         if(!verificaExistenciaUser(friend))
             return UTILIZADOR_INEXISTENTE;
+
+        if(!verificaSeContacto(friend,username))
+            return NOT_CONTACT;
         Statement statement = dbConn.createStatement();
 
-        String sqlQuery = "DELETE FROM `Has_Contact` WHERE username='" + username + "' AND friend='" + friend + "'";
+        String sqlQuery = "DELETE FROM `Has_Contact` WHERE (user='" + username + "' AND friend='" + friend + "') OR (user='" + friend + "' AND friend='" + username + "')";
         statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
@@ -542,9 +546,9 @@ public class ComunicacaoBD {
         ResultSet resultSet = statement.executeQuery(sqlQuery);
         while(resultSet.next()) {
             if(isuserOnline(resultSet.getString("friend")))
-                resultado.append(resultSet.getString("friend")).append("[Online]");
+                resultado.append(resultSet.getString("friend")).append("[Online]\n");
             else
-                resultado.append(resultSet.getString("friend")).append("[Offline]");
+                resultado.append(resultSet.getString("friend")).append("[Offline]\n");
         }
 
         sqlQuery = "SELECT user FROM `Has_Contact` WHERE accepted=1" + " AND friend='" + username + "'";

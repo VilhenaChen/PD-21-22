@@ -473,6 +473,27 @@ public class UiTexto {
                     }
                     break;
                 case 2: //Eliminar contacto
+                    resultado = cs.listaContactos(user);
+                    if(resultado.length()==0) {
+                        System.out.println("Não possui contactos");
+                        break;
+                    }
+                    System.out.println("---- LISTA DE CONTACTOS ----");
+                    System.out.println(resultado);
+                    System.out.println("Insira o username dos contactos que pretende eliminar (separados por virgulas): ");
+                    String contactos = scanner.nextLine();
+                    resultado = cs.eliminaContactos(user,contactos);
+                    if(resultado.startsWith("ERRO")){
+                        System.out.println("Erro! Os usernames seguintes não foram eliminados por não estarem na lista de contactos: ");
+                        String[] arrayFalhas = resultado.split(",");
+                        for (int i = 1; i < arrayFalhas.length; i++) {
+                            System.out.println(arrayFalhas[i]);
+                        }
+                    }
+                    else{
+                        System.out.println("Os contactos (" + contactos + ") foram eliminados com sucesso");
+                    }
+
                     break;
                 case 3: //Pesquisar Utilizadores
                     System.out.println("Insira o username do user que pretende pesquisar: ");
