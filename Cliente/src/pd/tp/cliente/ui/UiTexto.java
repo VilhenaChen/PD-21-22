@@ -398,6 +398,7 @@ public class UiTexto {
                                 System.out.println(resultado);
                                 System.out.println("Insira o username dos membros que pretende excluir (separados por virgulas): ");
                                 String usernames_excluir = scanner.nextLine();
+
                                 resultado = cs.excluiMembros(usernames_excluir,idGrupo);
                                 if(resultado.startsWith("ERRO")){
                                     System.out.println("Erro! Os usernames seguintes não foram excluidos por não estarem na lista de membros atuais do grupo: ");
@@ -421,10 +422,11 @@ public class UiTexto {
                             case 3: //Listar membros
 
                                 resultado = cs.listaMembrosGrupos(idGrupo);
-                                System.out.println(resultado);
                                 if(resultado.equals(EMPTY)){
                                     System.out.println("Erro! E o unico membro deste grupo!");
+                                    break;
                                 }
+                                System.out.println(resultado);
                                 break;
                             case 4: //Alterar nome grupo
                                 System.out.println("Insira o novo nome para o grupo: ");

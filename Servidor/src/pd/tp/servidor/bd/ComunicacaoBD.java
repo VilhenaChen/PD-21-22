@@ -274,7 +274,9 @@ public class ComunicacaoBD {
         if(!verificaMembroGrupo(idGrupo,username)){
             return NOT_MEMBRO;
         }
-        String sqlQuery = "DELETE FROM `Joins` WHERE user='" + username + "'AND `group`='" + idGrupo +"'";
+        String sqlQuery = "DELETE FROM `Msg` WHERE group_receiver='" + idGrupo + "' AND sender='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "DELETE FROM `Joins` WHERE user='" + username + "'AND `group`='" + idGrupo +"'";
         statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
@@ -493,10 +495,13 @@ public class ComunicacaoBD {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "DELETE FROM `Joins` WHERE `group`='" + idGrupo + "'";
         statement.executeUpdate(sqlQuery);
+        sqlQuery = "DELETE FROM `Msg` WHERE group_receiver='" + idGrupo + "'";
+        statement.executeUpdate(sqlQuery);
         sqlQuery = "DELETE FROM `Group` WHERE idGroup='" + idGrupo + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
+        //Falta apagar o historico de ficheiros
     }
 
     //Funcoes Contactos
@@ -552,12 +557,13 @@ public class ComunicacaoBD {
         if(!verificaSeContacto(friend,username))
             return NOT_CONTACT;
         Statement statement = dbConn.createStatement();
-
-        String sqlQuery = "DELETE FROM `Has_Contact` WHERE (user='" + username + "' AND friend='" + friend + "') OR (user='" + friend + "' AND friend='" + username + "')";
+        String sqlQuery = "DELETE FROM `Msg` WHERE (sender='" + friend + "'AND user_receiver='" + username + "') OR (sender='" + username + "' AND user_receiver='" + friend + "')" ;
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "DELETE FROM `Has_Contact` WHERE (user='" + username + "' AND friend='" + friend + "') OR (user='" + friend + "' AND friend='" + username + "')";
         statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
-        //Falta eliminar o historico de msgs e de ficheiros
+        //Falta eliminar o historico ficheiros
     }
 
     public String listarContactos(String username) throws SQLException {

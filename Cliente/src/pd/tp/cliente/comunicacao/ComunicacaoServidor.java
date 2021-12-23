@@ -254,7 +254,8 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("EXCLUI_MEMBRO," + idGrupo + "," + array[i]);
+
+                out.writeObject("KICK_MEMBRO_GRUPO," + idGrupo + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();

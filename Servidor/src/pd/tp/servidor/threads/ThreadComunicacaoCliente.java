@@ -245,6 +245,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String[] array = msgRecebida.split(",");
         int idGrupo = Integer.parseInt(array[1]);
         String username = array[2];
+        System.out.println("Cheguei à função antes da da bd!");
         try{
             String resultado = comBD.leaveGroup(idGrupo,username);
             if(resultado.equals(SUCESSO))
@@ -463,7 +464,6 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                                             listaUsers(out, msgRecebida);
                                                                                                         } else {
                                                                                                             if (msgRecebida.startsWith("LISTA_TODOS_MEMBROS")) {
-                                                                                                                System.out.println("kkkkkkkkkkk");
                                                                                                                 listaMembrosGrupo(out, msgRecebida);
                                                                                                             }
                                                                                                         }
