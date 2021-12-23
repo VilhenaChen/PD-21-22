@@ -1,6 +1,11 @@
-package pd.tp.cliente;
+package pd.tp.comum;
 
-public class Mensagem {
+import java.io.Serializable;
+
+public class Mensagem implements Serializable {
+
+    private final static long serialVersionUID = 2L;
+
     String assunto;
     String corpo;
     String sender;
@@ -29,6 +34,10 @@ public class Mensagem {
 
     public String getReceveiver() {
         return receveiver;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package pd.tp.cliente.ui;
 
-import pd.tp.cliente.Mensagem;
+import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,11 +22,12 @@ public class UiTexto {
     private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
     private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
     private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
-    private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private static final String NOT_MEMBRO = "NOT_MEMBRO";
+    private static final String NOT_CONTACT = "NOT_CONTACT";
     private static final String JA_PERTENCE = "JA_PERTENCE";
     private static final String EMPTY = "EMPTY";
+
 
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
@@ -213,17 +214,39 @@ public class UiTexto {
             scanner.nextLine();
             switch (op) {
                 case 1: //Enviar Msg
-                    Date date = Calendar.getInstance().getTime();
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-                    String strDate = dateFormat.format(date);
-                    System.out.println("Assunto (Max 50 carateres): ");
-                    String assunto = scanner.nextLine();
-                    System.out.println("Corpo  (Max 250 carateres): ");
-                    String corpo = scanner.nextLine();
+                    Date date = new Date();
+                    Timestamp timestamp = new Timestamp(date.getTime());
+                    String strDate = timestamp.toString();
+                    String assunto = "";
+                    do{
+                        System.out.println("Assunto (Max 50 carateres): ");
+                        assunto = scanner.nextLine();
+                        if(assunto.length()>50)
+                            System.out.println("Erro! Excedeu o máximo de carateres do Assunto!");
+                    }while(assunto.length()>50);
+                    String corpo = "";
+                    do{
+                        System.out.println("Corpo  (Max 250 carateres): ");
+                        corpo = scanner.nextLine();
+                        if(corpo.length()>250)
+                            System.out.println("Erro! Excedeu o máximo de carateres do Corpo!");
+                    }while(corpo.length()>250);
                     System.out.println("Destinatario (Username ou ID do grupo): ");
                     String destino = scanner.nextLine();
                     Mensagem msg = new Mensagem(assunto, corpo, user.getUsername(), destino, strDate);
                     resultado = cs.enviaMensagem(msg);
+                    if(resultado.equals(GRUPO_INEXISTENTE)) {
+                        System.out.println("O Grupo " + msg.getReceveiver() + " nao existe" );
+                    }
+                    else if(resultado.equals(NOT_MEMBRO)) {
+                        System.out.println("Nao faz parte do grupo " + msg.getReceveiver());
+                    }
+                    else if(resultado.equals(UTILIZADOR_INEXISTENTE)) {
+                        System.out.println("O Utilizador " + msg.getReceveiver() + " nao existe" );
+                    }
+                    else {
+                        System.out.println("Mensagem enviada com sucesso" );
+                    }
                     System.out.println(msg);
                     break;
                 case 2: //Listar msg
@@ -366,7 +389,7 @@ public class UiTexto {
                         op = scanner.nextInt();
                         scanner.nextLine();
                         switch (op) {
-                            case 1: //Excluir membs
+                            case 1: //Excluir membros
                                 resultado = cs.listaMembrosGrupos(idGrupo);
                                 if(resultado.length()==0){
                                     System.out.println("ERRO! Não existem membros do grupo para além de si mesmo");
@@ -578,8 +601,11 @@ public class UiTexto {
                     resultado = cs.trocaNome(user, nome);
                     if(resultado.equals(SUCESSO)){
                         user.setNome(nome);
+                        System.out.println("Nome modificado com sucesso");
                     }
-                    System.out.println(resultado);
+                    else {
+                        System.out.println("O nome escolhido ja se encontra em uso");
+                    }
                     break;
                 case 3: //Modificar username
                     System.out.println("Insira o novo username: ");
@@ -587,8 +613,11 @@ public class UiTexto {
                     resultado = cs.trocaUsername(user, username);
                     if(resultado.equals(SUCESSO)){
                         user.setUsername(username);
+                        System.out.println("Username modificado com sucesso");
                     }
-                    System.out.println(resultado);
+                    else {
+                        System.out.println("O username escolhido ja se encontra em uso");
+                    }
                     break;
                 case 4: //Modificar Password
                     System.out.println("Insira a nova password: ");
@@ -596,8 +625,8 @@ public class UiTexto {
                     resultado = cs.trocaPassword(user, password);
                     if(resultado.equals(SUCESSO)){
                         user.setPassword(password);
+                        System.out.println("Password modificada com sucesso");
                     }
-                    System.out.println(resultado);
                     break;
                 case 0: //back
                     return;

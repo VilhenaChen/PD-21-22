@@ -1,6 +1,6 @@
 package pd.tp.servidor.bd;
 
-import javax.swing.plaf.nimbus.State;
+import pd.tp.comum.Mensagem;
 import java.sql.*;
 
 public class ComunicacaoBD {
@@ -15,7 +15,6 @@ public class ComunicacaoBD {
     private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
     private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
     private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
-    private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private static final String NOT_MEMBRO = "NOT_MEMBRO";
     private static final String NOT_CONTACT = "NOT_CONTACT";
@@ -58,10 +57,29 @@ public class ComunicacaoBD {
             return resultado.toString();
     }
 
+    public boolean verificaNomeUserExistente(String name) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT username FROM `User` WHERE name='" + name + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(!resultSet.next()) {
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+        else{
+            resultSet.close();
+            statement.close();
+            return true;
+        }
+    }
+
     public String insereUser(String name, String username, String password, int logado) throws SQLException {
         Statement statement = dbConn.createStatement();
         if(verificaExistenciaUser(username)){
             return USERNAME_REPETIDO;
+        }
+        if(verificaNomeUserExistente(name)){
+            return NOME_REPETIDO;
         }
         String sqlQuery = "INSERT INTO User (username, name, password, login) VALUES ('" + username + "','" + name + "','" + password + "','" + logado + "')";
         statement.executeUpdate(sqlQuery);
@@ -73,6 +91,9 @@ public class ComunicacaoBD {
         Statement statement = dbConn.createStatement();
         if(!verificaExistenciaUser(username)){
             return UTILIZADOR_INEXISTENTE;
+        }
+        if(verificaNomeUserExistente(name)){
+            return NOME_REPETIDO;
         }
         String sqlQuery = "UPDATE User SET name='" + name + "'WHERE username='" + username + "'";
         statement.executeUpdate(sqlQuery);
@@ -304,6 +325,7 @@ public class ComunicacaoBD {
         statement.close();
         return idAtribuir;
     }
+
 
 
     public String updateGroupName(String name, int idGroup) throws SQLException{
@@ -580,6 +602,49 @@ public class ComunicacaoBD {
         resultSet.close();
         statement.close();
         return resultado.toString();
+    }
+
+    //MENSAGENS
+
+    public int getNextIdMsg() throws SQLException {
+        int idAtribuir = -1;
+        Statement statement = dbConn.createStatement();
+        ResultSet resultSet;
+        do{
+            idAtribuir++;
+            String sqlQuery = "SELECT subject FROM `Msg` WHERE idMsg='" + idAtribuir + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+        }while (resultSet.next());
+
+        resultSet.close();
+        statement.close();
+        return idAtribuir;
+    }
+
+    public String recebeMsg(Mensagem msg) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        int idGrupo;
+        String username;
+        String sqlQuery;
+        try{
+            idGrupo = Integer.parseInt(msg.getReceveiver());
+            if(!verificaExistenciaGrupo(idGrupo))
+                return GRUPO_INEXISTENTE;
+            if(!verificaMembroGrupo(idGrupo,msg.getSender())){
+                return NOT_MEMBRO;
+            }
+            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,group_receiver) VALUES ('" +  getNextIdMsg() +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + idGrupo + "')";
+            statement.executeUpdate(sqlQuery);
+        }catch (NumberFormatException e){
+            username = msg.getReceveiver();
+            if(!verificaExistenciaUser(username))
+                return UTILIZADOR_INEXISTENTE;
+            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,user_receiver) VALUES ('" +  getNextIdMsg() +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + username + "')";
+            statement.executeUpdate(sqlQuery);
+        }
+        statement.close();
+        return SUCESSO;
+
     }
 
  }

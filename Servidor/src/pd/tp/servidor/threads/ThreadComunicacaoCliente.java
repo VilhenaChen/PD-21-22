@@ -1,5 +1,6 @@
 package pd.tp.servidor.threads;
 
+import pd.tp.comum.Mensagem;
 import pd.tp.servidor.bd.ComunicacaoBD;
 
 import java.io.IOException;
@@ -364,111 +365,110 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void recebeMsg(ObjectOutputStream out, Mensagem msg) {
+        try {
+            String resultado = comBD.recebeMsg(msg);
+            if(resultado.equals(SUCESSO)) {
+                System.out.println("O Utilizador " + msg.getSender() + " enviou uma menagem para o destinatario " + msg.getReceveiver());
+            }
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
             dadosUser = new HashMap<>();
         try {
             ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
             ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
-            String msgRecebida;
-
+            Object objetoRecebido;
+            String msgRecebida = "";
             do {
-                msgRecebida = (String) in.readObject();
+                objetoRecebido = in.readObject();
 
-                if (msgRecebida.startsWith("LOGIN")) {
-                    login(out,msgRecebida);
-                } else {
-                    if (msgRecebida.startsWith("REGISTO")) {
-                        signIn(out,msgRecebida);
-                    }
-                    else{
-                        if (msgRecebida.startsWith("UPDATE_NAME")) {
-                            updateName(out,msgRecebida);
-                        }
-                        else{
-                            if (msgRecebida.startsWith("UPDATE_USERNAME")) {
-                                updateUsername(out, msgRecebida);
-                            }
-                            else{
-                                if (msgRecebida.startsWith("UPDATE_PASSWORD")) {
-                                    updatePassword(out,msgRecebida);
-                                }
-                                else {
-                                    if(msgRecebida.startsWith("NOVO_GRUPO")) {
-                                        criaGrupo(out, msgRecebida);
-                                    }
-                                    else {
-                                        if(msgRecebida.startsWith("LISTA_GRUPOS_ADMIN")) {
-                                            listaGruposAdmin(out, msgRecebida);
-                                        }
-                                        else {
-                                            if(msgRecebida.startsWith("LISTA_GRUPOS")) {
-                                                listaGrupos(out, msgRecebida);
-                                            }
-                                            else{
-                                                if(msgRecebida.startsWith("ADERE_A_GRUPO")){
-                                                    adereAGrupo(out,msgRecebida);
-                                                }
-                                                else{
-                                                    if(msgRecebida.startsWith("SAI_DE_GRUPO")){
-                                                        saiDeGrupo(out,msgRecebida);
-                                                    }
-                                                    else{
-                                                        if(msgRecebida.startsWith("KICK_MEMBRO_GRUPO")) {
-                                                            excluiMembroGrupo(out, msgRecebida);
-                                                        }
-                                                        else{
-                                                            if(msgRecebida.startsWith("LISTA_MEMBROS_GRUPO_POR_ACEITAR")){
-                                                                listaMembrosGrupoPorAceitar(out, msgRecebida);
-                                                            }
-                                                            else{
-                                                                if(msgRecebida.startsWith("ACEITA_MEMBRO")){
-                                                                    aceitaMembro(out,msgRecebida);
-                                                                }
-                                                                else {
-                                                                    if(msgRecebida.startsWith("UPDATE_NOME_GRUPO")) {
-                                                                        alteraNomeGrupo(out,msgRecebida);
-                                                                    }
-                                                                    else {
-                                                                        if(msgRecebida.startsWith("ELIMINA_GRUPO")) {
-                                                                            eliminaGrupo(out,msgRecebida);
-                                                                        }
-                                                                        else {
-                                                                            if(msgRecebida.startsWith("NOVO_CONTACTO")) {
-                                                                                novoContacto(out, msgRecebida);
-                                                                            }
-                                                                            else {
-                                                                                if(msgRecebida.startsWith("ACEITA_CONTACTO")) {
-                                                                                    aceitaContacto(out, msgRecebida);
-                                                                                }
-                                                                                else {
-                                                                                    if(msgRecebida.startsWith("LISTA_CONTACTOS")) {
-                                                                                        listaContactos(out, msgRecebida);
-                                                                                    }
-                                                                                    else {
-                                                                                        if(msgRecebida.startsWith("LISTA_POR_ACEITAR_CONTACTOS")) {
-                                                                                            listaContactosPorAceitar(out, msgRecebida);
-                                                                                        }
-                                                                                        else {
-                                                                                            if(msgRecebida.startsWith("ELIMINA_CONTACTO")) {
-                                                                                                //Eliminar contacto e o historico de troca de msgs e ficheiros entre eles
-                                                                                                eliminaContacto(out,msgRecebida);
-                                                                                            }
-                                                                                            else {
-                                                                                                if(msgRecebida.startsWith("PESQUISA_USER")) {
-                                                                                                    pesquisaUsers(out, msgRecebida);
-                                                                                                }
-                                                                                                else {
-                                                                                                    if(msgRecebida.startsWith("LISTA_USERS")) {
-                                                                                                        listaUsers(out, msgRecebida);
-                                                                                                    }
-                                                                                                    else{
-                                                                                                        if(msgRecebida.startsWith("LISTA_TODOS_MEMBROS")){
-                                                                                                            System.out.println("kkkkkkkkkkk");
-                                                                                                            listaMembrosGrupo(out,msgRecebida);
+                if(objetoRecebido instanceof Mensagem) {
+                    recebeMsg(out, (Mensagem) objetoRecebido);
+                }
+                else if(objetoRecebido instanceof String) {
+                    msgRecebida = objetoRecebido.toString();
+
+                    if (msgRecebida.startsWith("LOGIN")) {
+                        login(out, msgRecebida);
+                    } else {
+                        if (msgRecebida.startsWith("REGISTO")) {
+                            signIn(out, msgRecebida);
+                        } else {
+                            if (msgRecebida.startsWith("UPDATE_NAME")) {
+                                updateName(out, msgRecebida);
+                            } else {
+                                if (msgRecebida.startsWith("UPDATE_USERNAME")) {
+                                    updateUsername(out, msgRecebida);
+                                } else {
+                                    if (msgRecebida.startsWith("UPDATE_PASSWORD")) {
+                                        updatePassword(out, msgRecebida);
+                                    } else {
+                                        if (msgRecebida.startsWith("NOVO_GRUPO")) {
+                                            criaGrupo(out, msgRecebida);
+                                        } else {
+                                            if (msgRecebida.startsWith("LISTA_GRUPOS_ADMIN")) {
+                                                listaGruposAdmin(out, msgRecebida);
+                                            } else {
+                                                if (msgRecebida.startsWith("LISTA_GRUPOS")) {
+                                                    listaGrupos(out, msgRecebida);
+                                                } else {
+                                                    if (msgRecebida.startsWith("ADERE_A_GRUPO")) {
+                                                        adereAGrupo(out, msgRecebida);
+                                                    } else {
+                                                        if (msgRecebida.startsWith("SAI_DE_GRUPO")) {
+                                                            saiDeGrupo(out, msgRecebida);
+                                                        } else {
+                                                            if (msgRecebida.startsWith("KICK_MEMBRO_GRUPO")) {
+                                                                excluiMembroGrupo(out, msgRecebida);
+                                                            } else {
+                                                                if (msgRecebida.startsWith("LISTA_MEMBROS_GRUPO_POR_ACEITAR")) {
+                                                                    listaMembrosGrupoPorAceitar(out, msgRecebida);
+                                                                } else {
+                                                                    if (msgRecebida.startsWith("ACEITA_MEMBRO")) {
+                                                                        aceitaMembro(out, msgRecebida);
+                                                                    } else {
+                                                                        if (msgRecebida.startsWith("UPDATE_NOME_GRUPO")) {
+                                                                            alteraNomeGrupo(out, msgRecebida);
+                                                                        } else {
+                                                                            if (msgRecebida.startsWith("ELIMINA_GRUPO")) {
+                                                                                eliminaGrupo(out, msgRecebida);
+                                                                            } else {
+                                                                                if (msgRecebida.startsWith("NOVO_CONTACTO")) {
+                                                                                    novoContacto(out, msgRecebida);
+                                                                                } else {
+                                                                                    if (msgRecebida.startsWith("ACEITA_CONTACTO")) {
+                                                                                        aceitaContacto(out, msgRecebida);
+                                                                                    } else {
+                                                                                        if (msgRecebida.startsWith("LISTA_CONTACTOS")) {
+                                                                                            listaContactos(out, msgRecebida);
+                                                                                        } else {
+                                                                                            if (msgRecebida.startsWith("LISTA_POR_ACEITAR_CONTACTOS")) {
+                                                                                                listaContactosPorAceitar(out, msgRecebida);
+                                                                                            } else {
+                                                                                                if (msgRecebida.startsWith("ELIMINA_CONTACTO")) {
+                                                                                                    //Eliminar contacto e o historico de troca de msgs e ficheiros entre eles
+                                                                                                    eliminaContacto(out, msgRecebida);
+                                                                                                } else {
+                                                                                                    if (msgRecebida.startsWith("PESQUISA_USER")) {
+                                                                                                        pesquisaUsers(out, msgRecebida);
+                                                                                                    } else {
+                                                                                                        if (msgRecebida.startsWith("LISTA_USERS")) {
+                                                                                                            listaUsers(out, msgRecebida);
+                                                                                                        } else {
+                                                                                                            if (msgRecebida.startsWith("LISTA_TODOS_MEMBROS")) {
+                                                                                                                System.out.println("kkkkkkkkkkk");
+                                                                                                                listaMembrosGrupo(out, msgRecebida);
+                                                                                                            }
                                                                                                         }
-                                                                                                    }
 
+                                                                                                    }
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -478,7 +478,7 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                         }
                                                                     }
                                                                 }
-                                                           }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -490,7 +490,6 @@ public class ThreadComunicacaoCliente extends Thread{
                         }
                     }
                 }
-
 
             }while (!msgRecebida.equals("LOGOUT"));
 

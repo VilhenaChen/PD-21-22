@@ -1,8 +1,7 @@
 package pd.tp.cliente.comunicacao;
 
-import pd.tp.cliente.Mensagem;
+import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -428,7 +427,7 @@ public class ComunicacaoServidor {
     public String enviaMensagem(Mensagem msg) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_USERS");
+            out.writeObject(msg);
             out.flush();
 
             resultado = (String) in.readObject();
