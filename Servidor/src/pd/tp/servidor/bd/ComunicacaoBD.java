@@ -2,6 +2,7 @@ package pd.tp.servidor.bd;
 
 import pd.tp.comum.Mensagem;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ComunicacaoBD {
 
@@ -20,6 +21,8 @@ public class ComunicacaoBD {
     private static final String NOT_CONTACT = "NOT_CONTACT";
     private static final String JA_PERTENCE = "JA_PERTENCE";
     private static final String EMPTY = "EMPTY";
+    private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
+    private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
 
     private Connection dbConn;
 
@@ -651,6 +654,161 @@ public class ComunicacaoBD {
         statement.close();
         return SUCESSO;
 
+    }
+
+    public ArrayList<Integer> arrayDeGruposUser(String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        ArrayList<Integer> arrayGrupos = new ArrayList<>();
+        String sqlQuery = "SELECT `group` FROM `Joins`  WHERE user='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        while (resultSet.next()){
+            arrayGrupos.add(Integer.parseInt(resultSet.getString("idGroup")));
+        }
+        return arrayGrupos;
+
+    }
+
+    public String listaMensagens(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        StringBuilder resultado = new StringBuilder();
+        ArrayList<Integer> grupos = arrayDeGruposUser(username);
+
+        String sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver,user_receiver FROM `Msg`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while(resultSet.next()) {
+            if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
+                if(resultSet.getString("user_receiver") != null)
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
+                else
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+            }
+            else {
+                if(resultSet.getString("user_receiver") != null)
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Nao Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
+                else
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Nao Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+            }
+        }
+
+        for(Integer i : grupos) {
+            sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver FROM `Msg`  WHERE group_receiver='" + i + "'AND sender!='" + username + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+            while (resultSet.next()) {
+                if (Integer.parseInt(resultSet.getString("viewed")) == 1) {
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                } else {
+                    resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Nao Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                }
+            }
+        }
+        
+        resultSet.close();
+        statement.close();
+        return resultado.toString();
+    }
+
+    public String listaMensagensParaEliminar(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        StringBuilder resultado = new StringBuilder();
+
+        String sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,user_receiver FROM `Msg`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while(resultSet.next()) {
+            if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
+                resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Lida"
+                        + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                        + resultSet.getString("user_receiver") + "\n");
+            }
+            else {
+                resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Nao Lida"
+                        + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                        + resultSet.getString("user_receiver") + "\n");
+            }
+        }
+        resultSet.close();
+        statement.close();
+        return resultado.toString();
+    }
+
+    public boolean verificaExistenciaMensagem(int idMsg) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        ResultSet resultSet;
+
+        String sqlQuery = "SELECT subject FROM `Msg` WHERE idMsg='" + idMsg + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+        if(resultSet.next()){
+            resultSet.close();
+            statement.close();
+            return true;
+        }
+        else{
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+    }
+
+    public boolean verificaSenderOrReceiver(int idMsg, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        ResultSet resultSet;
+
+        String sqlQuery = "SELECT sender, user_receiver FROM `Msg` WHERE idMsg='" + idMsg + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+        while(resultSet.next()){
+            if(resultSet.getString("sender").equals(username) || resultSet.getString("user_receiver").equals(username))
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
+
+    public String eliminaMsg(int idMsg, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        if(!verificaExistenciaMensagem(idMsg)){
+            statement.close();
+            return MSG_INEXISTENTE;
+        }
+        if(!verificaSenderOrReceiver(idMsg,username)){
+            statement.close();
+            return NOT_YOUR_MSG;
+        }
+        String sqlQuery = "DELETE FROM `Msg` WHERE `idMsg`='" + idMsg + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String getCorpoMsg(int idMsg, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        ResultSet resultSet;
+        StringBuilder resultado = new StringBuilder();
+        if(!verificaExistenciaMensagem(idMsg)){
+            statement.close();
+            return resultado.toString();
+        }
+        String sqlQuery = "SELECT idMsg,subject,body,`date`,viewed,sender,user_receiver, group_receiver FROM `Msg` WHERE `idMsg`='" + idMsg + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while(resultSet.next()) {
+            if(!verificaSenderOrReceiver(idMsg,username) && !verificaMembroGrupo(Integer.parseInt(resultSet.getString("group_receiver")),username)){
+                resultSet.close();
+                statement.close();
+                return resultado.toString();
+            }
+            if(resultSet.getString("user_receiver") != null) {
+                resultado.append("De ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append(" envidada as: ").append(resultSet.getString("date")).append(" \n").append(resultSet.getString("subject")).append("\n\t").append(resultSet.getString("body"));
+            }
+            else {
+                resultado.append("De ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append(" envidada as: ").append(resultSet.getString("date")).append(" \n").append(resultSet.getString("subject")).append("\n\t").append(resultSet.getString("body"));
+            }
+        }
+
+        resultSet.close();
+        statement.close();
+        return resultado.toString();
     }
 
  }

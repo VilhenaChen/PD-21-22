@@ -379,6 +379,58 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void eliminaMensagem(ObjectOutputStream out, String msg){
+        String[] array = msg.split(",");
+        int idMsg = Integer.parseInt(array[1]);
+        String username = array[2];
+        try {
+            String resultado = comBD.eliminaMsg(idMsg, username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("A mensagem " + idMsg + " do user " + username + "foi eliminada com sucesso");
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listaMensagens(ObjectOutputStream out, String msg){
+        String[] array = msg.split(",");
+        String username = array[1];
+        try {
+            String resultado = comBD.listaMensagens(username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getCorpoMsg(ObjectOutputStream out, String msg){
+        String[] array = msg.split(",");
+        int idMsg = Integer.parseInt(array[1]);
+        String username = array[2];
+        try {
+            String resultado = comBD.getCorpoMsg(idMsg,username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listaMensagensParaEliminar(ObjectOutputStream out, String msg){
+        String[] array = msg.split(",");
+        String username = array[1];
+        try {
+            String resultado = comBD.listaMensagensParaEliminar(username);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
             dadosUser = new HashMap<>();
@@ -465,6 +517,26 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                                         } else {
                                                                                                             if (msgRecebida.startsWith("LISTA_TODOS_MEMBROS")) {
                                                                                                                 listaMembrosGrupo(out, msgRecebida);
+                                                                                                            }
+                                                                                                            else{
+                                                                                                                if(msgRecebida.startsWith("ELIMINA_MENSAGEM")){
+                                                                                                                    eliminaMensagem(out,msgRecebida);
+                                                                                                                }
+                                                                                                                else {
+                                                                                                                    if(msgRecebida.startsWith("LISTA_MENSAGENS")) {
+                                                                                                                        listaMensagens(out, msgRecebida);
+                                                                                                                    }
+                                                                                                                    else{
+                                                                                                                        if(msgRecebida.startsWith("LISTA_PARA_ELIMINAR_MSG")){
+                                                                                                                            listaMensagensParaEliminar(out,msgRecebida);
+                                                                                                                        }
+                                                                                                                        else{
+                                                                                                                            if(msgRecebida.startsWith("GET_CORPO")){
+                                                                                                                                getCorpoMsg(out,msgRecebida);
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
                                                                                                             }
                                                                                                         }
 

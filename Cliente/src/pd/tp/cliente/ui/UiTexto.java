@@ -27,6 +27,8 @@ public class UiTexto {
     private static final String NOT_CONTACT = "NOT_CONTACT";
     private static final String JA_PERTENCE = "JA_PERTENCE";
     private static final String EMPTY = "EMPTY";
+    private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
+    private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
 
 
     private Scanner scanner = new Scanner(System.in);
@@ -250,8 +252,44 @@ public class UiTexto {
                     System.out.println(msg);
                     break;
                 case 2: //Listar msg
+                    resultado = cs.listaMensagens(user);
+                    if(resultado.length() == 0)
+                        System.out.println("Nao existem mensagens!");
+                    else {
+                        System.out.println("---- LISTA DE MENSAGENS----");
+                        System.out.println(resultado);
+                        System.out.println("Escolha uma mensagem: ");
+                        int escolha = scanner.nextInt();
+                        scanner.nextLine();
+                        resultado = cs.getCorpoMensagem(escolha,user);
+                        if(resultado.length() == 0)
+                            System.out.println("A Mensagem " + escolha + " nao existe ou nao e sua");
+                        else {
+                            System.out.println(resultado);
+                        }
+                    }
                     break;
                 case 3: //Eliminar msg historico
+                    resultado = cs.listaMensagensParaEliminar(user);
+                    if(resultado.length()==0){
+                        System.out.println("ERRO! Não possui mensagens");
+                        break;
+                    }
+                    System.out.println(resultado);
+                    System.out.println("Insira os ids das mensagens que pretende eliminar (separados por virgulas): ");
+                    String mensagens = scanner.nextLine();
+
+                    resultado = cs.eliminaMensagens(user,mensagens);
+                    if(resultado.startsWith("ERRO")){
+                        System.out.println("Erro! As mensagens seguintes não foram eliminadas por não estarem na sua lista de mensagens: ");
+                        String[] arrayFalhas = resultado.split(",");
+                        for(int j = 0; j< arrayFalhas.length; j++){
+                            System.out.println(arrayFalhas[j]);
+                        }
+                    }
+                    else{
+                        System.out.println("As mensagens (" + mensagens + ") foram eliminadas com sucesso");
+                    }
                     break;
                 case 0: //Back
                     return;

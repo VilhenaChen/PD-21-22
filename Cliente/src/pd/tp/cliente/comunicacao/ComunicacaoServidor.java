@@ -440,4 +440,73 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
+    public String eliminaMensagens(Utilizador user, String mensagens){
+        String resultado = "";
+        String[] array = mensagens.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("ELIMINA_MENSAGEM," + array[i] + "," + user.getUsername());
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
+    public String listaMensagens(Utilizador user){
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_MENSAGENS," + user.getUsername());
+            out.flush();
+
+            resultado = (String) in.readObject();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaMensagensParaEliminar(Utilizador user){
+        String resultado = "";
+        try {
+            out.writeObject("LISTA_PARA_ELIMINAR_MSG," + user.getUsername());
+            out.flush();
+            resultado = (String) in.readObject();
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String getCorpoMensagem(int escolha, Utilizador user) {
+        String resultado = "";
+        try {
+            out.writeObject("GET_CORPO," + escolha + "," + user.getUsername());
+            out.flush();
+            resultado = (String) in.readObject();
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
 }
