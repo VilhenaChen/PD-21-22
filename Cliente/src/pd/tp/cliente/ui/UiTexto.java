@@ -146,7 +146,7 @@ public class UiTexto {
         System.out.println("2 - Eliminar Grupo");
         System.out.println("3 - Listar Membros");
         System.out.println("4 - Alterar nome do grupo");
-        System.out.println("5 - Aceitar membros");
+        System.out.println("5 - Aceitar ou Rejeitar membros");
         System.out.println("0 - Voltar atras");
         System.out.println("> ");
     }
@@ -158,7 +158,7 @@ public class UiTexto {
         System.out.println("3 - Pesquisar Utilizadores");
         System.out.println("4 - Listar Utilizadores");
         System.out.println("5 - Adicionar Contacto");
-        System.out.println("6 - Aceitar Contactos");
+        System.out.println("6 - Aceitar ou Rejeitar Contactos");
         System.out.println("0 - Voltar atras");
         System.out.println("> ");
     }
@@ -480,28 +480,54 @@ public class UiTexto {
                                     }
                                 }
                                 break;
-                            case 5: //Aceitar membros
+                            case 5: //Aceitar ou Rejeitar membros
 
                                 resultado = cs.listaMembrosGrupoPorAceitar(idGrupo);
-                                if(resultado.length()==0){
+                                if(resultado.equals(EMPTY)){
                                     System.out.println("Não existem membros por aceitar");
                                     break;
                                 }
                                 System.out.println(resultado);
-                                System.out.println("Insira o username dos membros que pretende aceitar (separados por virgulas): ");
-                                String usernames = scanner.nextLine();
-                                resultado = cs.aceitaMembros(usernames,idGrupo);
-                                if(resultado.startsWith("ERRO")){
-                                    System.out.println("Erro! Os usernames seguintes não foram inseridos por não estarem na lista de membros a aceitar: ");
-                                    String[] arrayFalhas = resultado.split(",");
-                                    for(int j = 0; j< arrayFalhas.length; j++){
-                                        System.out.println(arrayFalhas[j]);
+                                int opcao;
+                                do {
+                                    System.out.println("--AÇÕES POSSIVEIS--");
+                                    System.out.println("0 - Aceitar");
+                                    System.out.println("1 - Rejeitar");
+                                    System.out.println("Insira a ação que pretende realizar:");
+                                    opcao = scanner.nextInt();
+                                    scanner.nextLine();
+                                    if (opcao != 0 && opcao != 1){
+                                        System.out.println("Erro! Opção Inserida Inválida!");
+                                    }
+                                }while (opcao != 0 && opcao != 1);
+                                if(opcao == 0) {
+                                    System.out.println("Insira o username dos membros que pretende aceitar (separados por virgulas): ");
+                                    String usernames = scanner.nextLine();
+                                    resultado = cs.aceitaMembros(usernames, idGrupo);
+                                    if (resultado.startsWith("ERRO")) {
+                                        System.out.println("Erro! Os usernames seguintes não foram aceites por não estarem na lista de membros a aceitar: ");
+                                        String[] arrayFalhas = resultado.split(",");
+                                        for (int j = 0; j < arrayFalhas.length; j++) {
+                                            System.out.println(arrayFalhas[j]);
+                                        }
+                                    } else {
+                                        System.out.println("Os membros (" + usernames + ") Foram aceites com sucesso");
                                     }
                                 }
-                                else{
-                                    System.out.println("Os membros (" + usernames + ") Foram aceites com sucesso");
+                                else {
+                                    System.out.println("Insira o username dos membros que pretende rejeitar (separados por virgulas): ");
+                                    String usernames = scanner.nextLine();
+                                    resultado = cs.rejeitaMembros(usernames, idGrupo);
+                                    if (resultado.startsWith("ERRO")) {
+                                        System.out.println("Erro! Os usernames seguintes não foram rejeitados por não estarem na lista de membros a aceitar: ");
+                                        String[] arrayFalhas = resultado.split(",");
+                                        for (int j = 0; j < arrayFalhas.length; j++) {
+                                            System.out.println(arrayFalhas[j]);
+                                        }
+                                    } else {
+                                        System.out.println("Os membros (" + usernames + ") Foram rejeitados com sucesso");
+                                    }
                                 }
-
                                 break;
                             case 0: //back
                                 return;
@@ -589,7 +615,7 @@ public class UiTexto {
                     else if(resultado.equals(USERNAME_REPETIDO))
                         System.out.println("O Utilizador '" + friend + "' ja faz parte da sua lista de contactos ou já tem um pedido de amizade seu");
                     break;
-                case 6: //Aceitar contactos
+                case 6: //Aceitar ou rejeitar contactos
 
                     resultado = cs.listaContactosPorAceitar(user);
                     if(resultado.length()==0) {
@@ -598,18 +624,48 @@ public class UiTexto {
                     }
                     System.out.println("---- LISTA DE CONTACTOS POR ACEITAR ----");
                     System.out.println(resultado);
-                    System.out.println("Insira o username dos contactos que pretende aceitar (separados por virgulas): ");
-                    String usernames = scanner.nextLine();
-                    resultado = cs.aceitaContactos(user,usernames);
-                    if(resultado.startsWith("ERRO")){
-                        System.out.println("Erro! Os usernames seguintes não foram aceites por não estarem na lista de contactos a aceitar: ");
-                        String[] arrayFalhas = resultado.split(",");
-                        for (int i = 1; i < arrayFalhas.length; i++) {
-                            System.out.println(arrayFalhas[i]);
+                    int opcao;
+                    do {
+                        System.out.println("--AÇÕES POSSIVEIS--");
+                        System.out.println("0 - Aceitar");
+                        System.out.println("1 - Rejeitar");
+                        System.out.println("Insira a ação que pretende realizar:");
+                        opcao = scanner.nextInt();
+                        scanner.nextLine();
+                        if (opcao != 0 && opcao != 1){
+                            System.out.println("Erro! Opção Inserida Inválida!");
+                        }
+                    }while (opcao != 0 && opcao != 1);
+                    if (opcao == 0){
+
+                        System.out.println("Insira o username dos contactos que pretende aceitar (separados por virgulas): ");
+                        String usernames = scanner.nextLine();
+                        resultado = cs.aceitaContactos(user,usernames);
+                        if(resultado.startsWith("ERRO")){
+                            System.out.println("Erro! Os usernames seguintes não foram aceites por não estarem na lista de contactos a aceitar: ");
+                            String[] arrayFalhas = resultado.split(",");
+                            for (int i = 1; i < arrayFalhas.length; i++) {
+                                System.out.println(arrayFalhas[i]);
+                            }
+                        }
+                        else{
+                            System.out.println("Os contactos (" + usernames + ") foram aceites com sucesso");
                         }
                     }
-                    else{
-                        System.out.println("Os contactos (" + usernames + ") foram aceites com sucesso");
+                    else {
+                        System.out.println("Insira o username dos contactos que pretende rejeitar (separados por virgulas): ");
+                        String usernames = scanner.nextLine();
+                        resultado = cs.rejeitaContactos(user,usernames);
+                        if(resultado.startsWith("ERRO")){
+                            System.out.println("Erro! Os usernames seguintes não foram rejeitados por não estarem na lista de contactos a rejeitar: ");
+                            String[] arrayFalhas = resultado.split(",");
+                            for (int i = 1; i < arrayFalhas.length; i++) {
+                                System.out.println(arrayFalhas[i]);
+                            }
+                        }
+                        else{
+                            System.out.println("Os contactos (" + usernames + ") foram rejeitados com sucesso");
+                        }
                     }
                     break;
                 case 0: //Back

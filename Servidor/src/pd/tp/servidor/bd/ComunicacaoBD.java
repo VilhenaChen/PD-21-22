@@ -287,7 +287,21 @@ public class ComunicacaoBD {
 
     public boolean verificaMembroGrupo(int idGrupo, String username) throws SQLException{
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT user FROM `Joins` WHERE user='" + username + "'AND `group`='" + idGrupo +"'";
+        String sqlQuery = "SELECT user FROM `Joins` WHERE (user='" + username + "'AND `group`='" + idGrupo +"') AND accepted='1'";
+        System.out.println(sqlQuery);
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        if(!resultSet.next()) {
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean verificaSePedidoAdesao(int idGrupo, String username) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE (user='" + username + "'AND `group`='" + idGrupo +"') AND accepted='0'";
         System.out.println(sqlQuery);
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
@@ -478,18 +492,35 @@ public class ComunicacaoBD {
 
     public String aceitaMembro(String username,int idGrupo) throws SQLException{
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user='" + username + "'";
 
-        ResultSet resultSet = statement.executeQuery(sqlQuery);
-        if(!resultSet.next()) {
-            System.out.println("O utilizador não existe!");
-            resultSet.close();
-            statement.close();
+        if(!verificaExistenciaUser(username)){
             return UTILIZADOR_INEXISTENTE;
         }
-        sqlQuery = "UPDATE `Joins` SET accepted=1 WHERE `group`='" + idGrupo + "'AND user='" + username + "'";
+        if(verificaMembroGrupo(idGrupo,username)){
+            return USERNAME_REPETIDO;
+        }
+        if (!verificaSePedidoAdesao(idGrupo,username)){
+            return NOT_MEMBRO;
+        }
+        String sqlQuery = "UPDATE `Joins` SET accepted=1 WHERE `group`='" + idGrupo + "'AND user='" + username + "'";
         statement.executeUpdate(sqlQuery);
-        resultSet.close();
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String rejeitaMembro(String username,int idGrupo) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        if(!verificaExistenciaUser(username)){
+            return UTILIZADOR_INEXISTENTE;
+        }
+        if(verificaMembroGrupo(idGrupo,username)){
+            return USERNAME_REPETIDO;
+        }
+        if (!verificaSePedidoAdesao(idGrupo,username)){
+            return NOT_MEMBRO;
+        }
+        String sqlQuery = "DELETE FROM `Joins` WHERE `group`='" + idGrupo + "'AND user='" + username + "'";
+        statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;
     }
@@ -512,7 +543,7 @@ public class ComunicacaoBD {
     public String adicionaContacto(String username, String friend) throws SQLException {
         if(!verificaExistenciaUser(friend))
             return UTILIZADOR_INEXISTENTE;
-        if(verificaSeContacto(friend, username)){
+        if(verificaSeContacto(friend, username) || verificaSePedidoContacto(friend,username)){
             return USERNAME_REPETIDO;
         }
         Statement statement = dbConn.createStatement();
@@ -524,7 +555,23 @@ public class ComunicacaoBD {
 
     public boolean verificaSeContacto(String username_amigo, String username_eu) throws SQLException{
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT accepted FROM `Has_Contact` WHERE (user='" + username_eu + "' AND friend ='" + username_amigo +  "') OR (friend='" + username_eu + "' AND user='" + username_amigo +  "')";
+        String sqlQuery = "SELECT accepted FROM `Has_Contact` WHERE ((user='" + username_eu + "' AND friend ='" + username_amigo +  "') OR (friend='" + username_eu + "' AND user='" + username_amigo +  "')) AND accepted = '1'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        if(resultSet.next()){
+            resultSet.close();
+            statement.close();
+            return true;
+        }
+        else{
+            resultSet.close();
+            statement.close();
+            return false;
+        }
+    }
+    public boolean verificaSePedidoContacto(String username_amigo, String username_eu) throws SQLException{
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT accepted FROM `Has_Contact` WHERE ((user='" + username_eu + "' AND friend ='" + username_amigo +  "') OR (friend='" + username_eu + "' AND user='" + username_amigo +  "')) AND accepted = '0'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(resultSet.next()){
@@ -545,9 +592,28 @@ public class ComunicacaoBD {
         if (verificaSeContacto(myUsername, username_mandou)){
             return USERNAME_REPETIDO;
         }
+        if(!verificaSePedidoContacto(myUsername,username_mandou)){
+            return NOT_CONTACT;
+        }
         Statement statement = dbConn.createStatement();
 
         String sqlQuery = "UPDATE `Has_Contact` SET accepted=1 WHERE `user`='" + username_mandou + "'AND friend='" + myUsername + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+        return SUCESSO;
+    }
+
+    public String rejeitaContacto(String username_mandou, String myUsername) throws SQLException {
+        if(!verificaExistenciaUser(username_mandou))
+            return UTILIZADOR_INEXISTENTE;
+        if (verificaSeContacto(myUsername, username_mandou)){
+            return USERNAME_REPETIDO;
+        }
+        if(!verificaSePedidoContacto(myUsername,username_mandou)){
+            return NOT_CONTACT;
+        }
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "DELETE FROM `Has_Contact` WHERE user='" + username_mandou + "' AND friend='" + myUsername + "'";
         statement.executeUpdate(sqlQuery);
         statement.close();
         return SUCESSO;

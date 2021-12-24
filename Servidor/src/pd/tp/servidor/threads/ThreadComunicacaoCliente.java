@@ -241,6 +241,22 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void rejeitaMembro(ObjectOutputStream out, String msgRecebida){
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        String username = array[2];
+        try{
+            String resultado = comBD.rejeitaMembro(username,idGrupo);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O pedido de adesão do Utilizador '" + username + "' foi rejeitado pelo admin do grupo: " + idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+
+        } catch(IOException | SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     private void excluiMembroGrupo(ObjectOutputStream out, String msgRecebida){
         String[] array = msgRecebida.split(",");
         int idGrupo = Integer.parseInt(array[1]);
@@ -297,6 +313,22 @@ public class ThreadComunicacaoCliente extends Thread{
             String resultado = comBD.aceitaContacto(friend,username);
             if(resultado.equals(SUCESSO))
                 System.out.println("O Utilizador '" + username + "' aceitou o pedido de contacto do user '" + friend + "'" );
+            out.writeUnshared(resultado);
+            out.flush();
+
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void rejeitaContacto(ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        String friend = array[2];
+        try {
+            String resultado = comBD.rejeitaContacto(friend,username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + username + "' rejeitou o pedido de contacto do user '" + friend + "'" );
             out.writeUnshared(resultado);
             out.flush();
 
@@ -533,6 +565,17 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                                                         else{
                                                                                                                             if(msgRecebida.startsWith("GET_CORPO")){
                                                                                                                                 getCorpoMsg(out,msgRecebida);
+                                                                                                                            }
+                                                                                                                            else{
+                                                                                                                                if(msgRecebida.startsWith("REJEITA_CONTACTO")){
+                                                                                                                                    rejeitaContacto(out,msgRecebida);
+                                                                                                                                }
+                                                                                                                                else {
+                                                                                                                                    if (msgRecebida.startsWith("REJEITA_MEMBRO"))
+                                                                                                                                    {
+                                                                                                                                        rejeitaMembro(out,msgRecebida);
+                                                                                                                                    }
+                                                                                                                                }
                                                                                                                             }
                                                                                                                         }
                                                                                                                     }

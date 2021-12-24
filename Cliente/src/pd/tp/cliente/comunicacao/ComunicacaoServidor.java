@@ -247,6 +247,34 @@ public class ComunicacaoServidor {
         }
     }
 
+    public String rejeitaMembros(String usernames, int idGrupo){
+        String resultado = "";
+        String[] array = usernames.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("REJEITA_MEMBRO," + idGrupo + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
     public String excluiMembros(String usernames_excluir, int idGrupo) {
         String resultado = "";
         String[] array = usernames_excluir.split(",");
@@ -345,6 +373,34 @@ public class ComunicacaoServidor {
         for(int i = 0; i<array.length; i++){
             try {
                 out.writeObject("ACEITA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.flush();
+
+                resultado = (String) in.readObject();
+                if(!resultado.equals("SUCESSO")){
+                    falhas = falhas + "," + array[i];
+                }
+
+            }catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(falhas.equals("")){
+            return "SUCESSO";
+        }
+        else{
+            return "ERRO" + "," + falhas;
+        }
+    }
+
+    public String rejeitaContactos(Utilizador user, String usernames){
+        String resultado = "";
+        String[] array = usernames.split(",");
+        String falhas = "";
+
+        for(int i = 0; i<array.length; i++){
+            try {
+                out.writeObject("REJEITA_CONTACTO," + user.getUsername() + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
