@@ -131,6 +131,7 @@ public class ThreadComunicacao extends Thread{
         int id = Integer.parseInt(arrayAux[1]);
         int porto = Integer.parseInt(arrayAux[2]);
         alteraPorto(id,porto);
+        setHeartbeat(id);
         System.out.println("Alterei o porto do Servidor: " + id + " para: " + porto);
     }
 
@@ -139,6 +140,25 @@ public class ThreadComunicacao extends Thread{
             if(s.getId() == id){
                 s.setPorto(porto);
                 return;
+            }
+        }
+    }
+
+    private void setHeartbeat(int id) {
+        for(int i = 0; i < servidores.size(); i++) {
+            if(servidores.get(i).getId() == id) {
+                servidores.get(i).setHeartbeat(0);
+                return;
+            }
+        }
+    }
+
+    //Heartbeat servidor
+    private void checkOffServer() {
+        for(int i = 0; i < servidores.size(); i++) {
+            if(servidores.get(i).getHeartbeat() >= 3) {
+                servidores.remove(i);
+                System.out.println("O servidor " + i + " foi removido por falta de heartbeat");
             }
         }
     }

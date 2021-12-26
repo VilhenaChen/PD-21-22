@@ -46,9 +46,9 @@ public class ComunicacaoServidor {
         return resultado;
     }
 
-    public void logout(){
+    public void logout(Utilizador user){
         try {
-            out.writeObject("LOGOUT");
+            out.writeObject("LOGOUT," + user.getUsername());
             out.flush();
         }catch(IOException e) {
             e.printStackTrace();

@@ -110,6 +110,19 @@ public class ThreadComunicacaoCliente extends Thread{
         }
     }
 
+    private void logoutUser(String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        try {
+            String resultado = comBD.logoutUser(username);
+            if(resultado.equals(SUCESSO))
+                System.out.println("O Utilizador '" + username + "' desligou-se");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     //Grupos
 
     private void criaGrupo(ObjectOutputStream out, String msgRecebida) {
@@ -608,11 +621,11 @@ public class ThreadComunicacaoCliente extends Thread{
 
             }while (!msgRecebida.equals("LOGOUT"));
 
-            comBD.logoutUser(dadosUser.get("username"));
+            logoutUser(msgRecebida);
             out.close();
             in.close();
             sCli.close();
-        } catch (IOException | ClassNotFoundException | SQLException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 

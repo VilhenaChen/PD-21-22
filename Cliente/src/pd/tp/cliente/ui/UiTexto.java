@@ -799,10 +799,10 @@ public class UiTexto {
                         break;
                 }
         }
-        cs.logout();
+        cs.logout(user);
         out.close();
         in.close();
         sCli.close();
-
+        System.out.println("Cliente desligado com sucesso!!");
     }
 }
