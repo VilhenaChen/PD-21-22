@@ -67,7 +67,7 @@ public class Servidor {
         servidor.InicioGRDS();
         ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss, servidor.ID_SERVIDOR);
         Timer timer = new Timer("InformaPorto");
-        timer.schedule(informaPortoThread, 1000, 20000); //Mudar para 20secondos
+        timer.schedule(informaPortoThread, 0, 20000); //Mudar para 20secondos
 
         while(true) {
             Socket sCli = servidor.ss.accept();

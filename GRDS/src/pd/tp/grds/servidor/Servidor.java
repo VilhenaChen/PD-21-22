@@ -42,7 +42,6 @@ public class Servidor implements Serializable {
 
     @Override
     public String toString() {
-        return "ip='" + ip + '\'' +
-                ", porto=" + porto;
+        return "id= " + id + " -> ip=" + ip + ", porto= " + porto;
     }
 }
