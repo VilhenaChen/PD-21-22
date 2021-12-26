@@ -3,7 +3,6 @@ package pd.tp.servidor;
 import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
-
 import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
@@ -44,22 +43,70 @@ public class Servidor {
 
     }
 
+    private void recebeIPePortoPorMulticast() throws UnknownHostException {
+
+        try{
+            MulticastSocket ms = new MulticastSocket(3030);
+            InetAddress ia = InetAddress.getByName("230.30.30.30");
+            InetAddress myIa = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
+            InetSocketAddress isa = new InetSocketAddress(ia,3030);
+            NetworkInterface ni = NetworkInterface.getByInetAddress(myIa);
+            ms.joinGroup(isa,ni);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(baos);
+            out.writeUnshared("PEDIDO_COORDENADAS");
+            out.flush();
+            byte[] msgBytes = baos.toByteArray();
+            dp = new DatagramPacket(msgBytes,msgBytes.length,ia,3030);
+            ms.send(dp);
+
+
+                Thread.sleep(5000);
+
+            String mensagemRecebida = "";
+            do{
+                DatagramPacket dp = new DatagramPacket(new byte[1024],1024);
+                ms.receive(dp);
+                ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
+                ObjectInputStream in = new ObjectInputStream(bais);
+                mensagemRecebida = (String) in.readObject();
+                System.out.println("Recebi " + mensagemRecebida);
+
+                if(mensagemRecebida.startsWith("COORDENADAS")){
+                    String[] array = mensagemRecebida.split(",");
+                    IP_GRDS = array[1];
+                    PORTO_GRDS = Integer.parseInt(array[2]);
+                }
+            }while(!mensagemRecebida.startsWith("COORDENADAS"));
+            System.out.println("A sair do grupo");
+            ms.leaveGroup(isa,ni);
+
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
         Servidor servidor = new Servidor();
 
         if(args.length <= 0) {
-            System.out.println("Falta de IP e Porto do GRDS por parametros");
-            System.exit(1);
+            System.out.println("Falta de IP e Porto do GRDS por parametros! A Procurar por multicast");
+            servidor.recebeIPePortoPorMulticast();
+            //System.exit(1);
         }
-
-        servidor.IP_GRDS = args[0];
-        try {
-            servidor.PORTO_GRDS = Integer.parseInt(args[1]);
-        }catch (NumberFormatException e) {
-            System.out.println("ERRO!!! O Porto passado não é um Inteiro");
-            System.exit(1);
+        else {
+            servidor.IP_GRDS = args[0];
+            try {
+                servidor.PORTO_GRDS = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("ERRO!!! O Porto passado não é um Inteiro");
+                System.exit(1);
+            }
         }
-
+        System.out.println("---- SERVIDOR INICIADO ----");
         servidor.ss = new ServerSocket(0);
         System.out.println("Estou na porta: " + servidor.ss.getLocalPort());
         ComunicacaoBD comBD = new ComunicacaoBD();
