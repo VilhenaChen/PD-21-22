@@ -29,6 +29,7 @@ public class UiTexto {
     private static final String EMPTY = "EMPTY";
     private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
     private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
+    private static final String UTILIZADOR_JA_LOGADO = "UTILIZADOR_JA_LOGADO";
 
 
     private Scanner scanner = new Scanner(System.in);
@@ -186,6 +187,9 @@ public class UiTexto {
             }
             if (mensagem.equals(UTILIZADOR_INEXISTENTE)) {
                 System.out.println("ERRO! Utilizador Inexistente! Login não efetuado!");
+            }
+            if (mensagem.equals(UTILIZADOR_JA_LOGADO)){
+                System.out.println("ERRO! Já foi efetuado um login com esta conta!");
             }
             return false;
         }

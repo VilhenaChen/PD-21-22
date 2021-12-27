@@ -1,5 +1,6 @@
 package pd.tp.servidor;
 
+import pd.tp.cliente.Clientes;
 import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
@@ -16,6 +17,7 @@ public class Servidor {
     private DatagramSocket ds;
     private DatagramPacket dp;
     private ServerSocket ss;
+    private Clientes clientes;
 
     private void InicioGRDS() throws IOException, ClassNotFoundException {
         String msgTipo = "NOVO_SERV," + ss.getLocalPort();
@@ -123,10 +125,10 @@ public class Servidor {
         ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss, servidor.ID_SERVIDOR);
         Timer timer = new Timer("InformaPorto");
         timer.schedule(informaPortoThread, 0, 20000); //Mudar para 20secondos
-
+        servidor.clientes = new Clientes();
         while(true) {
             Socket sCli = servidor.ss.accept();
-            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD);
+            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);
             tc.start();
         }
 

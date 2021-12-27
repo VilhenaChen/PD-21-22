@@ -1,6 +1,8 @@
 package pd.tp.servidor.bd;
 
 import pd.tp.comum.Mensagem;
+import pd.tp.comum.NovidadeGRDS;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -23,6 +25,7 @@ public class ComunicacaoBD {
     private static final String EMPTY = "EMPTY";
     private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
     private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
+    private static final String UTILIZADOR_JA_LOGADO = "UTILIZADOR_JA_LOGADO";
 
     private Connection dbConn;
 
@@ -143,7 +146,7 @@ public class ComunicacaoBD {
 
     public String loginUser(String username, String password) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT password FROM User WHERE username='" + username + "'";
+        String sqlQuery = "SELECT password, login FROM User WHERE username='" + username + "'";
         String DBPassword;
 
         ResultSet resultSet = statement.executeQuery(sqlQuery);
@@ -153,6 +156,12 @@ public class ComunicacaoBD {
             resultSet.close();
             statement.close();
             return UTILIZADOR_INEXISTENTE;
+        }
+
+        if(resultSet.getInt("login") == 1){
+            resultSet.close();
+            statement.close();
+            return UTILIZADOR_JA_LOGADO;
         }
 
         DBPassword = resultSet.getString("password");
@@ -233,15 +242,17 @@ public class ComunicacaoBD {
 
     //Funções Grupo
 
-    public String createGroup(String name, String username) throws SQLException {
+    public String createGroup(String name, String username, NovidadeGRDS novidadeGRDS) throws SQLException {
         Statement statement = dbConn.createStatement();
         String sqlQuery;
         if(verificaExistenciaUser(username)) {
             if (!verificaSeExisteGrupoComNomeEAdmin(name,username)){
-                sqlQuery = "INSERT INTO `Group` (idGroup,name,admin) VALUES ('" + getNextIdGroup() + "','" + name + "','" + username + "')";
+                int idGrupo = getNextIdGroup();
+                sqlQuery = "INSERT INTO `Group` (idGroup,name,admin) VALUES ('" + idGrupo + "','" + name + "','" + username + "')";
                 statement.executeUpdate(sqlQuery);
                 statement.close();
-                return "SUCESSO";
+                novidadeGRDS.setIdGrupo(idGrupo);
+                return SUCESSO;
             }
             else {
                 statement.close();
@@ -696,11 +707,12 @@ public class ComunicacaoBD {
         return idAtribuir;
     }
 
-    public String recebeMsg(Mensagem msg) throws SQLException {
+    public String recebeMsg(Mensagem msg, NovidadeGRDS novidadeGRDS) throws SQLException {
         Statement statement = dbConn.createStatement();
         int idGrupo;
         String username;
         String sqlQuery;
+        int idMsg = getNextIdMsg();
         try{
             idGrupo = Integer.parseInt(msg.getReceveiver());
             if(!verificaExistenciaGrupo(idGrupo))
@@ -708,16 +720,17 @@ public class ComunicacaoBD {
             if(!verificaMembroGrupo(idGrupo,msg.getSender())){
                 return NOT_MEMBRO;
             }
-            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,group_receiver) VALUES ('" +  getNextIdMsg() +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + idGrupo + "')";
+            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,group_receiver) VALUES ('" +  idMsg +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + idGrupo + "')";
             statement.executeUpdate(sqlQuery);
         }catch (NumberFormatException e){
             username = msg.getReceveiver();
             if(!verificaExistenciaUser(username))
                 return UTILIZADOR_INEXISTENTE;
-            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,user_receiver) VALUES ('" +  getNextIdMsg() +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + username + "')";
+            sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,user_receiver) VALUES ('" +  idMsg +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + username + "')";
             statement.executeUpdate(sqlQuery);
         }
         statement.close();
+        novidadeGRDS.setIdMsg(idMsg);
         return SUCESSO;
 
     }
@@ -876,5 +889,208 @@ public class ComunicacaoBD {
         statement.close();
         return resultado.toString();
     }
+
+
+    //Novidades GRDS
+
+    public void verificaAfetadosUpdateUsername(String old_username, NovidadeGRDS novidadeGRDS) throws SQLException {
+        ArrayList<Integer> grupos = new ArrayList<>();
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Has_Contact` WHERE friend='" + old_username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        sqlQuery = "SELECT friend FROM `Has_Contact` WHERE user='" + old_username + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("friend"));
+        }
+
+        sqlQuery = "SELECT `group` FROM `Joins` WHERE user='" + old_username + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            grupos.add(resultSet.getInt("group"));
+        }
+
+        sqlQuery = "SELECT idGroup FROM `Group` WHERE admin='" + old_username + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            grupos.add(resultSet.getInt("group"));
+        }
+
+        for (Integer i : grupos){
+            sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + i + "' AND user!='" + old_username + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+
+            while (resultSet.next()){
+                novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+            }
+
+            sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + i + "' AND admin!='" + old_username + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+
+            while (resultSet.next()){
+                novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+            }
+        }
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosUpdateGroupName(int idGrupo, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosAdereGrupo(int idGrupo, String username, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user!='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+        }
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosLeaveGroup(int idGrupo, String username, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user!='" + username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
+        resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+        }
+        resultSet.close();
+        statement.close();
+    }
+    public void verificaAfetadosMembroAceite(int idGrupo, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosKickMembro(int idGrupo, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosDeleteGroup(int idGrupo, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+        }
+
+        resultSet.close();
+        statement.close();
+    }
+
+    public void verificaAfetadosMensagem(String sender, String receiver, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery;
+        ResultSet resultSet;
+        try{
+            int idGrupo = Integer.parseInt(receiver);
+
+            sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user!='" + sender + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+
+            while (resultSet.next()){
+                novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+            }
+
+            sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND admin!='" + sender + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+
+            while (resultSet.next()){
+                novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+            }
+            resultSet.close();
+        }catch (NumberFormatException e){
+            novidadeGRDS.addUserAfetado(receiver);
+        }
+        statement.close();
+    }
+
+    public void verificaAfetadosEliminaMensagem(int idMsg, String username, NovidadeGRDS novidadeGRDS) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "SELECT sender,user_receiver,group_receiver FROM `Msg` WHERE `idMsg`='" + idMsg + "'";;
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        while (resultSet.next()){
+            if(resultSet.getString("user_receiver")==null){
+                sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + resultSet.getInt("group_receiver") + "' AND user!='" + username + "'";
+                resultSet = statement.executeQuery(sqlQuery);
+
+                while (resultSet.next()){
+                    novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+                }
+
+                sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + resultSet.getInt("group_receiver") + "' AND admin!='" + username + "'";
+                resultSet = statement.executeQuery(sqlQuery);
+
+                while (resultSet.next()){
+                    novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+                }
+                resultSet.close();
+            }
+            else{
+                if(resultSet.getString("sender").equals(username)){
+                    novidadeGRDS.addUserAfetado(resultSet.getString("user_receiver"));
+                }
+                else{
+                    novidadeGRDS.addUserAfetado(resultSet.getString("sender"));
+                }
+            }
+        }
+        statement.close();
+    }
+
 
  }

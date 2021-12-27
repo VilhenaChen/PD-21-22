@@ -1,11 +1,15 @@
 package pd.tp.servidor.threads;
 
+import pd.tp.cliente.Clientes;
 import pd.tp.comum.Mensagem;
+import pd.tp.comum.NovidadeGRDS;
 import pd.tp.servidor.bd.ComunicacaoBD;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -23,10 +27,18 @@ public class ThreadComunicacaoCliente extends Thread{
     private static final String NOT_ADMIN = "NOT_ADMIN";
     private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private HashMap<String, String> dadosUser;
+    private Clientes clientes;
+    DatagramSocket ds;
+    DatagramPacket dp;
+    int id;
 
-    public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD) {
+    public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes) {
         this.sCli = sCli;
         this.comBD = comBD;
+        this.clientes = clientes;
+        this.ds = ds;
+        this.dp = dp;
+        this.id = id;
     }
 
 
@@ -41,9 +53,17 @@ public class ThreadComunicacaoCliente extends Thread{
     private void login(ObjectOutputStream out, String msgRecebida){
         separaDadosUser(msgRecebida);
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("LOGIN");
+            novidade.setUsernameUser(dadosUser.get("username"));
             String login = comBD.loginUser(dadosUser.get("username"), dadosUser.get("password"));
-            if(login.startsWith(SUCESSO))
+            if(login.startsWith(SUCESSO)){
                 System.out.println("O Utilizador '" + dadosUser.get("username") + "' efetou login com Sucesso");
+                clientes.addCli(dadosUser.get("username"));
+
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(login);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -55,9 +75,16 @@ public class ThreadComunicacaoCliente extends Thread{
     private void signIn(ObjectOutputStream out, String msgRecebida){
         separaDadosUser(msgRecebida);
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("REGISTO");
+            novidade.setUsernameUser(dadosUser.get("username"));
             String resultado = comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
                 System.out.println("O Utilizador '" + dadosUser.get("username") + "' registou-se com Sucesso");
+
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -70,9 +97,16 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String name = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("UPDATE_NAME");
+            novidade.setUsernameUser(dadosUser.get("username"));
             String resultado = comBD.updateUserName(name, username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
+                dadosUser.replace("name", name);
                 System.out.println("O Utilizador '" + dadosUser.get("username") + "' mudou o seu nome com Sucesso");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -85,9 +119,20 @@ public class ThreadComunicacaoCliente extends Thread{
         String old_username = array[1];
         String new_username = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("UPDATE_NAME");
+            novidade.setUsernameUser(old_username);
+            novidade.setNovoUsernameUser(new_username);
+            comBD.verificaAfetadosUpdateUsername(old_username,novidade);
             String resultado = comBD.updateUserUsername(new_username, old_username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
+                dadosUser.replace("username", new_username);
                 System.out.println("O Utilizador '" + old_username + "' alterou o seu username para '" + new_username + "'");
+                clientes.updateUsernameCli(new_username); //Ve se esta bem que isto apaga demasiadas coisas
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
+
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -100,9 +145,16 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String password = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("UPDATE_PASSWORD");
+            novidade.setUsernameUser(dadosUser.get("username"));
+
             String resultado = comBD.updateUserPassword(password, username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O Utilizador '" + username + "' mudou a sua password com sucesso");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -114,9 +166,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String[] array = msgRecebida.split(",");
         String username = array[1];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("LOGOUT");
+            novidade.setUsernameUser(username);
             String resultado = comBD.logoutUser(username);
-            if(resultado.equals(SUCESSO))
+            novidade.setTipoMsg("LOGOUT");
+            novidade.setUsernameUser(dadosUser.get("username"));
+            if(resultado.equals(SUCESSO)){
                 System.out.println("O Utilizador '" + username + "' desligou-se");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -131,7 +191,10 @@ public class ThreadComunicacaoCliente extends Thread{
         String nomeGrupo = array[2];
 
         try {
-            String resultado = comBD.createGroup(nomeGrupo, username);
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("NOVO_GRUPO");
+            novidade.setUsernameUser(username);
+            String resultado = comBD.createGroup(nomeGrupo, username, novidade);
             if(resultado.equals(SUCESSO))
                 System.out.println("O Utilizador " + username + " criou o grupo " + nomeGrupo);
             out.writeUnshared(resultado);
@@ -147,9 +210,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String novoNome = array[2];
 
         try{
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("UPDATE_NOME_GRUPO");
+            novidade.setUsernameUser(dadosUser.get("username"));
+            novidade.setIdGrupo(idGrupo);
+            novidade.setNovoNomeGrupo(novoNome);
+            comBD.verificaAfetadosUpdateGroupName(idGrupo,novidade);
             String resultado = comBD.updateGroupName(novoNome,idGrupo);
             if(resultado.equals(SUCESSO)){
                 System.out.println("O nome do grupo " + idGrupo + " foi trocado para: " + novoNome);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
             }
             out.writeUnshared(resultado);
             out.flush();
@@ -164,9 +235,17 @@ public class ThreadComunicacaoCliente extends Thread{
         int idGrupo = Integer.parseInt(array[2]);
 
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("ADERE_A_GRUPO");
+            novidade.setUsernameUser(username);
+            novidade.setIdGrupo(idGrupo);
+            comBD.verificaAfetadosAdereGrupo(idGrupo,username,novidade);
             String resultado = comBD.joinGroup(idGrupo, username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
                 System.out.println("O Utilizador " + username + " pediu para aderir ao grupo com o id: " + idGrupo);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -180,9 +259,17 @@ public class ThreadComunicacaoCliente extends Thread{
         int idGrupo = Integer.parseInt(array[2]);
 
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("SAI_DE_GRUPO");
+            novidade.setIdGrupo(idGrupo);
+            novidade.setUsernameUser(username);
+            comBD.verificaAfetadosLeaveGroup(idGrupo,username,novidade);
             String resultado = comBD.leaveGroup(idGrupo, username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O Utilizador " + username + " saiu do grupo " + idGrupo);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -242,10 +329,19 @@ public class ThreadComunicacaoCliente extends Thread{
         String[] array = msgRecebida.split(",");
         int idGrupo = Integer.parseInt(array[1]);
         String username = array[2];
+
         try{
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("ACEITA_MEMBRO");
+            novidade.setIdGrupo(idGrupo);
+            novidade.setUsernameUser(username);
+            comBD.verificaAfetadosMembroAceite(idGrupo,novidade);
             String resultado = comBD.aceitaMembro(username,idGrupo);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O Utilizador '" + username + "' foi aceite no grupo: " + idGrupo);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -259,9 +355,17 @@ public class ThreadComunicacaoCliente extends Thread{
         int idGrupo = Integer.parseInt(array[1]);
         String username = array[2];
         try{
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("REJEITA_MEMBRO");
+            novidade.setUsernameUser(username);
+            novidade.setIdGrupo(idGrupo);
+            novidade.addUserAfetado(username);
             String resultado = comBD.rejeitaMembro(username,idGrupo);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O pedido de adesão do Utilizador '" + username + "' foi rejeitado pelo admin do grupo: " + idGrupo);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -276,9 +380,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[2];
         System.out.println("Cheguei à função antes da da bd!");
         try{
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("KICK_MEMBRO_GRUPO");
+            novidade.setIdGrupo(idGrupo);
+            novidade.setUsernameUser(username);
+            comBD.verificaAfetadosKickMembro(idGrupo,novidade);
             String resultado = comBD.leaveGroup(idGrupo,username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O Utilizador '" + username + "' foi excluido do grupo: " + idGrupo);
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -291,9 +403,16 @@ public class ThreadComunicacaoCliente extends Thread{
         String[] array = msgRecebida.split(",");
         int idGrupo = Integer.parseInt(array[1]);
         try{
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("ELIMINA_GRUPO");
+            novidade.setIdGrupo(idGrupo);
+            comBD.verificaAfetadosDeleteGroup(idGrupo,novidade);
             String resultado = comBD.deleteGroup(idGrupo);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O Grupo" + idGrupo + "foi eliminado");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -307,9 +426,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String friend = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("NOVO_CONTACTO");
+            novidade.setUsernameUser(username);
+            novidade.setFriend(friend);
+            novidade.addUserAfetado(friend);
             String resultado = comBD.adicionaContacto(username,friend);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
                 System.out.println("O Utilizador '" + username + "' enviou um pedido de contacto para o '" + friend + "'" );
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -323,9 +450,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String friend = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("ACEITA_CONTACTO");
+            novidade.setFriend(friend);
+            novidade.setUsernameUser(username);
+            novidade.addUserAfetado(friend);
             String resultado = comBD.aceitaContacto(friend,username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
                 System.out.println("O Utilizador '" + username + "' aceitou o pedido de contacto do user '" + friend + "'" );
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -339,9 +474,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String friend = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("REJEITA_CONTACTO");
+            novidade.setUsernameUser(username);
+            novidade.setFriend(friend);
+            novidade.addUserAfetado(friend);
             String resultado = comBD.rejeitaContacto(friend,username);
-            if(resultado.equals(SUCESSO))
-                System.out.println("O Utilizador '" + username + "' rejeitou o pedido de contacto do user '" + friend + "'" );
+            if(resultado.equals(SUCESSO)) {
+                System.out.println("O Utilizador '" + username + "' rejeitou o pedido de contacto do user '" + friend + "'");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
 
@@ -379,9 +522,17 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         String contacto = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("ELIMINA_CONTACTO");
+            novidade.setUsernameUser(username);
+            novidade.setFriend(contacto);
+            novidade.addUserAfetado(contacto);
             String resultado = comBD.eliminaContacto(username,contacto);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)) {
                 System.out.println("O contacto " + contacto + " do user " + username + "foi eliminado com sucesso");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             out.writeUnshared(resultado);
             out.flush();
         } catch (IOException | SQLException e) {
@@ -413,9 +564,16 @@ public class ThreadComunicacaoCliente extends Thread{
 
     private void recebeMsg(ObjectOutputStream out, Mensagem msg) {
         try {
-            String resultado = comBD.recebeMsg(msg);
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("MENSAGEM");
+            novidade.setUsernameUser(msg.getSender());
+            novidade.setReceiver(msg.getReceveiver());
+            comBD.verificaAfetadosMensagem(msg.getSender(),msg.getReceveiver(),novidade);
+            String resultado = comBD.recebeMsg(msg, novidade);
             if(resultado.equals(SUCESSO)) {
                 System.out.println("O Utilizador " + msg.getSender() + " enviou uma menagem para o destinatario " + msg.getReceveiver());
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
             }
             out.writeUnshared(resultado);
             out.flush();
@@ -429,6 +587,10 @@ public class ThreadComunicacaoCliente extends Thread{
         int idMsg = Integer.parseInt(array[1]);
         String username = array[2];
         try {
+            NovidadeGRDS novidade = new NovidadeGRDS();
+            novidade.setTipoMsg("MENSAGEM");
+            novidade.setIdMsg(idMsg);
+            comBD.verificaAfetadosEliminaMensagem(idMsg, username, novidade);
             String resultado = comBD.eliminaMsg(idMsg, username);
             if(resultado.equals(SUCESSO))
                 System.out.println("A mensagem " + idMsg + " do user " + username + "foi eliminada com sucesso");
@@ -478,7 +640,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
     @Override
     public void run() {
-            dadosUser = new HashMap<>();
+        dadosUser = new HashMap<>();
         try {
             ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
             ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
@@ -495,6 +657,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
                     if (msgRecebida.startsWith("LOGIN")) {
                         login(out, msgRecebida);
+
                     } else {
                         if (msgRecebida.startsWith("REGISTO")) {
                             signIn(out, msgRecebida);
@@ -595,7 +758,6 @@ public class ThreadComunicacaoCliente extends Thread{
                                                                                                                 }
                                                                                                             }
                                                                                                         }
-
                                                                                                     }
                                                                                                 }
                                                                                             }
@@ -618,7 +780,6 @@ public class ThreadComunicacaoCliente extends Thread{
                         }
                     }
                 }
-
             }while (!msgRecebida.equals("LOGOUT"));
 
             logoutUser(msgRecebida);
@@ -630,6 +791,4 @@ public class ThreadComunicacaoCliente extends Thread{
         }
 
     }
-
-
 }
