@@ -44,7 +44,7 @@ public class Servidor {
     }
 
     private void recebeIPePortoPorMulticast() throws UnknownHostException {
-
+        int cont = 0;
         try{
             MulticastSocket ms = new MulticastSocket(3030);
             InetAddress ia = InetAddress.getByName("230.30.30.30");
@@ -53,36 +53,44 @@ public class Servidor {
             NetworkInterface ni = NetworkInterface.getByInetAddress(myIa);
             ms.joinGroup(isa,ni);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(baos);
-            out.writeUnshared("PEDIDO_COORDENADAS");
-            out.flush();
-            byte[] msgBytes = baos.toByteArray();
-            dp = new DatagramPacket(msgBytes,msgBytes.length,ia,3030);
-            ms.send(dp);
+            while(cont<3 && cont != -1) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(baos);
+                out.writeUnshared("PEDIDO_COORDENADAS");
+                out.flush();
+                byte[] msgBytes = baos.toByteArray();
+                dp = new DatagramPacket(msgBytes, msgBytes.length, ia, 3030);
+                ms.send(dp);
+                String mensagemRecebida = "";
+                ms.setSoTimeout(5000);
+                try{
+                    do {
+                        DatagramPacket dp = new DatagramPacket(new byte[1024], 1024);
+                        ms.receive(dp);
+                        ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
+                        ObjectInputStream in = new ObjectInputStream(bais);
+                        mensagemRecebida = (String) in.readObject();
+                        System.out.println("Recebi " + mensagemRecebida);
 
-
-                Thread.sleep(5000);
-
-            String mensagemRecebida = "";
-            do{
-                DatagramPacket dp = new DatagramPacket(new byte[1024],1024);
-                ms.receive(dp);
-                ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
-                ObjectInputStream in = new ObjectInputStream(bais);
-                mensagemRecebida = (String) in.readObject();
-                System.out.println("Recebi " + mensagemRecebida);
-
-                if(mensagemRecebida.startsWith("COORDENADAS")){
-                    String[] array = mensagemRecebida.split(",");
-                    IP_GRDS = array[1];
-                    PORTO_GRDS = Integer.parseInt(array[2]);
+                        if (mensagemRecebida.startsWith("COORDENADAS")) {
+                            String[] array = mensagemRecebida.split(",");
+                            IP_GRDS = array[1];
+                            PORTO_GRDS = Integer.parseInt(array[2]);
+                            cont = -1;
+                        }
+                    } while (!mensagemRecebida.startsWith("COORDENADAS"));
+                }catch (SocketTimeoutException e){
+                    cont++;
+                    continue;
                 }
-            }while(!mensagemRecebida.startsWith("COORDENADAS"));
+            }
             System.out.println("A sair do grupo");
             ms.leaveGroup(isa,ni);
-
-        } catch (IOException | ClassNotFoundException | InterruptedException e) {
+            if (cont==3) {
+                System.out.println("Erro! Não foi possível obter o IP e o Porto do GRDS!");
+                System.exit(1);
+            }
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

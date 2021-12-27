@@ -34,6 +34,11 @@ public class ThreadMulticastServidores extends Thread{
                     out.flush();
                     byte[] msgBytes = baos.toByteArray();
                     dp = new DatagramPacket(msgBytes,msgBytes.length,ia, 3030);
+                    /*try {
+                        Thread.sleep(20000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }*/ // Para verificar se as 3 tentativas do servidor funcionam
                     ms.send(dp);
                 }
             } catch (IOException | ClassNotFoundException e) {
