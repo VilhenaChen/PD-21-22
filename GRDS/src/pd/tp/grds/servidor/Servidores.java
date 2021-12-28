@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Servidores {
@@ -54,7 +53,7 @@ public class Servidores {
     public void alteraPorto(int id,int porto){
         for(Servidor s : servidores){
             if(s.getId() == id){
-                s.setPorto(porto);
+                s.setPorto_cli(porto);
                 return;
             }
         }
@@ -109,7 +108,7 @@ public class Servidores {
 
     public void aumentaHeartbeat(){
         for (Servidor serv : servidores) {
-            //System.out.println("Aumentei o tempo de inatividade do servidor -> " + serv.getId() + " para " + (serv.getHeartbeat() + 1));
+            System.out.println("Aumentei o tempo de inatividade do servidor -> " + serv.getId() + " para " + (serv.getHeartbeat() + 1));
             serv.setHeartbeat(serv.getHeartbeat() + 1);
         }
     }
@@ -123,7 +122,7 @@ public class Servidores {
     }
 
     public int getPortoServidor(Integer indice) {
-        return servidores.get(indice).getPorto();
+        return servidores.get(indice).getPorto_cli();
     }
 
     public int getIDServidor(int indice){
@@ -147,19 +146,15 @@ public class Servidores {
         DatagramPacket dp;
         for (Servidor serv : servidores){
             if(serv.getId()!=novidadeGRDS.getIdServidor()){
-                System.out.println("eu");
                 try {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ObjectOutputStream out = new ObjectOutputStream(baos);
                     out.writeUnshared(novidadeGRDS);
                     out.flush();
                     byte[] msgTipoBytes = baos.toByteArray();
-                    System.out.println("tu " + serv.ip);
                     InetAddress ip = InetAddress.getByName(serv.ip);
-                    dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.porto);
-                    System.out.println("ele");
+                    dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.getPorto_serv());
                     ds.send(dp);
-                    System.out.println("nos");
                 }catch (IOException e) {
                     e.printStackTrace();
                 }

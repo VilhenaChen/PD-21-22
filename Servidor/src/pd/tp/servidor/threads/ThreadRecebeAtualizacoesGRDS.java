@@ -26,37 +26,34 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
     public void run() {
         while(true){
             try {
-                System.out.println("vos");
                 dp = new DatagramPacket(new byte[1024], 1024);
                 ds.receive(dp);
-                System.out.println("eles");
                 ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
                 ObjectInputStream in = new ObjectInputStream(bais);
                 novidadeGRDS = (NovidadeGRDS) in.readObject();
-                System.out.println("I");
                 StringBuilder stringBuilder = new StringBuilder();
                 if(novidadeGRDS.getTipoMsg().equals(LOGIN)){
-                    System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "efetuou login!");
+                    System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " efetuou login!");
                 }
                 else {
                     if(novidadeGRDS.getTipoMsg().equals(REGISTO)){
-                        System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "efetuou registo!");
+                        System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " efetuou registo!");
                     }
                     else {
                         if(novidadeGRDS.getTipoMsg().equals(UPDATE_NAME)){
-                            System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "alterou o seu nome!");
+                            System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " alterou o seu nome!");
                         }
                         else {
                             if(novidadeGRDS.getTipoMsg().equals(UPDATE_USERNAME)){
-                                System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "alterou o seu username para " + novidadeGRDS.getNovoUsernameUser() + "!");
+                                System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " alterou o seu username para " + novidadeGRDS.getNovoUsernameUser() + "!");
                             }
                             else {
                                 if(novidadeGRDS.getTipoMsg().equals(UPDATE_PASSWORD)){
-                                    System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "alterou a sua password!");
+                                    System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "  a sua password!");
                                 }
                                 else {
                                     if(novidadeGRDS.getTipoMsg().equals(LOGOUT)){
-                                        System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + "efetuou logout!");
+                                        System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " efetuou logout!");
                                     }
                                     else {
                                         if(novidadeGRDS.getTipoMsg().equals(NOVO_GRUPO)){
@@ -154,8 +151,10 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                     }
                 }
                 ArrayList<String> afetados = novidadeGRDS.getUsersAfetados();
-                for (String afetado : afetados){
-                    clientes.addNovidadeCli(afetado,stringBuilder.toString());
+                if(afetados!=null){
+                    for (String afetado : afetados){
+                        clientes.addNovidadeCli(afetado,stringBuilder.toString());
+                    }
                 }
             }catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();

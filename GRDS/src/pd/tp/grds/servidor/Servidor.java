@@ -1,18 +1,21 @@
 package pd.tp.grds.servidor;
 
+import javax.sound.sampled.Port;
 import java.io.Serializable;
 
 public class Servidor implements Serializable {
 
     int id;
     String ip;
-    int porto;
+    int porto_cli;
+    int porto_serv;
     int heartbeat;
 
-    public Servidor(int id,String ip, int porto) {
+    public Servidor(int id, String ip, int porto_cli, int porto_serv) {
         this.id = id;
         this.ip = ip;
-        this.porto = porto;
+        this.porto_cli = porto_cli;
+        this.porto_serv = porto_serv;
         this.heartbeat = 0;
     }
 
@@ -20,12 +23,20 @@ public class Servidor implements Serializable {
         return ip;
     }
 
-    public int getPorto() {
-        return porto;
+    public int getPorto_cli() {
+        return porto_cli;
     }
 
-    public void setPorto(int porto) {
-        this.porto = porto;
+    public void setPorto_cli(int porto_cli) {
+        this.porto_cli = porto_cli;
+    }
+
+    public int getPorto_serv() {
+        return porto_serv;
+    }
+
+    public void setPorto_serv(int porto_serv) {
+        this.porto_serv = porto_serv;
     }
 
     public int getId() {
@@ -42,6 +53,6 @@ public class Servidor implements Serializable {
 
     @Override
     public String toString() {
-        return "id= " + id + " -> ip=" + ip + ", porto= " + porto;
+        return "id= " + id + " -> ip=" + ip + ", porto= " + porto_cli;
     }
 }

@@ -72,7 +72,7 @@ public class ThreadComunicacao extends Thread implements Utils {
             String[] arrayAux = tipo.split(",");
             porto = Integer.parseInt(arrayAux[1]);
             int novoId = servidores.getNovoId();
-            servidores.addServidor(new Servidor(novoId, dp.getAddress().getHostAddress(), porto));
+            servidores.addServidor(new Servidor(novoId, dp.getAddress().getHostAddress(), porto, dp.getPort()));
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(baos);
