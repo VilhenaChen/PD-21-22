@@ -18,7 +18,7 @@ public class ThreadHeartbeatServidores extends TimerTask {
     public void run() {
         servidores.aumentaHeartbeat();
         servidores.removeServidoresInativos();
-        if(!servidores.verificaVazio())
-            System.out.println(servidores);
+        /*if(!servidores.verificaVazio())
+            System.out.println(servidores);*/
     }
 }

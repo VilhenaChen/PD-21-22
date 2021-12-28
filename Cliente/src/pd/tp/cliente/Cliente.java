@@ -1,6 +1,8 @@
 package pd.tp.cliente;
 
 import pd.tp.cliente.ui.UiTexto;
+import pd.tp.comum.Utils;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -8,13 +10,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class Cliente {
+public class Cliente implements Utils{
     private String IP_GRDS;
     private int PORTO_GRDS;
     private HashMap<String, String> infoServidor;
 
     private void pedeIPGRDS() throws IOException, ClassNotFoundException {
-        String msgEnviada = "NOVO_CLI";
+        String msgEnviada = NOVO_CLI;
         DatagramSocket ds = new DatagramSocket();
         //ds.setSoTimeout(5000);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

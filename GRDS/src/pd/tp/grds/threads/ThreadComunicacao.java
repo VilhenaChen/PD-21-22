@@ -1,5 +1,6 @@
 package pd.tp.grds.threads;
 
+import pd.tp.comum.Utils;
 import pd.tp.grds.servidor.Servidor;
 import pd.tp.grds.servidor.Servidores;
 
@@ -9,7 +10,7 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ThreadComunicacao extends Thread{
+public class ThreadComunicacao extends Thread implements Utils {
     DatagramPacket dp;
     DatagramSocket ds;
     Servidores servidores;
@@ -25,15 +26,15 @@ public class ThreadComunicacao extends Thread{
 
     @Override
     public void run() {
-        if (tipo.equals("NOVO_CLI")){
+        if (tipo.equals(NOVO_CLI)){
             novoCliente();
             return;
         }
-        if(tipo.startsWith("NOVO_SERV")){
+        if(tipo.startsWith(NOVO_SERV)){
             novoServidor();
             return;
         }
-        if (tipo.startsWith("INFO_PORT")){
+        if (tipo.startsWith(INFO_PORT)){
             infoPortoServidor();
         }
     }

@@ -113,7 +113,6 @@ public class NovidadeGRDS implements Serializable {
     public void setIdMsg(int idMsg) {
         this.idMsg = idMsg;
     }
-
     @Override
     public String toString() {
         return "Tipo: " + tipoMsg + " Username: " + usernameUser;

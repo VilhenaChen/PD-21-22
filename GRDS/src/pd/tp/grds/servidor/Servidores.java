@@ -1,5 +1,14 @@
 package pd.tp.grds.servidor;
 
+import pd.tp.comum.NovidadeGRDS;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Servidores {
@@ -100,7 +109,7 @@ public class Servidores {
 
     public void aumentaHeartbeat(){
         for (Servidor serv : servidores) {
-            System.out.println("Aumentei o tempo de inatividade do servidor -> " + serv.getId() + " para " + (serv.getHeartbeat() + 1));
+            //System.out.println("Aumentei o tempo de inatividade do servidor -> " + serv.getId() + " para " + (serv.getHeartbeat() + 1));
             serv.setHeartbeat(serv.getHeartbeat() + 1);
         }
     }
@@ -130,6 +139,27 @@ public class Servidores {
             if(servidores.get(i).getId() == id) {
                 servidores.get(i).setHeartbeat(0);
                 return;
+            }
+        }
+    }
+
+    public void enviaNovidadeAosServidores(DatagramSocket ds, NovidadeGRDS novidadeGRDS){
+        DatagramPacket dp;
+        for (Servidor serv : servidores){
+            if(serv.getId()!=novidadeGRDS.getIdServidor()){
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = new ObjectOutputStream(baos);
+                    out.writeUnshared(novidadeGRDS);
+                    out.flush();
+                    byte[] msgTipoBytes = baos.toByteArray();
+
+                    InetAddress ip = InetAddress.getByName(serv.ip);
+                    dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.porto);
+                    ds.send(dp);
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

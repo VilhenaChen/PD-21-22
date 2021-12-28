@@ -1,9 +1,11 @@
 package pd.tp.grds.threads;
 
+import pd.tp.comum.Utils;
+
 import java.io.*;
 import java.net.*;
 
-public class ThreadMulticastServidores extends Thread{
+public class ThreadMulticastServidores extends Thread implements Utils {
     private String ip;
     private String porto;
     MulticastSocket ms;
@@ -26,10 +28,10 @@ public class ThreadMulticastServidores extends Thread{
                 ObjectInputStream in = new ObjectInputStream(bais);
                 String mensagemRecebida = (String) in.readObject();
 
-                if (mensagemRecebida.equals("PEDIDO_COORDENADAS")) {
+                if (mensagemRecebida.equals(PEDIDO_COORDENADAS)) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ObjectOutputStream out = new ObjectOutputStream(baos);
-                    stringBuilder.append("COORDENADAS,").append(ip).append(",").append(porto);
+                    stringBuilder.append(COORDENADAS).append(",").append(ip).append(",").append(porto);
                     out.writeUnshared(stringBuilder.toString());
                     out.flush();
                     byte[] msgBytes = baos.toByteArray();

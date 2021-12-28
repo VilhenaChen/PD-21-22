@@ -1,6 +1,7 @@
 package pd.tp.servidor;
 
 import pd.tp.cliente.Clientes;
+import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
@@ -9,7 +10,7 @@ import java.net.*;
 import java.sql.SQLException;
 import java.util.Timer;
 
-public class Servidor {
+public class Servidor implements Utils {
 
     private String IP_GRDS;
     private int PORTO_GRDS;
@@ -20,7 +21,7 @@ public class Servidor {
     private Clientes clientes;
 
     private void InicioGRDS() throws IOException, ClassNotFoundException {
-        String msgTipo = "NOVO_SERV," + ss.getLocalPort();
+        String msgTipo = NOVO_SERV + "," + ss.getLocalPort();
         ds = new DatagramSocket();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -58,7 +59,7 @@ public class Servidor {
             while(cont<3 && cont != -1) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(baos);
-                out.writeUnshared("PEDIDO_COORDENADAS");
+                out.writeUnshared(PEDIDO_COORDENADAS);
                 out.flush();
                 byte[] msgBytes = baos.toByteArray();
                 dp = new DatagramPacket(msgBytes, msgBytes.length, ia, 3030);

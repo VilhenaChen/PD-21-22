@@ -28,6 +28,7 @@ public class ThreadEnviaAtualizacaoGRDS extends Thread{
             System.out.println("Informei o GRDS da novidade ");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(baos);
+            novidadeGRDS.setIdServidor(id);
             out.writeUnshared(novidadeGRDS);
             out.flush();
             byte[] msgBytes = baos.toByteArray();

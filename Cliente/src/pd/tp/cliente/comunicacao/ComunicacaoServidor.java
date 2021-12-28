@@ -2,12 +2,14 @@ package pd.tp.cliente.comunicacao;
 
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
+import pd.tp.comum.Utils;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ComunicacaoServidor {
+public class ComunicacaoServidor implements Utils {
     Socket sCli;
     ObjectOutputStream out;
     ObjectInputStream in;
@@ -21,7 +23,7 @@ public class ComunicacaoServidor {
     public String efetuaLogin(Utilizador user) { //Manda o Login do User ao Servidor
         String resultado = "";
         try {
-            out.writeObject("LOGIN," + user.getUsername() + "," + user.getPassword());
+            out.writeObject(LOGIN+"," + user.getUsername() + "," + user.getPassword());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -35,7 +37,7 @@ public class ComunicacaoServidor {
     public String efetuaRegisto(Utilizador user) { //Manda o Registo do User ao Servidor
         String resultado = "";
         try {
-            out.writeUnshared("REGISTO," + user.getUsername() +"," + user.getPassword() + "," + user.getNome());
+            out.writeUnshared(REGISTO + "," + user.getUsername() +"," + user.getPassword() + "," + user.getNome());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -48,7 +50,7 @@ public class ComunicacaoServidor {
 
     public void logout(Utilizador user){
         try {
-            out.writeObject("LOGOUT," + user.getUsername());
+            out.writeObject(LOGOUT + "," + user.getUsername());
             out.flush();
         }catch(IOException e) {
             e.printStackTrace();
@@ -58,7 +60,7 @@ public class ComunicacaoServidor {
     public String trocaNome(Utilizador user, String nome) {
         String resultado = "";
         try {
-            out.writeObject("UPDATE_NAME," + user.getUsername() + "," + nome );
+            out.writeObject(UPDATE_NAME + "," + user.getUsername() + "," + nome );
             out.flush();
 
             resultado = (String) in.readObject();
@@ -72,7 +74,7 @@ public class ComunicacaoServidor {
     public String trocaPassword(Utilizador user, String password) {
         String resultado = "";
         try {
-            out.writeObject("UPDATE_PASSWORD," + user.getUsername() + "," + password );
+            out.writeObject(UPDATE_PASSWORD + "," + user.getUsername() + "," + password );
             out.flush();
 
             resultado = (String) in.readObject();
@@ -86,7 +88,7 @@ public class ComunicacaoServidor {
     public String trocaUsername(Utilizador user, String username) {
         String resultado = "";
         try {
-            out.writeObject("UPDATE_USERNAME," + user.getUsername() + "," + username );
+            out.writeObject(UPDATE_USERNAME + "," + user.getUsername() + "," + username );
             out.flush();
 
             resultado = (String) in.readObject();
@@ -101,7 +103,7 @@ public class ComunicacaoServidor {
     public String criaGrupo(Utilizador user, String nome) {
         String resultado = "";
         try {
-            out.writeObject("NOVO_GRUPO," + user.getUsername() + "," + nome);
+            out.writeObject(NOVO_GRUPO + "," + user.getUsername() + "," + nome);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -116,7 +118,7 @@ public class ComunicacaoServidor {
     public String adereAGrupo(Utilizador user, int idGrupo){
         String resultado = "";
         try {
-            out.writeObject("ADERE_A_GRUPO," + user.getUsername() + "," + idGrupo);
+            out.writeObject(ADERE_A_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -132,7 +134,7 @@ public class ComunicacaoServidor {
     {
         String resultado = "";
         try {
-            out.writeObject("SAI_DE_GRUPO," + user.getUsername() + "," + idGrupo);
+            out.writeObject(SAI_DE_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -147,7 +149,7 @@ public class ComunicacaoServidor {
     public String trocaNomeGroup(String novo_nome, int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject("UPDATE_NOME_GRUPO," + idGrupo + "," + novo_nome);
+            out.writeObject(UPDATE_NOME_GRUPO + "," + idGrupo + "," + novo_nome);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -162,7 +164,7 @@ public class ComunicacaoServidor {
     public String listaGrupos() {
         String resultado = "";
         try {
-            out.writeObject("LISTA_GRUPOS");
+            out.writeObject(LISTA_GRUPOS);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -177,7 +179,7 @@ public class ComunicacaoServidor {
     public String listaGruposAdmin(Utilizador user) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_GRUPOS_ADMIN," + user.getUsername());
+            out.writeObject(LISTA_GRUPOS_ADMIN + "," + user.getUsername());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -192,7 +194,7 @@ public class ComunicacaoServidor {
     public String listaMembrosGrupos(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_TODOS_MEMBROS," + idGrupo);
+            out.writeObject(LISTA_TODOS_MEMBROS + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -207,7 +209,7 @@ public class ComunicacaoServidor {
     public String listaMembrosGrupoPorAceitar(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_MEMBROS_GRUPO_POR_ACEITAR," + idGrupo);
+            out.writeObject(LISTA_MEMBROS_GRUPO_POR_ACEITAR + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -226,11 +228,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("ACEITA_MEMBRO," + idGrupo + "," + array[i]);
+                out.writeObject(ACEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -240,7 +242,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -254,11 +256,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("REJEITA_MEMBRO," + idGrupo + "," + array[i]);
+                out.writeObject(REJEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -268,7 +270,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -283,11 +285,11 @@ public class ComunicacaoServidor {
         for(int i = 0; i<array.length; i++){
             try {
 
-                out.writeObject("KICK_MEMBRO_GRUPO," + idGrupo + "," + array[i]);
+                out.writeObject(KICK_MEMBRO_GRUPO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -297,7 +299,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -307,7 +309,7 @@ public class ComunicacaoServidor {
     public String eliminaGrupo(int idGrupo){
         String resultado = "";
         try{
-            out.writeObject("ELIMINA_GRUPO," + idGrupo);
+            out.writeObject(ELIMINA_GRUPO + "," + idGrupo);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -322,7 +324,7 @@ public class ComunicacaoServidor {
     public String listaContactos(Utilizador user) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_CONTACTOS," + user.getUsername());
+            out.writeObject(LISTA_CONTACTOS + "," + user.getUsername());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -337,7 +339,7 @@ public class ComunicacaoServidor {
     public String listaContactosPorAceitar(Utilizador user) {
         String resultado = "";
         try {
-            out.writeObject("LISTA_POR_ACEITAR_CONTACTOS," + user.getUsername());
+            out.writeObject(LISTA_POR_ACEITAR_CONTACTOS + "," + user.getUsername());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -353,7 +355,7 @@ public class ComunicacaoServidor {
     public String adicionaContacto(Utilizador user, String friend) {
         String resultado = "";
         try {
-            out.writeObject("NOVO_CONTACTO," + user.getUsername() + "," +friend);
+            out.writeObject(NOVO_CONTACTO + "," + user.getUsername() + "," +friend);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -372,11 +374,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("ACEITA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.writeObject(ACEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -386,7 +388,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -400,11 +402,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("REJEITA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.writeObject(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -414,7 +416,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -428,11 +430,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("ELIMINA_CONTACTO," + user.getUsername() + "," + array[i]);
+                out.writeObject(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -442,7 +444,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -452,7 +454,7 @@ public class ComunicacaoServidor {
     public String pesquisaUsers(String pesquisa) {
         String resultado = "";
         try {
-            out.writeObject("PESQUISA_USER," + pesquisa);
+            out.writeObject(PESQUISA_USER + "," + pesquisa);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -467,7 +469,7 @@ public class ComunicacaoServidor {
     public String listaUsers() {
         String resultado = "";
         try {
-            out.writeObject("LISTA_USERS");
+            out.writeObject(LISTA_USERS);
             out.flush();
 
             resultado = (String) in.readObject();
@@ -503,11 +505,11 @@ public class ComunicacaoServidor {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject("ELIMINA_MENSAGEM," + array[i] + "," + user.getUsername());
+                out.writeObject(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
                 out.flush();
 
                 resultado = (String) in.readObject();
-                if(!resultado.equals("SUCESSO")){
+                if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
@@ -517,7 +519,7 @@ public class ComunicacaoServidor {
         }
 
         if(falhas.equals("")){
-            return "SUCESSO";
+            return SUCESSO;
         }
         else{
             return "ERRO" + "," + falhas;
@@ -527,7 +529,7 @@ public class ComunicacaoServidor {
     public String listaMensagens(Utilizador user){
         String resultado = "";
         try {
-            out.writeObject("LISTA_MENSAGENS," + user.getUsername());
+            out.writeObject(LISTA_MENSAGENS + "," + user.getUsername());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -542,7 +544,7 @@ public class ComunicacaoServidor {
     public String listaMensagensParaEliminar(Utilizador user){
         String resultado = "";
         try {
-            out.writeObject("LISTA_PARA_ELIMINAR_MSG," + user.getUsername());
+            out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
             out.flush();
             resultado = (String) in.readObject();
         }catch (IOException | ClassNotFoundException e) {
@@ -555,7 +557,7 @@ public class ComunicacaoServidor {
     public String getCorpoMensagem(int escolha, Utilizador user) {
         String resultado = "";
         try {
-            out.writeObject("GET_CORPO," + escolha + "," + user.getUsername());
+            out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
             out.flush();
             resultado = (String) in.readObject();
         }catch (IOException | ClassNotFoundException e) {

@@ -3,6 +3,7 @@ package pd.tp.servidor.threads;
 import pd.tp.cliente.Clientes;
 import pd.tp.comum.Mensagem;
 import pd.tp.comum.NovidadeGRDS;
+import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
 
 import java.io.IOException;
@@ -14,18 +15,9 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class ThreadComunicacaoCliente extends Thread{
+public class ThreadComunicacaoCliente extends Thread implements Utils {
     private Socket sCli;
     private ComunicacaoBD comBD;
-    private static final String SUCESSO = "SUCESSO";
-    private static final String PASSWORD_ERRADA = "PASSWORD_ERRADA";
-    private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
-    private static final String NOME_REPETIDO = "NOME_REPETIDO";
-    private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
-    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
-    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
-    private static final String NOT_ADMIN = "NOT_ADMIN";
-    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
     private HashMap<String, String> dadosUser;
     private Clientes clientes;
     DatagramSocket ds;
@@ -54,7 +46,7 @@ public class ThreadComunicacaoCliente extends Thread{
         separaDadosUser(msgRecebida);
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("LOGIN");
+            novidade.setTipoMsg(LOGIN);
             novidade.setUsernameUser(dadosUser.get("username"));
             String login = comBD.loginUser(dadosUser.get("username"), dadosUser.get("password"));
             if(login.startsWith(SUCESSO)){
@@ -76,7 +68,7 @@ public class ThreadComunicacaoCliente extends Thread{
         separaDadosUser(msgRecebida);
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("REGISTO");
+            novidade.setTipoMsg(REGISTO);
             novidade.setUsernameUser(dadosUser.get("username"));
             String resultado = comBD.insereUser(dadosUser.get("name"), dadosUser.get("username"), dadosUser.get("password"),0);
             if(resultado.equals(SUCESSO)){
@@ -98,7 +90,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String name = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("UPDATE_NAME");
+            novidade.setTipoMsg(UPDATE_NAME);
             novidade.setUsernameUser(dadosUser.get("username"));
             String resultado = comBD.updateUserName(name, username);
             if(resultado.equals(SUCESSO)){
@@ -120,7 +112,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String new_username = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("UPDATE_NAME");
+            novidade.setTipoMsg(UPDATE_USERNAME);
             novidade.setUsernameUser(old_username);
             novidade.setNovoUsernameUser(new_username);
             comBD.verificaAfetadosUpdateUsername(old_username,novidade);
@@ -146,7 +138,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String password = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("UPDATE_PASSWORD");
+            novidade.setTipoMsg(UPDATE_PASSWORD);
             novidade.setUsernameUser(dadosUser.get("username"));
 
             String resultado = comBD.updateUserPassword(password, username);
@@ -167,7 +159,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[1];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("LOGOUT");
+            novidade.setTipoMsg(LOGOUT);
             novidade.setUsernameUser(username);
             String resultado = comBD.logoutUser(username);
             novidade.setTipoMsg("LOGOUT");
@@ -192,7 +184,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("NOVO_GRUPO");
+            novidade.setTipoMsg(NOVO_GRUPO);
             novidade.setUsernameUser(username);
             String resultado = comBD.createGroup(nomeGrupo, username, novidade);
             if(resultado.equals(SUCESSO))
@@ -211,7 +203,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
         try{
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("UPDATE_NOME_GRUPO");
+            novidade.setTipoMsg(UPDATE_NOME_GRUPO);
             novidade.setUsernameUser(dadosUser.get("username"));
             novidade.setIdGrupo(idGrupo);
             novidade.setNovoNomeGrupo(novoNome);
@@ -236,7 +228,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("ADERE_A_GRUPO");
+            novidade.setTipoMsg(ADERE_A_GRUPO);
             novidade.setUsernameUser(username);
             novidade.setIdGrupo(idGrupo);
             comBD.verificaAfetadosAdereGrupo(idGrupo,username,novidade);
@@ -260,7 +252,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("SAI_DE_GRUPO");
+            novidade.setTipoMsg(SAI_DE_GRUPO);
             novidade.setIdGrupo(idGrupo);
             novidade.setUsernameUser(username);
             comBD.verificaAfetadosLeaveGroup(idGrupo,username,novidade);
@@ -332,7 +324,7 @@ public class ThreadComunicacaoCliente extends Thread{
 
         try{
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("ACEITA_MEMBRO");
+            novidade.setTipoMsg(ACEITA_MEMBRO);
             novidade.setIdGrupo(idGrupo);
             novidade.setUsernameUser(username);
             comBD.verificaAfetadosMembroAceite(idGrupo,novidade);
@@ -356,7 +348,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[2];
         try{
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("REJEITA_MEMBRO");
+            novidade.setTipoMsg(REJEITA_MEMBRO);
             novidade.setUsernameUser(username);
             novidade.setIdGrupo(idGrupo);
             novidade.addUserAfetado(username);
@@ -381,7 +373,7 @@ public class ThreadComunicacaoCliente extends Thread{
         System.out.println("Cheguei à função antes da da bd!");
         try{
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("KICK_MEMBRO_GRUPO");
+            novidade.setTipoMsg(KICK_MEMBRO_GRUPO);
             novidade.setIdGrupo(idGrupo);
             novidade.setUsernameUser(username);
             comBD.verificaAfetadosKickMembro(idGrupo,novidade);
@@ -404,7 +396,7 @@ public class ThreadComunicacaoCliente extends Thread{
         int idGrupo = Integer.parseInt(array[1]);
         try{
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("ELIMINA_GRUPO");
+            novidade.setTipoMsg(ELIMINA_GRUPO);
             novidade.setIdGrupo(idGrupo);
             comBD.verificaAfetadosDeleteGroup(idGrupo,novidade);
             String resultado = comBD.deleteGroup(idGrupo);
@@ -427,7 +419,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String friend = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("NOVO_CONTACTO");
+            novidade.setTipoMsg(NOVO_CONTACTO);
             novidade.setUsernameUser(username);
             novidade.setFriend(friend);
             novidade.addUserAfetado(friend);
@@ -451,7 +443,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String friend = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("ACEITA_CONTACTO");
+            novidade.setTipoMsg(ACEITA_CONTACTO);
             novidade.setFriend(friend);
             novidade.setUsernameUser(username);
             novidade.addUserAfetado(friend);
@@ -475,7 +467,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String friend = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("REJEITA_CONTACTO");
+            novidade.setTipoMsg(REJEITA_CONTACTO);
             novidade.setUsernameUser(username);
             novidade.setFriend(friend);
             novidade.addUserAfetado(friend);
@@ -523,7 +515,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String contacto = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("ELIMINA_CONTACTO");
+            novidade.setTipoMsg(ELIMINA_CONTACTO);
             novidade.setUsernameUser(username);
             novidade.setFriend(contacto);
             novidade.addUserAfetado(contacto);
@@ -565,7 +557,7 @@ public class ThreadComunicacaoCliente extends Thread{
     private void recebeMsg(ObjectOutputStream out, Mensagem msg) {
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("MENSAGEM");
+            novidade.setTipoMsg(MENSAGEM);
             novidade.setUsernameUser(msg.getSender());
             novidade.setReceiver(msg.getReceveiver());
             comBD.verificaAfetadosMensagem(msg.getSender(),msg.getReceveiver(),novidade);
@@ -588,7 +580,7 @@ public class ThreadComunicacaoCliente extends Thread{
         String username = array[2];
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
-            novidade.setTipoMsg("MENSAGEM");
+            novidade.setTipoMsg(ELIMINA_MENSAGEM);
             novidade.setIdMsg(idMsg);
             comBD.verificaAfetadosEliminaMensagem(idMsg, username, novidade);
             String resultado = comBD.eliminaMsg(idMsg, username);
@@ -655,99 +647,99 @@ public class ThreadComunicacaoCliente extends Thread{
                 else if(objetoRecebido instanceof String) {
                     msgRecebida = objetoRecebido.toString();
 
-                    if (msgRecebida.startsWith("LOGIN")) {
+                    if (msgRecebida.startsWith(LOGIN)) {
                         login(out, msgRecebida);
 
                     } else {
-                        if (msgRecebida.startsWith("REGISTO")) {
+                        if (msgRecebida.startsWith(REGISTO)) {
                             signIn(out, msgRecebida);
                         } else {
-                            if (msgRecebida.startsWith("UPDATE_NAME")) {
+                            if (msgRecebida.startsWith(UPDATE_NAME)) {
                                 updateName(out, msgRecebida);
                             } else {
-                                if (msgRecebida.startsWith("UPDATE_USERNAME")) {
+                                if (msgRecebida.startsWith(UPDATE_USERNAME)) {
                                     updateUsername(out, msgRecebida);
                                 } else {
-                                    if (msgRecebida.startsWith("UPDATE_PASSWORD")) {
+                                    if (msgRecebida.startsWith(UPDATE_PASSWORD)) {
                                         updatePassword(out, msgRecebida);
                                     } else {
-                                        if (msgRecebida.startsWith("NOVO_GRUPO")) {
+                                        if (msgRecebida.startsWith(NOVO_GRUPO)) {
                                             criaGrupo(out, msgRecebida);
                                         } else {
-                                            if (msgRecebida.startsWith("LISTA_GRUPOS_ADMIN")) {
+                                            if (msgRecebida.startsWith(LISTA_GRUPOS_ADMIN)) {
                                                 listaGruposAdmin(out, msgRecebida);
                                             } else {
-                                                if (msgRecebida.startsWith("LISTA_GRUPOS")) {
+                                                if (msgRecebida.startsWith(LISTA_GRUPOS)) {
                                                     listaGrupos(out, msgRecebida);
                                                 } else {
-                                                    if (msgRecebida.startsWith("ADERE_A_GRUPO")) {
+                                                    if (msgRecebida.startsWith(ADERE_A_GRUPO)) {
                                                         adereAGrupo(out, msgRecebida);
                                                     } else {
-                                                        if (msgRecebida.startsWith("SAI_DE_GRUPO")) {
+                                                        if (msgRecebida.startsWith(SAI_DE_GRUPO)) {
                                                             saiDeGrupo(out, msgRecebida);
                                                         } else {
-                                                            if (msgRecebida.startsWith("KICK_MEMBRO_GRUPO")) {
+                                                            if (msgRecebida.startsWith(KICK_MEMBRO_GRUPO)) {
                                                                 excluiMembroGrupo(out, msgRecebida);
                                                             } else {
-                                                                if (msgRecebida.startsWith("LISTA_MEMBROS_GRUPO_POR_ACEITAR")) {
+                                                                if (msgRecebida.startsWith(LISTA_MEMBROS_GRUPO_POR_ACEITAR)) {
                                                                     listaMembrosGrupoPorAceitar(out, msgRecebida);
                                                                 } else {
-                                                                    if (msgRecebida.startsWith("ACEITA_MEMBRO")) {
+                                                                    if (msgRecebida.startsWith(ACEITA_MEMBRO)) {
                                                                         aceitaMembro(out, msgRecebida);
                                                                     } else {
-                                                                        if (msgRecebida.startsWith("UPDATE_NOME_GRUPO")) {
+                                                                        if (msgRecebida.startsWith(UPDATE_NOME_GRUPO)) {
                                                                             alteraNomeGrupo(out, msgRecebida);
                                                                         } else {
-                                                                            if (msgRecebida.startsWith("ELIMINA_GRUPO")) {
+                                                                            if (msgRecebida.startsWith(ELIMINA_GRUPO)) {
                                                                                 eliminaGrupo(out, msgRecebida);
                                                                             } else {
-                                                                                if (msgRecebida.startsWith("NOVO_CONTACTO")) {
+                                                                                if (msgRecebida.startsWith(NOVO_CONTACTO)) {
                                                                                     novoContacto(out, msgRecebida);
                                                                                 } else {
-                                                                                    if (msgRecebida.startsWith("ACEITA_CONTACTO")) {
+                                                                                    if (msgRecebida.startsWith(ACEITA_CONTACTO)) {
                                                                                         aceitaContacto(out, msgRecebida);
                                                                                     } else {
-                                                                                        if (msgRecebida.startsWith("LISTA_CONTACTOS")) {
+                                                                                        if (msgRecebida.startsWith(LISTA_CONTACTOS)) {
                                                                                             listaContactos(out, msgRecebida);
                                                                                         } else {
-                                                                                            if (msgRecebida.startsWith("LISTA_POR_ACEITAR_CONTACTOS")) {
+                                                                                            if (msgRecebida.startsWith(LISTA_POR_ACEITAR_CONTACTOS)) {
                                                                                                 listaContactosPorAceitar(out, msgRecebida);
                                                                                             } else {
-                                                                                                if (msgRecebida.startsWith("ELIMINA_CONTACTO")) {
+                                                                                                if (msgRecebida.startsWith(ELIMINA_CONTACTO)) {
                                                                                                     //Eliminar contacto e o historico de troca de msgs e ficheiros entre eles
                                                                                                     eliminaContacto(out, msgRecebida);
                                                                                                 } else {
-                                                                                                    if (msgRecebida.startsWith("PESQUISA_USER")) {
+                                                                                                    if (msgRecebida.startsWith(PESQUISA_USER)) {
                                                                                                         pesquisaUsers(out, msgRecebida);
                                                                                                     } else {
-                                                                                                        if (msgRecebida.startsWith("LISTA_USERS")) {
+                                                                                                        if (msgRecebida.startsWith(LISTA_USERS)) {
                                                                                                             listaUsers(out, msgRecebida);
                                                                                                         } else {
-                                                                                                            if (msgRecebida.startsWith("LISTA_TODOS_MEMBROS")) {
+                                                                                                            if (msgRecebida.startsWith(LISTA_TODOS_MEMBROS)) {
                                                                                                                 listaMembrosGrupo(out, msgRecebida);
                                                                                                             }
                                                                                                             else{
-                                                                                                                if(msgRecebida.startsWith("ELIMINA_MENSAGEM")){
+                                                                                                                if(msgRecebida.startsWith(ELIMINA_MENSAGEM)){
                                                                                                                     eliminaMensagem(out,msgRecebida);
                                                                                                                 }
                                                                                                                 else {
-                                                                                                                    if(msgRecebida.startsWith("LISTA_MENSAGENS")) {
+                                                                                                                    if(msgRecebida.startsWith(LISTA_MENSAGENS)) {
                                                                                                                         listaMensagens(out, msgRecebida);
                                                                                                                     }
                                                                                                                     else{
-                                                                                                                        if(msgRecebida.startsWith("LISTA_PARA_ELIMINAR_MSG")){
+                                                                                                                        if(msgRecebida.startsWith(LISTA_PARA_ELIMINAR_MSG)){
                                                                                                                             listaMensagensParaEliminar(out,msgRecebida);
                                                                                                                         }
                                                                                                                         else{
-                                                                                                                            if(msgRecebida.startsWith("GET_CORPO")){
+                                                                                                                            if(msgRecebida.startsWith(GET_CORPO)){
                                                                                                                                 getCorpoMsg(out,msgRecebida);
                                                                                                                             }
                                                                                                                             else{
-                                                                                                                                if(msgRecebida.startsWith("REJEITA_CONTACTO")){
+                                                                                                                                if(msgRecebida.startsWith(REJEITA_CONTACTO)){
                                                                                                                                     rejeitaContacto(out,msgRecebida);
                                                                                                                                 }
                                                                                                                                 else {
-                                                                                                                                    if (msgRecebida.startsWith("REJEITA_MEMBRO"))
+                                                                                                                                    if (msgRecebida.startsWith(REJEITA_MEMBRO))
                                                                                                                                     {
                                                                                                                                         rejeitaMembro(out,msgRecebida);
                                                                                                                                     }

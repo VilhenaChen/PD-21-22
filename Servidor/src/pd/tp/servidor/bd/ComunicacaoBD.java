@@ -2,30 +2,16 @@ package pd.tp.servidor.bd;
 
 import pd.tp.comum.Mensagem;
 import pd.tp.comum.NovidadeGRDS;
+import pd.tp.comum.Utils;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class ComunicacaoBD {
+public class ComunicacaoBD implements Utils {
 
     private final String BD_URL = "jdbc:mysql://localhost:13306/sgbd";
     private final String USERNAME = "sgbd_user";
     private final String PASSWORD = "c4s#fk9bpw2x";
-    private static final String SUCESSO = "SUCESSO";
-    private static final String PASSWORD_ERRADA = "PASSWORD_ERRADA";
-    private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
-    private static final String NOME_REPETIDO = "NOME_REPETIDO";
-    private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
-    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
-    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
-    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
-    private static final String NOT_MEMBRO = "NOT_MEMBRO";
-    private static final String NOT_CONTACT = "NOT_CONTACT";
-    private static final String JA_PERTENCE = "JA_PERTENCE";
-    private static final String EMPTY = "EMPTY";
-    private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
-    private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
-    private static final String UTILIZADOR_JA_LOGADO = "UTILIZADOR_JA_LOGADO";
 
     private Connection dbConn;
 

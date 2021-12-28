@@ -3,6 +3,8 @@ package pd.tp.cliente.ui;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
+import pd.tp.comum.Utils;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,23 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
-public class UiTexto {
-    private static final String SUCESSO = "SUCESSO";
-    private static final String PASSWORD_ERRADA = "PASSWORD_ERRADA";
-    private static final String UTILIZADOR_INEXISTENTE = "UTILIZADOR_INEXISTENTE";
-    private static final String NOME_REPETIDO = "NOME_REPETIDO";
-    private static final String USERNAME_REPETIDO = "USERNAME_REPETIDO";
-    private static final String NOME_E_ADMIN_JA_EXISTENTES = "NOME_E_ADMIN_JA_EXISTENTES";
-    private static final String ADMIN_INEXISTENTE = "ADMIN_INEXISTENTE";
-    private static final String GRUPO_INEXISTENTE = "GRUPO_INEXISTENTE";
-    private static final String NOT_MEMBRO = "NOT_MEMBRO";
-    private static final String NOT_CONTACT = "NOT_CONTACT";
-    private static final String JA_PERTENCE = "JA_PERTENCE";
-    private static final String EMPTY = "EMPTY";
-    private static final String NOT_YOUR_MSG = "NOT_YOUR_MSG";
-    private static final String MSG_INEXISTENTE = "MSG_INEXISTENTE";
-    private static final String UTILIZADOR_JA_LOGADO = "UTILIZADOR_JA_LOGADO";
-
+public class UiTexto implements Utils {
 
     private Scanner scanner = new Scanner(System.in);
     Utilizador user;
