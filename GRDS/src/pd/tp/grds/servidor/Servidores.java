@@ -147,16 +147,19 @@ public class Servidores {
         DatagramPacket dp;
         for (Servidor serv : servidores){
             if(serv.getId()!=novidadeGRDS.getIdServidor()){
+                System.out.println("eu");
                 try {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ObjectOutputStream out = new ObjectOutputStream(baos);
                     out.writeUnshared(novidadeGRDS);
                     out.flush();
                     byte[] msgTipoBytes = baos.toByteArray();
-
+                    System.out.println("tu " + serv.ip);
                     InetAddress ip = InetAddress.getByName(serv.ip);
                     dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.porto);
+                    System.out.println("ele");
                     ds.send(dp);
+                    System.out.println("nos");
                 }catch (IOException e) {
                     e.printStackTrace();
                 }

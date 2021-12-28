@@ -986,7 +986,7 @@ public class ComunicacaoBD implements Utils {
         while (resultSet.next()){
             novidadeGRDS.addUserAfetado(resultSet.getString("user"));
         }
-
+        novidadeGRDS.addUserAfetado(novidadeGRDS.getUsernameUser());
         resultSet.close();
         statement.close();
     }

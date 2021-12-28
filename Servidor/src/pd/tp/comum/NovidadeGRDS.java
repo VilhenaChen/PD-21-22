@@ -114,6 +114,10 @@ public class NovidadeGRDS implements Serializable {
         this.idMsg = idMsg;
     }
 
+    public ArrayList<String> getUsersAfetados() {
+        return usersAfetados;
+    }
+
     @Override
     public String toString() {
         return "Tipo: " + tipoMsg + " Username: " + usernameUser;

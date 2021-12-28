@@ -19,7 +19,6 @@ public class ThreadComunicacaoNovidade extends Thread implements Utils {
 
     @Override
     public void run() {
-        System.out.println(novidadeGRDS.getTipoMsg());
-        //servidores.enviaNovidadeAosServidores(ds, novidadeGRDS);
+        servidores.enviaNovidadeAosServidores(ds, novidadeGRDS);
     }
 }

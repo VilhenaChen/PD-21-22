@@ -5,6 +5,8 @@ import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
+import pd.tp.servidor.threads.ThreadRecebeAtualizacoesGRDS;
+
 import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
@@ -106,7 +108,6 @@ public class Servidor implements Utils {
         if(args.length <= 0) {
             System.out.println("Falta de IP e Porto do GRDS por parametros! A Procurar por multicast");
             servidor.recebeIPePortoPorMulticast();
-            //System.exit(1);
         }
         else {
             servidor.IP_GRDS = args[0];
@@ -127,6 +128,8 @@ public class Servidor implements Utils {
         Timer timer = new Timer("InformaPorto");
         timer.schedule(informaPortoThread, 0, 20000); //Mudar para 20secondos
         servidor.clientes = new Clientes();
+        ThreadRecebeAtualizacoesGRDS threadRecebeAtualizacoesGRDS = new ThreadRecebeAtualizacoesGRDS(servidor.ds,servidor.clientes);
+        threadRecebeAtualizacoesGRDS.start();
         while(true) {
             Socket sCli = servidor.ss.accept();
             ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);

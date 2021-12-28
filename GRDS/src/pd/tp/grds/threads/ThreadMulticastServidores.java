@@ -31,7 +31,7 @@ public class ThreadMulticastServidores extends Thread implements Utils {
                 if (mensagemRecebida.equals(PEDIDO_COORDENADAS)) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ObjectOutputStream out = new ObjectOutputStream(baos);
-                    stringBuilder.append(COORDENADAS).append(",").append(ip).append(",").append(porto);
+                    stringBuilder.append(COORDENADAS).append(",").append(ip).append(",").append(porto).append(",");
                     out.writeUnshared(stringBuilder.toString());
                     out.flush();
                     byte[] msgBytes = baos.toByteArray();
