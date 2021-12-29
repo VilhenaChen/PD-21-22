@@ -413,6 +413,18 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         }
     }
 
+    private void getMembrosGrupo(ObjectOutputStream out,String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        int idGrupo = Integer.parseInt(array[1]);
+        try {
+            String resultado = comBD.listaMembrosGrupos(idGrupo);
+            out.writeUnshared(resultado);
+            out.flush();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void novoContacto(ObjectOutputStream out, String msgRecebida) {
         String[] array = msgRecebida.split(",");
         String username = array[1];
@@ -744,6 +756,11 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                                                                                                                                     if (msgRecebida.startsWith(REJEITA_MEMBRO))
                                                                                                                                     {
                                                                                                                                         rejeitaMembro(out,msgRecebida);
+                                                                                                                                    }
+                                                                                                                                    else {
+                                                                                                                                        if(msgRecebida.startsWith(GET_MEMBROS_GRUPO)) {
+                                                                                                                                            getMembrosGrupo(out,msgRecebida);
+                                                                                                                                        }
                                                                                                                                     }
                                                                                                                                 }
                                                                                                                             }

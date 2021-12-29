@@ -31,7 +31,7 @@ public class ThreadIniciaComunicacao extends Thread implements Utils {
                     if(tipo.startsWith(NOVO_CLI)){
                         do{
                             servidores.getNovoindiceUltimoServidorAtribuido();
-                        }while(servidores.verificaServidorAtivoParaAtribuir(servidores.getIndiceUltimoServidorAtribuido()));
+                        }while(!servidores.verificaServidorAtivoParaAtribuir(servidores.getIndiceUltimoServidorAtribuido()));
                     }
                     ThreadComunicacao tc = new ThreadComunicacao(dp,ds,servidores, tipo);
                     tc.start();

@@ -461,6 +461,28 @@ public class ComunicacaoServidor implements Utils {
         return  resultado;
     }
 
+    public String getListaMembrosGrupo(int escolha) {
+        String resultado = "";
+        try {
+            out.writeObject(GET_MEMBROS_GRUPO + "," + escolha);
+            out.flush();
+            while(user.getResultadoComando().equals("")){
+                try {
+                Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
     //Contactos
 
     public String listaContactos() {
@@ -582,7 +604,13 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){}
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 resultado = user.getResultadoComando();
                 user.eraseResultadoComando();
@@ -613,7 +641,13 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){}
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 resultado = user.getResultadoComando();
                 user.eraseResultadoComando();
@@ -640,7 +674,13 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(PESQUISA_USER + "," + pesquisa);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();
@@ -658,7 +698,13 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_USERS);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();
@@ -678,7 +724,13 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(msg);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();
@@ -700,7 +752,13 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){}
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 resultado = user.getResultadoComando();
                 user.eraseResultadoComando();
@@ -727,7 +785,13 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_MENSAGENS + "," + user.getUsername());
             out.flush();
 
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();
@@ -744,7 +808,13 @@ public class ComunicacaoServidor implements Utils {
         try {
             out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
             out.flush();
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();
@@ -760,7 +830,13 @@ public class ComunicacaoServidor implements Utils {
         try {
             out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
             out.flush();
-            while(user.getResultadoComando().equals("")){}
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             resultado = user.getResultadoComando();
             user.eraseResultadoComando();

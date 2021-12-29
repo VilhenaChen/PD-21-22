@@ -53,5 +53,5 @@ public interface Utils {
     String NOVO_SERV = "NOVO_SERV";
     String NOVO_CLI = "NOVO_CLI";
     String INFO_PORT = "INFO_PORT";
-
+    String GET_MEMBROS_GRUPO = "GET_MEMBROS_GRUPO";
 }

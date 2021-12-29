@@ -102,8 +102,46 @@ public class ComunicacaoBD implements Utils {
         if(verificaExistenciaUser(new_username)){
             return USERNAME_REPETIDO;
         }
-        String sqlQuery = "UPDATE User SET username='" + new_username + "'WHERE username='" + old_username + "'";
+
+        String sqlQuery = "SELECT name, password FROM `User` WHERE username='" + old_username + "'";
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        String nome = "";
+        String nomeSuplente = "suplente";
+        String password = "";
+        while (resultSet.next()){
+            nome = resultSet.getString("name");
+            password = resultSet.getString("password");
+        }
+        resultSet.close();
+
+        sqlQuery = "INSERT INTO `User` (username, name, password, login) VALUES ('" + new_username + "','" + nomeSuplente + "','" + password + "','" + 1 + "')";
         statement.executeUpdate(sqlQuery);
+
+        sqlQuery = "UPDATE `File` SET sender='" + new_username + "'WHERE sender='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "UPDATE `File` SET user_receiver='" + new_username + "'WHERE user_receiver='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+
+        sqlQuery = "UPDATE `Msg` SET sender='" + new_username + "'WHERE sender='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "UPDATE `Msg` SET user_receiver='" + new_username + "'WHERE user_receiver='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+
+        sqlQuery = "UPDATE `Group` SET admin='" + new_username + "'WHERE admin='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "UPDATE `Joins` SET user='" + new_username + "'WHERE user='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+
+        sqlQuery = "UPDATE `Has_Contact` SET user='" + new_username + "'WHERE user='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "UPDATE `Has_Contact` SET friend='" + new_username + "'WHERE friend='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+
+        sqlQuery = "DELETE FROM `User` WHERE username='" + old_username + "'";
+        statement.executeUpdate(sqlQuery);
+        sqlQuery = "UPDATE `User` SET name='" + nome + "'WHERE username='" + new_username + "'";
+        statement.executeUpdate(sqlQuery);
+
         statement.close();
         return SUCESSO;
     }
@@ -447,23 +485,30 @@ public class ComunicacaoBD implements Utils {
     }
 
     public String listaMembrosGrupos(int idGrupo) throws SQLException {
-        String resultado = "";
+        StringBuilder resultado = new StringBuilder();
         Statement statement = dbConn.createStatement();
         String sqlQuery;
         boolean vazio = true;
-        sqlQuery = "SELECT user FROM `Joins` WHERE accepted='1' AND `group`='" + idGrupo + "'";
+        sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
+        if(resultSet.next()) {
+            resultado.append(resultSet.getString("admin")).append(" -> Admin\n");
+        }
+        else {
+            return EMPTY;
+        }
+        sqlQuery = "SELECT user FROM `Joins` WHERE accepted='1' AND `group`='" + idGrupo + "'";
+        resultSet = statement.executeQuery(sqlQuery);
         while (resultSet.next()) {
             vazio=false;
-            resultado = resultado + resultSet.getString("user") + "\n";
+            resultado.append(resultSet.getString("user")).append("\n");
         }
         resultSet.close();
         statement.close();
         if(vazio){
-            System.out.println("Não existem membros neste grupo!");
             return EMPTY;
         }
-        return resultado;
+        return resultado.toString();
     }
 
     public String listaMembrosGrupoPorAceitar(int idGrupo) throws SQLException {
@@ -481,7 +526,6 @@ public class ComunicacaoBD implements Utils {
         resultSet.close();
         statement.close();
         if(vazio){
-            System.out.println("Não existem membros por aceitar!");
             return EMPTY;
         }
         return resultado;
@@ -907,7 +951,7 @@ public class ComunicacaoBD implements Utils {
         resultSet = statement.executeQuery(sqlQuery);
 
         while (resultSet.next()){
-            grupos.add(resultSet.getInt("group"));
+            grupos.add(resultSet.getInt("idGroup"));
         }
 
         for (Integer i : grupos){

@@ -360,6 +360,16 @@ public class UiTexto implements Utils {
                     else {
                         System.out.println("---- GRUPOS EXISTENTES ----");
                         System.out.println(resultado);
+                        System.out.println("Escolha um grupo: ");
+                        int escolha = scanner.nextInt();
+                        scanner.nextLine();
+                        resultado = cs.getListaMembrosGrupo(escolha);
+                        if(resultado == EMPTY)
+                            System.out.println("A Grupo " + escolha + " nao tem membros");
+                        else {
+                            System.out.println(resultado);
+                        }
+
                     }
                     break;
                 case 4: //Criar um grupo
