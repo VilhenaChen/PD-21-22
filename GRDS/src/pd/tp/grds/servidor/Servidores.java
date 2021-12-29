@@ -12,8 +12,8 @@ import java.util.ArrayList;
 
 public class Servidores {
 
-    private static final int MAX_INATIVIDADE = 30;
-    private static final int MAX_INATIVIDADE_ATRIBUICAO = 10;
+    private static final int MAX_INATIVIDADE = 60;
+    private static final int MAX_INATIVIDADE_ATRIBUICAO = 20;
     private Integer indiceUltimoServidorAtribuido;
     private ArrayList<Servidor> servidores = new ArrayList<>();
 
@@ -145,19 +145,17 @@ public class Servidores {
     public void enviaNovidadeAosServidores(DatagramSocket ds, NovidadeGRDS novidadeGRDS){
         DatagramPacket dp;
         for (Servidor serv : servidores){
-            if(serv.getId()!=novidadeGRDS.getIdServidor()){
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ObjectOutputStream out = new ObjectOutputStream(baos);
-                    out.writeUnshared(novidadeGRDS);
-                    out.flush();
-                    byte[] msgTipoBytes = baos.toByteArray();
-                    InetAddress ip = InetAddress.getByName(serv.ip);
-                    dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.getPorto_serv());
-                    ds.send(dp);
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(baos);
+                out.writeUnshared(novidadeGRDS);
+                out.flush();
+                byte[] msgTipoBytes = baos.toByteArray();
+                InetAddress ip = InetAddress.getByName(serv.ip);
+                dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.getPorto_serv());
+                ds.send(dp);
+            }catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

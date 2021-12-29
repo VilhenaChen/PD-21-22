@@ -650,7 +650,8 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
 
                     if (msgRecebida.startsWith(LOGIN)) {
                         login(out, msgRecebida);
-
+                        ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente = new ThreadEnviaAtualizacoesCliente(out,clientes,dadosUser.get("username"));
+                        threadEnviaAtualizacoesCliente.start();
                     } else {
                         if (msgRecebida.startsWith(REGISTO)) {
                             signIn(out, msgRecebida);

@@ -1,5 +1,8 @@
 package pd.tp.cliente;
 
+import pd.tp.comum.AtualizacaoServidor;
+import pd.tp.comum.NovidadeGRDS;
+
 import java.util.ArrayList;
 
 public class Clientes {
@@ -13,7 +16,7 @@ public class Clientes {
         clientes.add(new Cliente(username));
     }
 
-    public void addNovidadeCli(String username, String novidade){
+    public void addNovidadeCli(String username, NovidadeGRDS novidade){
         for (Cliente cli : clientes){
             if(cli.getUsername().equals(username))
                 cli.addNovidade(novidade);
@@ -27,7 +30,7 @@ public class Clientes {
         }
     }
 
-    public ArrayList<String> getNovidadesCli(String username){
+    public ArrayList<AtualizacaoServidor> getNovidadesCli(String username){
         for (Cliente cli : clientes){
             if(cli.getUsername().equals(username))
                 return cli.getNovidades();

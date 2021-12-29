@@ -1,5 +1,6 @@
 package pd.tp.cliente.ui;
 
+import pd.tp.cliente.threads.ThreadRecebeInformacoesServidor;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
@@ -19,9 +20,11 @@ import java.util.Scanner;
 public class UiTexto implements Utils {
 
     private Scanner scanner = new Scanner(System.in);
-    Utilizador user;
+    private Utilizador user;
     private Socket sCli;
     private ComunicacaoServidor cs;
+
+
 
     public UiTexto(Socket sCli) {
         this.sCli = sCli;
@@ -184,7 +187,7 @@ public class UiTexto implements Utils {
     private boolean RegistoComSucesso(String mensagem) {
         if (mensagem.equals(SUCESSO)) {
             System.out.println("Registo efetuado com sucesso!");
-            user.setLogged(true);
+            user.setLogged(false);
             return true;
         } else {
             if (mensagem.equals(NOME_REPETIDO)) {
@@ -242,7 +245,7 @@ public class UiTexto implements Utils {
                     System.out.println(msg);
                     break;
                 case 2: //Listar msg
-                    resultado = cs.listaMensagens(user);
+                    resultado = cs.listaMensagens();
                     if(resultado.length() == 0)
                         System.out.println("Nao existem mensagens!");
                     else {
@@ -251,7 +254,7 @@ public class UiTexto implements Utils {
                         System.out.println("Escolha uma mensagem: ");
                         int escolha = scanner.nextInt();
                         scanner.nextLine();
-                        resultado = cs.getCorpoMensagem(escolha,user);
+                        resultado = cs.getCorpoMensagem(escolha);
                         if(resultado.length() == 0)
                             System.out.println("A Mensagem " + escolha + " nao existe ou nao e sua");
                         else {
@@ -260,7 +263,7 @@ public class UiTexto implements Utils {
                     }
                     break;
                 case 3: //Eliminar msg historico
-                    resultado = cs.listaMensagensParaEliminar(user);
+                    resultado = cs.listaMensagensParaEliminar();
                     if(resultado.length()==0){
                         System.out.println("ERRO! Não possui mensagens");
                         break;
@@ -269,7 +272,7 @@ public class UiTexto implements Utils {
                     System.out.println("Insira os ids das mensagens que pretende eliminar (separados por virgulas): ");
                     String mensagens = scanner.nextLine();
 
-                    resultado = cs.eliminaMensagens(user,mensagens);
+                    resultado = cs.eliminaMensagens(mensagens);
                     if(resultado.startsWith("ERRO")){
                         System.out.println("Erro! As mensagens seguintes não foram eliminadas por não estarem na sua lista de mensagens: ");
                         String[] arrayFalhas = resultado.split(",");
@@ -326,7 +329,7 @@ public class UiTexto implements Utils {
                     System.out.println("Insira o ID do grupo ao qual pretende aderir: ");
                     idGrupo = scanner.nextInt();
                     scanner.nextLine();
-                    resultado = cs.adereAGrupo(user, idGrupo);
+                    resultado = cs.adereAGrupo(idGrupo);
                     if(resultado.equals(GRUPO_INEXISTENTE)){
                         System.out.println("Erro! Não existe nenhum grupo com o id inserido");
                     }
@@ -340,7 +343,7 @@ public class UiTexto implements Utils {
                     System.out.println("Insira o ID do grupo do qual pretende sair: ");
                     idGrupo = scanner.nextInt();
                     scanner.nextLine();
-                    resultado = cs.saiDeGrupo(user, idGrupo);
+                    resultado = cs.saiDeGrupo(idGrupo);
                     if(resultado.equals(GRUPO_INEXISTENTE)){
                         System.out.println("ERRO!! Nao existe nenhum grupo com o ID inserido");
                     }
@@ -362,7 +365,7 @@ public class UiTexto implements Utils {
                 case 4: //Criar um grupo
                     System.out.println("Insira nome do Grupo: ");
                     String nome = scanner.nextLine();
-                    resultado = cs.criaGrupo(user, nome);
+                    resultado = cs.criaGrupo(nome);
                     if(resultado.equals(SUCESSO)) {
                         System.out.println("Grupo criado com sucesso");
                     }
@@ -385,7 +388,7 @@ public class UiTexto implements Utils {
     private void trataMenuGruposAdmin() {
         int op = 0;
         int idGrupo = -1;
-        String resultado = cs.listaGruposAdmin(user);
+        String resultado = cs.listaGruposAdmin();
         if(resultado.isEmpty()) {
             System.out.println("O Utilizador nao tem grupos administrados");
             return;
@@ -543,7 +546,7 @@ public class UiTexto implements Utils {
             scanner.nextLine();
             switch (op) {
                 case 1: //Listar Contactos
-                    resultado = cs.listaContactos(user);
+                    resultado = cs.listaContactos();
                     if(resultado.length() == 0)
                         System.out.println("Nao tem contactos");
                     else {
@@ -552,7 +555,7 @@ public class UiTexto implements Utils {
                     }
                     break;
                 case 2: //Eliminar contacto
-                    resultado = cs.listaContactos(user);
+                    resultado = cs.listaContactos();
                     if(resultado.length()==0) {
                         System.out.println("Não possui contactos");
                         break;
@@ -561,7 +564,7 @@ public class UiTexto implements Utils {
                     System.out.println(resultado);
                     System.out.println("Insira o username dos contactos que pretende eliminar (separados por virgulas): ");
                     String contactos = scanner.nextLine();
-                    resultado = cs.eliminaContactos(user,contactos);
+                    resultado = cs.eliminaContactos(contactos);
                     if(resultado.startsWith("ERRO")){
                         System.out.println("Erro! Os usernames seguintes não foram eliminados por não estarem na lista de contactos: ");
                         String[] arrayFalhas = resultado.split(",");
@@ -597,7 +600,7 @@ public class UiTexto implements Utils {
                 case 5: //Adicionar Contacto
                     System.out.println("Insira o username do user que pretende adicionar aos contacto: ");
                     String friend = scanner.nextLine();
-                    resultado = cs.adicionaContacto(user, friend);
+                    resultado = cs.adicionaContacto(friend);
                     if(resultado.equals(SUCESSO))
                         System.out.println("Pedido de contacto enviado com sucesso para o user '" + friend +"'");
                     else if(resultado.equals(UTILIZADOR_INEXISTENTE))
@@ -607,7 +610,7 @@ public class UiTexto implements Utils {
                     break;
                 case 6: //Aceitar ou rejeitar contactos
 
-                    resultado = cs.listaContactosPorAceitar(user);
+                    resultado = cs.listaContactosPorAceitar();
                     if(resultado.length()==0) {
                         System.out.println("Não existem contactos por aceitar");
                         break;
@@ -630,7 +633,7 @@ public class UiTexto implements Utils {
 
                         System.out.println("Insira o username dos contactos que pretende aceitar (separados por virgulas): ");
                         String usernames = scanner.nextLine();
-                        resultado = cs.aceitaContactos(user,usernames);
+                        resultado = cs.aceitaContactos(usernames);
                         if(resultado.startsWith("ERRO")){
                             System.out.println("Erro! Os usernames seguintes não foram aceites por não estarem na lista de contactos a aceitar: ");
                             String[] arrayFalhas = resultado.split(",");
@@ -645,7 +648,7 @@ public class UiTexto implements Utils {
                     else {
                         System.out.println("Insira o username dos contactos que pretende rejeitar (separados por virgulas): ");
                         String usernames = scanner.nextLine();
-                        resultado = cs.rejeitaContactos(user,usernames);
+                        resultado = cs.rejeitaContactos(usernames);
                         if(resultado.startsWith("ERRO")){
                             System.out.println("Erro! Os usernames seguintes não foram rejeitados por não estarem na lista de contactos a rejeitar: ");
                             String[] arrayFalhas = resultado.split(",");
@@ -684,7 +687,7 @@ public class UiTexto implements Utils {
                 case 2: //Modificar nome
                     System.out.println("Insira o novo nome: ");
                     String nome = scanner.nextLine();
-                    resultado = cs.trocaNome(user, nome);
+                    resultado = cs.trocaNome(nome);
                     if(resultado.equals(SUCESSO)){
                         user.setNome(nome);
                         System.out.println("Nome modificado com sucesso");
@@ -696,7 +699,7 @@ public class UiTexto implements Utils {
                 case 3: //Modificar username
                     System.out.println("Insira o novo username: ");
                     String username = scanner.nextLine();
-                    resultado = cs.trocaUsername(user, username);
+                    resultado = cs.trocaUsername(username);
                     if(resultado.equals(SUCESSO)){
                         user.setUsername(username);
                         System.out.println("Username modificado com sucesso");
@@ -708,7 +711,7 @@ public class UiTexto implements Utils {
                 case 4: //Modificar Password
                     System.out.println("Insira a nova password: ");
                     String password = scanner.nextLine();
-                    resultado = cs.trocaPassword(user, password);
+                    resultado = cs.trocaPassword(password);
                     if(resultado.equals(SUCESSO)){
                         user.setPassword(password);
                         System.out.println("Password modificada com sucesso");
@@ -778,7 +781,15 @@ public class UiTexto implements Utils {
                         uiLogin();
                         if(LoginComSucesso(cs.efetuaLogin(user))) {
                             System.out.println("Bem-vindo " + user.getUsername());
+                            ThreadRecebeInformacoesServidor threadRecebeInformacoesServidor = new ThreadRecebeInformacoesServidor(in,user);
+                            threadRecebeInformacoesServidor.start();
+                            cs.setUser(user);
                             exit = menuSecundario();
+                            try {
+                                threadRecebeInformacoesServidor.join();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
                         break;
                     case 0:
@@ -789,7 +800,7 @@ public class UiTexto implements Utils {
                         break;
                 }
         }
-        cs.logout(user);
+        cs.logout();
         out.close();
         in.close();
         sCli.close();

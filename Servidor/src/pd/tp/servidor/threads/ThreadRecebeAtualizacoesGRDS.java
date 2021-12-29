@@ -153,7 +153,7 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                 ArrayList<String> afetados = novidadeGRDS.getUsersAfetados();
                 if(afetados!=null){
                     for (String afetado : afetados){
-                        clientes.addNovidadeCli(afetado,stringBuilder.toString());
+                        clientes.addNovidadeCli(afetado,novidadeGRDS);
                     }
                 }
             }catch (IOException | ClassNotFoundException e) {

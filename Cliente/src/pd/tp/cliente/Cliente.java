@@ -1,6 +1,7 @@
 package pd.tp.cliente;
 
 import pd.tp.cliente.ui.UiTexto;
+import pd.tp.comum.AtualizacaoServidor;
 import pd.tp.comum.Utils;
 
 import java.io.*;
@@ -8,6 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Cliente implements Utils{

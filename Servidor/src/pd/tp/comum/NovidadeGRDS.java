@@ -16,7 +16,7 @@ public class NovidadeGRDS implements Serializable {
     private String friend;
     private String receiver;
     private int idMsg;
-    private ArrayList<String> usersAfetados;
+    private ArrayList<String> usersAfetados = new ArrayList<>();
     private int idServidor;
 
     public int getIdServidor() {
@@ -44,7 +44,10 @@ public class NovidadeGRDS implements Serializable {
     }
 
     public boolean verificaUtilizadorRepetido(String username){
-        for (String user : usersAfetados){
+        if(usersAfetados.isEmpty()) {
+            return false;
+        }
+        for (String user : usersAfetados) {
             if (user.equals(username)){
                 return true;
             }

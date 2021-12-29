@@ -1,23 +1,27 @@
 package pd.tp.cliente;
 
+import pd.tp.comum.Utils;
 import java.io.Serializable;
 
-public class Utilizador implements Serializable {
+public class Utilizador implements Serializable, Utils {
     private String username;
     private String nome;
     private String password;
     private Boolean logged;
+    private String resultadoComando;
 
     public Utilizador(String username, String password, String nome) {
         this.username = username;
         this.password = password;
         this.nome = nome;
         this.logged = false;
+        this.resultadoComando = "";
     }
 
     public Utilizador(String username, String password) {
         this.username = username;
         this.password = password;
+        this.resultadoComando = "";
     }
 
     public String getUsername() {
@@ -52,12 +56,24 @@ public class Utilizador implements Serializable {
         this.logged = logged;
     }
 
+    public String getResultadoComando() {
+        return this.resultadoComando;
+    }
+
+    public void setResultadoComando(String resultadoComando) {
+        this.resultadoComando = resultadoComando;
+    }
+
+    public void eraseResultadoComando(){
+        this.resultadoComando="";
+    }
+
     @Override
     public String toString() {
         return "Utilizador{" +
                 "username='" + username + '\'' +
                 ", nome='" + nome + '\'' +
                 ", password='" + password + '\'' +
-                '}';
+                "'} '" + resultadoComando;
     }
 }

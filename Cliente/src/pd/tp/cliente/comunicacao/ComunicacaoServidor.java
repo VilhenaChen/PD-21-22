@@ -13,6 +13,7 @@ public class ComunicacaoServidor implements Utils {
     Socket sCli;
     ObjectOutputStream out;
     ObjectInputStream in;
+    Utilizador user;
 
     public ComunicacaoServidor(Socket sCli, ObjectInputStream in, ObjectOutputStream out) {
         this.sCli = sCli;
@@ -20,10 +21,15 @@ public class ComunicacaoServidor implements Utils {
         this.out = out;
     }
 
-    public String efetuaLogin(Utilizador user) { //Manda o Login do User ao Servidor
+    public void setUser(Utilizador user){
+        this.user = user;
+        System.out.println(user.toString());
+    }
+
+    public String efetuaLogin(Utilizador utilizador) { //Manda o Login do User ao Servidor
         String resultado = "";
         try {
-            out.writeObject(LOGIN+"," + user.getUsername() + "," + user.getPassword());
+            out.writeObject(LOGIN+"," + utilizador.getUsername() + "," + utilizador.getPassword());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -34,10 +40,10 @@ public class ComunicacaoServidor implements Utils {
         return resultado;
     }
 
-    public String efetuaRegisto(Utilizador user) { //Manda o Registo do User ao Servidor
+    public String efetuaRegisto(Utilizador utilizador) { //Manda o Registo do User ao Servidor
         String resultado = "";
         try {
-            out.writeUnshared(REGISTO + "," + user.getUsername() +"," + user.getPassword() + "," + user.getNome());
+            out.writeUnshared(REGISTO + "," + utilizador.getUsername() +"," + utilizador.getPassword() + "," + utilizador.getNome());
             out.flush();
 
             resultado = (String) in.readObject();
@@ -48,7 +54,7 @@ public class ComunicacaoServidor implements Utils {
         return resultado;
     }
 
-    public void logout(Utilizador user){
+    public void logout(){
         try {
             out.writeObject(LOGOUT + "," + user.getUsername());
             out.flush();
@@ -57,89 +63,143 @@ public class ComunicacaoServidor implements Utils {
         }
     }
 
-    public String trocaNome(Utilizador user, String nome) {
+    public String trocaNome(String nome) {
         String resultado = "";
         try {
             out.writeObject(UPDATE_NAME + "," + user.getUsername() + "," + nome );
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch(IOException|ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch(IOException e) {
             e.printStackTrace();
         }
         return resultado;
     }
 
-    public String trocaPassword(Utilizador user, String password) {
+    public String trocaPassword(String password) {
         String resultado = "";
         try {
             out.writeObject(UPDATE_PASSWORD + "," + user.getUsername() + "," + password );
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch(IOException|ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch(IOException e) {
             e.printStackTrace();
         }
         return resultado;
     }
 
-    public String trocaUsername(Utilizador user, String username) {
+    public String trocaUsername(String username) {
         String resultado = "";
         try {
             out.writeObject(UPDATE_USERNAME + "," + user.getUsername() + "," + username );
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch(IOException|ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch(IOException e) {
             e.printStackTrace();
         }
         return resultado;
     }
 
     //GRUPOS
-    public String criaGrupo(Utilizador user, String nome) {
+    public String criaGrupo(String nome) {
         String resultado = "";
         try {
             out.writeObject(NOVO_GRUPO + "," + user.getUsername() + "," + nome);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException  e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String adereAGrupo(Utilizador user, int idGrupo){
+    public String adereAGrupo(int idGrupo){
         String resultado = "";
         try {
             out.writeObject(ADERE_A_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String saiDeGrupo(Utilizador user, int idGrupo)
+    public String saiDeGrupo(int idGrupo)
     {
         String resultado = "";
         try {
             out.writeObject(SAI_DE_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -152,9 +212,18 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(UPDATE_NOME_GRUPO + "," + idGrupo + "," + novo_nome);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -167,24 +236,42 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_GRUPOS);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String listaGruposAdmin(Utilizador user) {
+    public String listaGruposAdmin() {
         String resultado = "";
         try {
             out.writeObject(LISTA_GRUPOS_ADMIN + "," + user.getUsername());
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -197,9 +284,18 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_TODOS_MEMBROS + "," + idGrupo);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -212,9 +308,18 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_MEMBROS_GRUPO_POR_ACEITAR + "," + idGrupo);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -231,12 +336,22 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ACEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
+
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -259,12 +374,21 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(REJEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -288,12 +412,21 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(KICK_MEMBRO_GRUPO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -312,8 +445,17 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(ELIMINA_GRUPO + "," + idGrupo);
             out.flush();
 
-            resultado = (String) in.readObject();
-        }catch (IOException | ClassNotFoundException e){
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+        }catch (IOException e){
             e.printStackTrace();
         }
         return  resultado;
@@ -321,30 +463,48 @@ public class ComunicacaoServidor implements Utils {
 
     //Contactos
 
-    public String listaContactos(Utilizador user) {
+    public String listaContactos() {
         String resultado = "";
         try {
             out.writeObject(LISTA_CONTACTOS + "," + user.getUsername());
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String listaContactosPorAceitar(Utilizador user) {
+    public String listaContactosPorAceitar() {
         String resultado = "";
         try {
             out.writeObject(LISTA_POR_ACEITAR_CONTACTOS + "," + user.getUsername());
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -352,22 +512,30 @@ public class ComunicacaoServidor implements Utils {
     }
 
 
-    public String adicionaContacto(Utilizador user, String friend) {
+    public String adicionaContacto(String friend) {
         String resultado = "";
         try {
             out.writeObject(NOVO_CONTACTO + "," + user.getUsername() + "," +friend);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
 
-        }catch (IOException | ClassNotFoundException e) {
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String aceitaContactos(Utilizador user, String usernames){
+    public String aceitaContactos(String usernames){
         String resultado = "";
         String[] array = usernames.split(",");
         String falhas = "";
@@ -377,12 +545,21 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ACEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -395,7 +572,7 @@ public class ComunicacaoServidor implements Utils {
         }
     }
 
-    public String rejeitaContactos(Utilizador user, String usernames){
+    public String rejeitaContactos(String usernames){
         String resultado = "";
         String[] array = usernames.split(",");
         String falhas = "";
@@ -405,12 +582,15 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){}
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -423,7 +603,7 @@ public class ComunicacaoServidor implements Utils {
         }
     }
 
-    public String eliminaContactos(Utilizador user, String usernames){
+    public String eliminaContactos(String usernames){
         String resultado = "";
         String[] array = usernames.split(",");
         String falhas = "";
@@ -433,12 +613,15 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){}
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -457,9 +640,12 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(PESQUISA_USER + "," + pesquisa);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){}
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -472,9 +658,12 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_USERS);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){}
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -489,16 +678,19 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(msg);
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){}
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String eliminaMensagens(Utilizador user, String mensagens){
+    public String eliminaMensagens(String mensagens){
         String resultado = "";
         String[] array = mensagens.split(",");
         String falhas = "";
@@ -508,12 +700,15 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
                 out.flush();
 
-                resultado = (String) in.readObject();
+                while(user.getResultadoComando().equals("")){}
+
+                resultado = user.getResultadoComando();
+                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
 
-            }catch (IOException | ClassNotFoundException e) {
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -526,41 +721,50 @@ public class ComunicacaoServidor implements Utils {
         }
     }
 
-    public String listaMensagens(Utilizador user){
+    public String listaMensagens(){
         String resultado = "";
         try {
             out.writeObject(LISTA_MENSAGENS + "," + user.getUsername());
             out.flush();
 
-            resultado = (String) in.readObject();
+            while(user.getResultadoComando().equals("")){}
 
-        }catch (IOException | ClassNotFoundException e) {
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String listaMensagensParaEliminar(Utilizador user){
+    public String listaMensagensParaEliminar(){
         String resultado = "";
         try {
             out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
             out.flush();
-            resultado = (String) in.readObject();
-        }catch (IOException | ClassNotFoundException e) {
+            while(user.getResultadoComando().equals("")){}
+
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
         return resultado;
     }
 
-    public String getCorpoMensagem(int escolha, Utilizador user) {
+    public String getCorpoMensagem(int escolha) {
         String resultado = "";
         try {
             out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
             out.flush();
-            resultado = (String) in.readObject();
-        }catch (IOException | ClassNotFoundException e) {
+            while(user.getResultadoComando().equals("")){}
+
+            resultado = user.getResultadoComando();
+            user.eraseResultadoComando();
+        }catch (IOException e) {
             e.printStackTrace();
         }
 
