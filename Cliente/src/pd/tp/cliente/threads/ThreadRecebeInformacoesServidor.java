@@ -24,7 +24,9 @@ public class ThreadRecebeInformacoesServidor extends Thread{
             try {
                 objeto = in.readObject();
                 if(objeto instanceof String){
-                    user.setResultadoComando((String) objeto);
+                    synchronized (user){
+                        user.setResultadoComando((String) objeto);
+                    }
                 }
                 else{
                     AtualizacaoServidor atualizacaoServidor = (AtualizacaoServidor) objeto;

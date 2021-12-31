@@ -69,16 +69,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(UPDATE_NAME + "," + user.getUsername() + "," + nome );
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -92,16 +96,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(UPDATE_PASSWORD + "," + user.getUsername() + "," + password );
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -115,16 +123,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(UPDATE_USERNAME + "," + user.getUsername() + "," + username );
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -139,16 +151,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(NOVO_GRUPO + "," + user.getUsername() + "," + nome);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException  e) {
             e.printStackTrace();
@@ -163,16 +179,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(ADERE_A_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -188,16 +208,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(SAI_DE_GRUPO + "," + user.getUsername() + "," + idGrupo);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -212,16 +236,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(UPDATE_NOME_GRUPO + "," + idGrupo + "," + novo_nome);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -236,16 +264,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_GRUPOS);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -260,16 +292,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_GRUPOS_ADMIN + "," + user.getUsername());
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -284,16 +320,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_TODOS_MEMBROS + "," + idGrupo);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -308,16 +348,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_MEMBROS_GRUPO_POR_ACEITAR + "," + idGrupo);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -336,16 +380,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ACEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
 
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -374,16 +422,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(REJEITA_MEMBRO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -412,16 +464,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(KICK_MEMBRO_GRUPO + "," + idGrupo + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -445,16 +501,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(ELIMINA_GRUPO + "," + idGrupo);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -466,16 +526,20 @@ public class ComunicacaoServidor implements Utils {
         try {
             out.writeObject(GET_MEMBROS_GRUPO + "," + escolha);
             out.flush();
-            while(user.getResultadoComando().equals("")){
-                try {
-                Thread.sleep(1000);
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -491,16 +555,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_CONTACTOS + "," + user.getUsername());
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -515,16 +583,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_POR_ACEITAR_CONTACTOS + "," + user.getUsername());
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -540,15 +612,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(NOVO_CONTACTO + "," + user.getUsername() + "," +friend);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -567,16 +644,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ACEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -604,16 +685,19 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
+                    }  /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -641,16 +725,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -674,16 +762,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(PESQUISA_USER + "," + pesquisa);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -698,16 +790,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_USERS);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -724,16 +820,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(msg);
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -752,16 +852,20 @@ public class ComunicacaoServidor implements Utils {
                 out.writeObject(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
                 out.flush();
 
-                while(user.getResultadoComando().equals("")){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                while(true){
+                    synchronized (user){
+                        if(!user.getResultadoComando().equals("")){
+                            resultado = user.getResultadoComando();
+                            user.eraseResultadoComando();
+                            break;
+                        }
                     }
+                /*try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
                 }
-
-                resultado = user.getResultadoComando();
-                user.eraseResultadoComando();
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
                 }
@@ -785,16 +889,20 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_MENSAGENS + "," + user.getUsername());
             out.flush();
 
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
 
         }catch (IOException e) {
             e.printStackTrace();
@@ -808,16 +916,20 @@ public class ComunicacaoServidor implements Utils {
         try {
             out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
             out.flush();
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -830,16 +942,20 @@ public class ComunicacaoServidor implements Utils {
         try {
             out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
             out.flush();
-            while(user.getResultadoComando().equals("")){
-                try {
+            while(true){
+                synchronized (user){
+                    if(!user.getResultadoComando().equals("")){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        break;
+                    }
+                }
+                /*try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
-
-            resultado = user.getResultadoComando();
-            user.eraseResultadoComando();
         }catch (IOException e) {
             e.printStackTrace();
         }
