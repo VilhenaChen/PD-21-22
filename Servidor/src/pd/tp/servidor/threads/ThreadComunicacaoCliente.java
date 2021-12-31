@@ -791,8 +791,7 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                         }
                     }
                 }
-            }while (!msgRecebida.equals("LOGOUT"));
-
+            }while (!msgRecebida.startsWith("LOGOUT"));
             logoutUser(msgRecebida);
             out.close();
             in.close();

@@ -31,7 +31,8 @@ public class ThreadRecebeInformacoesServidor extends Thread{
                     System.out.println(atualizacaoServidor.toString());
                 }
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                break;
+                //e.printStackTrace();
             }
         }
     }

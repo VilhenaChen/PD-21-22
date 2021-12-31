@@ -795,14 +795,10 @@ public class UiTexto implements Utils {
                             threadRecebeInformacoesServidor.start();
                             cs.setUser(user);
                             exit = menuSecundario();
-                            try {
-                                threadRecebeInformacoesServidor.join();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                         }
                         break;
                     case 0:
+
                         exit = true;
                         break;
                     default:

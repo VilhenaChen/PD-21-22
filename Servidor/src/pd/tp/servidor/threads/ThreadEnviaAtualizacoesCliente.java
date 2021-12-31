@@ -23,7 +23,7 @@ public class ThreadEnviaAtualizacoesCliente extends Thread{
     public void run() {
         while (true){
             atualizacoesServidor = clientes.getNovidadesCli(username);
-            if(!atualizacoesServidor.isEmpty()){
+            if(atualizacoesServidor == null){
                 for (AtualizacaoServidor at : atualizacoesServidor){
                     try {
                         out.writeUnshared(at);
