@@ -78,7 +78,7 @@ public class ComunicacaoBD implements Utils {
                 if(verificaNomeUserExistente(name)){
                     return NOME_REPETIDO;
                 }
-                String sqlQuery = "INSERT INTO User (username, name, password, login) VALUES ('" + username + "','" + name + "','" + password + "','" + logado + "')";
+                String sqlQuery = "INSERT INTO User (username, name, password, login, lastInteraction) VALUES ('" + username + "','" + name + "','" + password + "','" + logado + "', NOW() )";
                 statement.executeUpdate(sqlQuery);
                 statement.close();
                 dbConn.commit();
@@ -1458,6 +1458,30 @@ public class ComunicacaoBD implements Utils {
         }while (!worked);
 
     }
+    public void setNewInteraction(String username) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "UPDATE `User` SET lastInteraction=NOW() WHERE username='" + username + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
+    }
 
-
+    public ArrayList<String> verificaUsersInativos() throws SQLException {
+        ArrayList<String> usersInativos = new ArrayList<>();
+        try {
+            dbConn.setAutoCommit(false);
+            Statement statement = dbConn.createStatement();
+            String sqlQuery = "SELECT username FROM `User` WHERE TIMESTAMPDIFF(SECOND,lastInteraction,NOW())>=30 AND login=1";
+            ResultSet resultSet = statement.executeQuery(sqlQuery);
+            while (resultSet.next()){
+                usersInativos.add(resultSet.getString("username"));
+            }
+            sqlQuery = "UPDATE `User` SET login=0 WHERE TIMESTAMPDIFF(SECOND,lastInteraction,NOW())>=30 AND login=1";
+            statement.executeUpdate(sqlQuery);
+            statement.close();
+            dbConn.commit();
+        }catch (Exception e){
+            dbConn.rollback();
+        }
+        return usersInativos;
+    }
  }

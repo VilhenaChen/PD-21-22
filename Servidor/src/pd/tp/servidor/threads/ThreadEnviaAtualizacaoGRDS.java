@@ -33,9 +33,11 @@ public class ThreadEnviaAtualizacaoGRDS extends Thread{
             out.flush();
             byte[] msgBytes = baos.toByteArray();
 
-            dp.setData(msgBytes);
-            dp.setLength(msgBytes.length);
-            ds.send(dp);
+            synchronized (dp) {
+                dp.setData(msgBytes);
+                dp.setLength(msgBytes.length);
+                ds.send(dp);
+            }
         }catch (IOException e) {
             e.printStackTrace();
         }

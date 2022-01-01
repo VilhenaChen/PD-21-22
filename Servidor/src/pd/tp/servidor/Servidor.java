@@ -6,6 +6,7 @@ import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.ThreadComunicacaoCliente;
 import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
 import pd.tp.servidor.threads.ThreadRecebeAtualizacoesGRDS;
+import pd.tp.servidor.threads.ThreadVerificaClientesAtivosBD;
 
 import java.io.*;
 import java.net.*;
@@ -21,6 +22,7 @@ public class Servidor implements Utils {
     private DatagramPacket dp;
     private ServerSocket ss;
     private Clientes clientes;
+    private ThreadInformaPortoGRDS informaPortoThread;
 
     private void InicioGRDS() throws IOException, ClassNotFoundException {
         String msgTipo = NOVO_SERV + "," + ss.getLocalPort();
@@ -124,17 +126,28 @@ public class Servidor implements Utils {
         ComunicacaoBD comBD = new ComunicacaoBD();
 
         servidor.InicioGRDS();
-        ThreadInformaPortoGRDS informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss, servidor.ID_SERVIDOR);
-        Timer timer = new Timer("InformaPorto");
-        timer.schedule(informaPortoThread, 0, 20000); //Mudar para 20secondos
+        servidor.informaPortoThread = new ThreadInformaPortoGRDS(servidor.ds, servidor.dp, servidor.ss, servidor.ID_SERVIDOR);
+        Timer timerInformaPorto = new Timer("InformaPorto");
+        timerInformaPorto.schedule(servidor.informaPortoThread, 0, 20000); //Mudar para 20secondos
         servidor.clientes = new Clientes();
         ThreadRecebeAtualizacoesGRDS threadRecebeAtualizacoesGRDS = new ThreadRecebeAtualizacoesGRDS(servidor.ds,servidor.clientes);
         threadRecebeAtualizacoesGRDS.start();
+        ThreadVerificaClientesAtivosBD threadVerificaClientesAtivosBD = new ThreadVerificaClientesAtivosBD(comBD,servidor.dp,servidor.ds, servidor.ID_SERVIDOR);
+        Timer timerVerificaAtividade = new Timer("VerifyActive");
+        timerVerificaAtividade.schedule(threadVerificaClientesAtivosBD, 0, 1000);
         while(true) {
             Socket sCli = servidor.ss.accept();
             ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);
             tc.start();
         }
-
+        //        try {
+        //            threadRecebeAtualizacoesGRDS.join();
+        //            threadVerificaClientesAtivosBD.cancel();
+        //            timerVerificaAtividade.cancel();
+        //            servidor.informaPortoThread.cancel();
+        //            timerInformaPorto.cancel();
+        //        } catch (InterruptedException e) {
+        //            e.printStackTrace();
+        //        }
     }
 }

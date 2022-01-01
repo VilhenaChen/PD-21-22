@@ -184,6 +184,11 @@ public class AtualizacaoServidor implements Serializable, Utils{
                                                                                     if(tipoMsg.equals(ELIMINA_MENSAGEM)){
                                                                                         stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" apagou a mensagem ").append(idMsg).append("!");
                                                                                     }
+                                                                                    else {
+                                                                                        if (tipoMsg.equals(UTILIZADORES_INATIVOS)){
+                                                                                            stringBuilder.append("NOTIFICAÇÃO: Foi dado como desconectado por inatividade!");
+                                                                                        }
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         }

@@ -19,15 +19,17 @@ public class GRDS {
     private Scanner scanner;
     private MulticastSocket ms;
     private InetSocketAddress isa;
-    NetworkInterface ni;
+    private NetworkInterface ni;
+    private ThreadHeartbeatServidores threadHeartbeatServidores;
+    private Timer timer;
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         GRDS grds = new GRDS();
         Servidores servidores = new Servidores();
         DatagramSocket ds = new DatagramSocket(PORTO);
         System.out.println("---- GRDS INICIADO ----");
-        ThreadHeartbeatServidores informaPortoThread = new ThreadHeartbeatServidores(servidores);
-        Timer timer = new Timer("StartHeartbeat");
-        timer.schedule(informaPortoThread, 0, 1000); //Mudar para 20secondos
+        grds.threadHeartbeatServidores = new ThreadHeartbeatServidores(servidores);
+        grds.timer = new Timer("VerifyHeartbeat");
+        grds.timer.schedule(grds.threadHeartbeatServidores, 0, 1000);
         ThreadIniciaComunicacao threadIniciaComunicacao = new ThreadIniciaComunicacao(servidores,ds);
         threadIniciaComunicacao.start();
         grds.IniciaThreadMulticast();
@@ -42,6 +44,8 @@ public class GRDS {
         try {
             threadIniciaComunicacao.join();
             grds.threadMulticastServidores.join();
+            grds.threadHeartbeatServidores.cancel();
+            grds.timer.cancel();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

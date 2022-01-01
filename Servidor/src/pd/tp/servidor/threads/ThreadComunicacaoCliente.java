@@ -14,6 +14,7 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Timer;
 
 public class ThreadComunicacaoCliente extends Thread implements Utils {
     private Socket sCli;
@@ -23,6 +24,8 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     DatagramSocket ds;
     DatagramPacket dp;
     ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente;
+    ThreadVerificaClientesAtivosBD threadVerificaClientesAtivosBD;
+    Timer timer;
     int id;
 
     public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes) {
@@ -613,6 +616,8 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         }
     }
 
+
+
     private void recebeMsg(ObjectOutputStream out, Mensagem msg) {
         try {
             NovidadeGRDS novidade = new NovidadeGRDS();
@@ -703,6 +708,15 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         }
     }
 
+    private void novaInteracao(){
+        try {
+            comBD.setNewInteraction(dadosUser.get("username"));
+            //System.out.println("Atualizei a ultima interação com o cliente " + dadosUser.get("username"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
         dadosUser = new HashMap<>();
@@ -726,100 +740,133 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                         threadEnviaAtualizacoesCliente.start();
                     } else {
                         if (msgRecebida.startsWith(REGISTO)) {
+                            novaInteracao();
                             signIn(out, msgRecebida);
                         } else {
                             if (msgRecebida.startsWith(UPDATE_NAME)) {
+                                novaInteracao();
                                 updateName(out, msgRecebida);
                             } else {
                                 if (msgRecebida.startsWith(UPDATE_USERNAME)) {
+                                    novaInteracao();
                                     updateUsername(out, msgRecebida);
                                 } else {
                                     if (msgRecebida.startsWith(UPDATE_PASSWORD)) {
+                                        novaInteracao();
                                         updatePassword(out, msgRecebida);
                                     } else {
                                         if (msgRecebida.startsWith(NOVO_GRUPO)) {
+                                            novaInteracao();
                                             criaGrupo(out, msgRecebida);
                                         } else {
                                             if (msgRecebida.startsWith(LISTA_GRUPOS_ADMIN)) {
+                                                novaInteracao();
                                                 listaGruposAdmin(out, msgRecebida);
                                             } else {
                                                 if (msgRecebida.startsWith(LISTA_GRUPOS)) {
+                                                    novaInteracao();
                                                     listaGrupos(out, msgRecebida);
                                                 } else {
                                                     if (msgRecebida.startsWith(ADERE_A_GRUPO)) {
+                                                        novaInteracao();
                                                         adereAGrupo(out, msgRecebida);
                                                     } else {
                                                         if (msgRecebida.startsWith(SAI_DE_GRUPO)) {
+                                                            novaInteracao();
                                                             saiDeGrupo(out, msgRecebida);
                                                         } else {
                                                             if (msgRecebida.startsWith(KICK_MEMBRO_GRUPO)) {
+                                                                novaInteracao();
                                                                 excluiMembroGrupo(out, msgRecebida);
                                                             } else {
                                                                 if (msgRecebida.startsWith(LISTA_MEMBROS_GRUPO_POR_ACEITAR)) {
+                                                                    novaInteracao();
                                                                     listaMembrosGrupoPorAceitar(out, msgRecebida);
                                                                 } else {
                                                                     if (msgRecebida.startsWith(ACEITA_MEMBRO)) {
+                                                                        novaInteracao();
                                                                         aceitaMembro(out, msgRecebida);
                                                                     } else {
                                                                         if (msgRecebida.startsWith(UPDATE_NOME_GRUPO)) {
+                                                                            novaInteracao();
                                                                             alteraNomeGrupo(out, msgRecebida);
                                                                         } else {
                                                                             if (msgRecebida.startsWith(ELIMINA_GRUPO)) {
+                                                                                novaInteracao();
                                                                                 eliminaGrupo(out, msgRecebida);
                                                                             } else {
                                                                                 if (msgRecebida.startsWith(NOVO_CONTACTO)) {
+                                                                                    novaInteracao();
                                                                                     novoContacto(out, msgRecebida);
                                                                                 } else {
                                                                                     if (msgRecebida.startsWith(ACEITA_CONTACTO)) {
+                                                                                        novaInteracao();
                                                                                         aceitaContacto(out, msgRecebida);
                                                                                     } else {
                                                                                         if (msgRecebida.startsWith(LISTA_CONTACTOS)) {
+                                                                                            novaInteracao();
                                                                                             listaContactos(out, msgRecebida);
                                                                                         } else {
                                                                                             if (msgRecebida.startsWith(LISTA_POR_ACEITAR_CONTACTOS)) {
+                                                                                                novaInteracao();
                                                                                                 listaContactosPorAceitar(out, msgRecebida);
                                                                                             } else {
                                                                                                 if (msgRecebida.startsWith(ELIMINA_CONTACTO)) {
+                                                                                                    novaInteracao();
                                                                                                     //Eliminar contacto e o historico de troca de msgs e ficheiros entre eles
                                                                                                     eliminaContacto(out, msgRecebida);
                                                                                                 } else {
                                                                                                     if (msgRecebida.startsWith(PESQUISA_USER)) {
+                                                                                                        novaInteracao();
                                                                                                         pesquisaUsers(out, msgRecebida);
                                                                                                     } else {
                                                                                                         if (msgRecebida.startsWith(LISTA_USERS)) {
+                                                                                                            novaInteracao();
                                                                                                             listaUsers(out, msgRecebida);
                                                                                                         } else {
                                                                                                             if (msgRecebida.startsWith(LISTA_TODOS_MEMBROS)) {
+                                                                                                                novaInteracao();
                                                                                                                 listaMembrosGrupo(out, msgRecebida);
                                                                                                             }
                                                                                                             else{
                                                                                                                 if(msgRecebida.startsWith(ELIMINA_MENSAGEM)){
+                                                                                                                    novaInteracao();
                                                                                                                     eliminaMensagem(out,msgRecebida);
                                                                                                                 }
                                                                                                                 else {
                                                                                                                     if(msgRecebida.startsWith(LISTA_MENSAGENS)) {
+                                                                                                                        novaInteracao();
                                                                                                                         listaMensagens(out, msgRecebida);
                                                                                                                     }
                                                                                                                     else{
                                                                                                                         if(msgRecebida.startsWith(LISTA_PARA_ELIMINAR_MSG)){
+                                                                                                                            novaInteracao();
                                                                                                                             listaMensagensParaEliminar(out,msgRecebida);
                                                                                                                         }
                                                                                                                         else{
                                                                                                                             if(msgRecebida.startsWith(GET_CORPO)){
+                                                                                                                                novaInteracao();
                                                                                                                                 getCorpoMsg(out,msgRecebida);
                                                                                                                             }
                                                                                                                             else{
                                                                                                                                 if(msgRecebida.startsWith(REJEITA_CONTACTO)){
+                                                                                                                                    novaInteracao();
                                                                                                                                     rejeitaContacto(out,msgRecebida);
                                                                                                                                 }
                                                                                                                                 else {
-                                                                                                                                    if (msgRecebida.startsWith(REJEITA_MEMBRO))
-                                                                                                                                    {
+                                                                                                                                    if (msgRecebida.startsWith(REJEITA_MEMBRO)) {
+                                                                                                                                        novaInteracao();
                                                                                                                                         rejeitaMembro(out,msgRecebida);
                                                                                                                                     }
                                                                                                                                     else {
                                                                                                                                         if(msgRecebida.startsWith(GET_MEMBROS_GRUPO)) {
+                                                                                                                                            novaInteracao();
                                                                                                                                             getMembrosGrupo(out,msgRecebida);
+                                                                                                                                        }
+                                                                                                                                        else{
+                                                                                                                                            if(msgRecebida.equals(HEARTBEAT_CLI)){
+                                                                                                                                                novaInteracao();
+                                                                                                                                            }
                                                                                                                                         }
                                                                                                                                     }
                                                                                                                                 }

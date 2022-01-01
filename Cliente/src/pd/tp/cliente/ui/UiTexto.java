@@ -1,5 +1,6 @@
 package pd.tp.cliente.ui;
 
+import pd.tp.cliente.threads.ThreadHeartbeat;
 import pd.tp.cliente.threads.ThreadRecebeInformacoesServidor;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
@@ -16,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Timer;
 
 public class UiTexto implements Utils {
 
@@ -28,8 +30,6 @@ public class UiTexto implements Utils {
 
     public UiTexto(Socket sCli) {
         this.sCli = sCli;
-        if (sCli.isClosed())
-            System.out.println("Fechado aqui!");
     }
 
     public void menuInicial() { //Menu chamado quando o User se connecta ao servidor
@@ -776,7 +776,6 @@ public class UiTexto implements Utils {
         ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
         cs = new ComunicacaoServidor(sCli, in, out);
-
         while(!exit) {
             menuInicial();
             op = scanner.nextInt();
@@ -793,8 +792,13 @@ public class UiTexto implements Utils {
                             System.out.println("Bem-vindo " + user.getUsername());
                             ThreadRecebeInformacoesServidor threadRecebeInformacoesServidor = new ThreadRecebeInformacoesServidor(in,user);
                             threadRecebeInformacoesServidor.start();
+                            ThreadHeartbeat threadHeartbeat = new ThreadHeartbeat(cs);
+                            Timer timer = new Timer("Heartbeat");
+                            timer.schedule(threadHeartbeat,0,1000);
                             cs.setUser(user);
                             exit = menuSecundario();
+                            threadHeartbeat.cancel();
+                            timer.cancel();
                         }
                         break;
                     case 0:

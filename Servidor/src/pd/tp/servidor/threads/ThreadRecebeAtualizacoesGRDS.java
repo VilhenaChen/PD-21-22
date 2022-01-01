@@ -131,6 +131,18 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                                                                                                 stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(novidadeGRDS.getUsernameUser()).append(" apagou a mensagem ").append(novidadeGRDS.getIdMsg()).append("!");
                                                                                                 System.out.println(stringBuilder.toString());
                                                                                             }
+                                                                                            else{
+                                                                                                if (novidadeGRDS.getTipoMsg().equals(UTILIZADORES_INATIVOS)){
+                                                                                                    if(novidadeGRDS.getUsersAfetados()!=null){
+                                                                                                        stringBuilder.append("INFORMAÇÃO GRDS: Os users, ");
+                                                                                                        for (String userAfetado : novidadeGRDS.getUsersAfetados()){
+                                                                                                            stringBuilder.append(userAfetado).append(", ");
+                                                                                                        }
+                                                                                                        stringBuilder.append("foram desconectados a nível da base de dados por inatividade!");
+                                                                                                        System.out.println(stringBuilder);
+                                                                                                    }
+                                                                                                }
+                                                                                            }
                                                                                         }
                                                                                     }
                                                                                 }

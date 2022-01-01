@@ -54,4 +54,6 @@ public interface Utils {
     String NOVO_CLI = "NOVO_CLI";
     String INFO_PORT = "INFO_PORT";
     String GET_MEMBROS_GRUPO = "GET_MEMBROS_GRUPO";
+    String HEARTBEAT_CLI = "HEARTBEAT_CLI";
+    String UTILIZADORES_INATIVOS = "UTILIZADORES_INATIVOS";
 }

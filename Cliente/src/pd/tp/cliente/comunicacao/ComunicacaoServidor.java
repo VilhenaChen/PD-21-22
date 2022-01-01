@@ -29,8 +29,10 @@ public class ComunicacaoServidor implements Utils {
     public String efetuaLogin(Utilizador utilizador) { //Manda o Login do User ao Servidor
         String resultado = "";
         try {
-            out.writeObject(LOGIN+"," + utilizador.getUsername() + "," + utilizador.getPassword());
-            out.flush();
+            synchronized (out){
+                out.writeObject(LOGIN+"," + utilizador.getUsername() + "," + utilizador.getPassword());
+                out.flush();
+            }
 
             resultado = (String) in.readObject();
 
@@ -43,9 +45,10 @@ public class ComunicacaoServidor implements Utils {
     public String efetuaRegisto(Utilizador utilizador) { //Manda o Registo do User ao Servidor
         String resultado = "";
         try {
-            out.writeUnshared(REGISTO + "," + utilizador.getUsername() +"," + utilizador.getPassword() + "," + utilizador.getNome());
-            out.flush();
-
+            synchronized (out){
+                out.writeUnshared(REGISTO + "," + utilizador.getUsername() +"," + utilizador.getPassword() + "," + utilizador.getNome());
+                out.flush();
+            }
             resultado = (String) in.readObject();
 
         }catch(IOException|ClassNotFoundException e){
@@ -56,8 +59,10 @@ public class ComunicacaoServidor implements Utils {
 
     public void logout(){
         try {
-            out.writeObject(LOGOUT + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LOGOUT + "," + user.getUsername());
+                out.flush();
+            }
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -66,8 +71,10 @@ public class ComunicacaoServidor implements Utils {
     public String trocaNome(String nome) {
         String resultado = "";
         try {
-            out.writeObject(UPDATE_NAME + "," + user.getUsername() + "," + nome );
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(UPDATE_NAME + "," + user.getUsername() + "," + nome );
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -87,8 +94,10 @@ public class ComunicacaoServidor implements Utils {
     public String trocaPassword(String password) {
         String resultado = "";
         try {
-            out.writeObject(UPDATE_PASSWORD + "," + user.getUsername() + "," + password );
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(UPDATE_PASSWORD + "," + user.getUsername() + "," + password );
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -108,8 +117,10 @@ public class ComunicacaoServidor implements Utils {
     public String trocaUsername(String username) {
         String resultado = "";
         try {
-            out.writeObject(UPDATE_USERNAME + "," + user.getUsername() + "," + username );
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(UPDATE_USERNAME + "," + user.getUsername() + "," + username );
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -130,8 +141,10 @@ public class ComunicacaoServidor implements Utils {
     public String criaGrupo(String nome) {
         String resultado = "";
         try {
-            out.writeObject(NOVO_GRUPO + "," + user.getUsername() + "," + nome);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(NOVO_GRUPO + "," + user.getUsername() + "," + nome);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -152,8 +165,10 @@ public class ComunicacaoServidor implements Utils {
     public String adereAGrupo(int idGrupo){
         String resultado = "";
         try {
-            out.writeObject(ADERE_A_GRUPO + "," + user.getUsername() + "," + idGrupo);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(ADERE_A_GRUPO + "," + user.getUsername() + "," + idGrupo);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -175,8 +190,10 @@ public class ComunicacaoServidor implements Utils {
     {
         String resultado = "";
         try {
-            out.writeObject(SAI_DE_GRUPO + "," + user.getUsername() + "," + idGrupo);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(SAI_DE_GRUPO + "," + user.getUsername() + "," + idGrupo);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -197,8 +214,10 @@ public class ComunicacaoServidor implements Utils {
     public String trocaNomeGroup(String novo_nome, int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject(UPDATE_NOME_GRUPO + "," + idGrupo + "," + novo_nome);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(UPDATE_NOME_GRUPO + "," + idGrupo + "," + novo_nome);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -219,8 +238,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaGrupos() {
         String resultado = "";
         try {
-            out.writeObject(LISTA_GRUPOS);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_GRUPOS);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -241,8 +262,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaGruposAdmin() {
         String resultado = "";
         try {
-            out.writeObject(LISTA_GRUPOS_ADMIN + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_GRUPOS_ADMIN + "," + user.getUsername());
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -263,8 +286,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaMembrosGrupos(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject(LISTA_TODOS_MEMBROS + "," + idGrupo);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_TODOS_MEMBROS + "," + idGrupo);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -284,8 +309,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaMembrosGrupoPorAceitar(int idGrupo) {
         String resultado = "";
         try {
-            out.writeObject(LISTA_MEMBROS_GRUPO_POR_ACEITAR + "," + idGrupo);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_MEMBROS_GRUPO_POR_ACEITAR + "," + idGrupo);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -310,8 +337,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(ACEITA_MEMBRO + "," + idGrupo + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(ACEITA_MEMBRO + "," + idGrupo + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -346,8 +375,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(REJEITA_MEMBRO + "," + idGrupo + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(REJEITA_MEMBRO + "," + idGrupo + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -381,9 +412,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-
-                out.writeObject(KICK_MEMBRO_GRUPO + "," + idGrupo + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(KICK_MEMBRO_GRUPO + "," + idGrupo + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -413,8 +445,10 @@ public class ComunicacaoServidor implements Utils {
     public String eliminaGrupo(int idGrupo){
         String resultado = "";
         try{
-            out.writeObject(ELIMINA_GRUPO + "," + idGrupo);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(ELIMINA_GRUPO + "," + idGrupo);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -433,8 +467,11 @@ public class ComunicacaoServidor implements Utils {
     public String getListaMembrosGrupo(int escolha) {
         String resultado = "";
         try {
-            out.writeObject(GET_MEMBROS_GRUPO + "," + escolha);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(GET_MEMBROS_GRUPO + "," + escolha);
+                out.flush();
+            }
+
             while(true){
                 if (user.isRecebiResultado()){
                     resultado = user.getResultadoComando();
@@ -455,8 +492,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaContactos() {
         String resultado = "";
         try {
-            out.writeObject(LISTA_CONTACTOS + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_CONTACTOS + "," + user.getUsername());
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -477,8 +516,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaContactosPorAceitar() {
         String resultado = "";
         try {
-            out.writeObject(LISTA_POR_ACEITAR_CONTACTOS + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_POR_ACEITAR_CONTACTOS + "," + user.getUsername());
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -500,8 +541,10 @@ public class ComunicacaoServidor implements Utils {
     public String adicionaContacto(String friend) {
         String resultado = "";
         try {
-            out.writeObject(NOVO_CONTACTO + "," + user.getUsername() + "," +friend);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(NOVO_CONTACTO + "," + user.getUsername() + "," +friend);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -526,8 +569,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(ACEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(ACEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -561,8 +606,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(REJEITA_CONTACTO + "," + user.getUsername() + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -596,8 +643,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(ELIMINA_CONTACTO + "," + user.getUsername() + "," + array[i]);
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -627,8 +676,10 @@ public class ComunicacaoServidor implements Utils {
     public String pesquisaUsers(String pesquisa) {
         String resultado = "";
         try {
-            out.writeObject(PESQUISA_USER + "," + pesquisa);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(PESQUISA_USER + "," + pesquisa);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -649,8 +700,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaUsers() {
         String resultado = "";
         try {
-            out.writeObject(LISTA_USERS);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_USERS);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -672,8 +725,10 @@ public class ComunicacaoServidor implements Utils {
     public String enviaMensagem(Mensagem msg) {
         String resultado = "";
         try {
-            out.writeObject(msg);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(msg);
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -698,8 +753,10 @@ public class ComunicacaoServidor implements Utils {
 
         for(int i = 0; i<array.length; i++){
             try {
-                out.writeObject(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
-                out.flush();
+                synchronized (out){
+                    out.writeUnshared(ELIMINA_MENSAGEM + "," + array[i] + "," + user.getUsername());
+                    out.flush();
+                }
 
                 while(true){
                     if (user.isRecebiResultado()){
@@ -729,8 +786,10 @@ public class ComunicacaoServidor implements Utils {
     public String listaMensagens(){
         String resultado = "";
         try {
-            out.writeObject(LISTA_MENSAGENS + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_MENSAGENS + "," + user.getUsername());
+                out.flush();
+            }
 
             while(true){
                 if (user.isRecebiResultado()){
@@ -751,8 +810,11 @@ public class ComunicacaoServidor implements Utils {
     public String listaMensagensParaEliminar(){
         String resultado = "";
         try {
-            out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
+                out.flush();
+            }
+
             while(true){
                 if (user.isRecebiResultado()){
                     resultado = user.getResultadoComando();
@@ -771,8 +833,11 @@ public class ComunicacaoServidor implements Utils {
     public String getCorpoMensagem(int escolha) {
         String resultado = "";
         try {
-            out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(GET_CORPO + "," + escolha + "," + user.getUsername());
+                out.flush();
+            }
+
             while(true){
                 if (user.isRecebiResultado()){
                     resultado = user.getResultadoComando();
@@ -788,4 +853,14 @@ public class ComunicacaoServidor implements Utils {
         return resultado;
     }
 
+    public void heartbeat(){
+        try {
+            synchronized (out){
+                out.writeUnshared(HEARTBEAT_CLI);
+                out.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
