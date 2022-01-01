@@ -1181,6 +1181,9 @@ public class ComunicacaoBD implements Utils {
                     }
                 }
 
+                sqlQuery = "UPDATE `Msg` SET viewed='1' WHERE idMsg='" + idMsg + "'";
+                statement.executeUpdate(sqlQuery);
+
                 resultSet.close();
                 statement.close();
                 dbConn.commit();
