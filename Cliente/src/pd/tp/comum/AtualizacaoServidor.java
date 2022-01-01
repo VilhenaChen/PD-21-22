@@ -101,88 +101,88 @@ public class AtualizacaoServidor implements Serializable, Utils{
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         if(tipoMsg.equals(LOGIN)){
-            stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" efetuou login!");
+            stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" efetuou login!");
         }
         else {
             if(tipoMsg.equals(REGISTO)){
-                stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" efetuou registo!");
+                stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" efetuou registo!");
             }
             else {
                 if(tipoMsg.equals(UPDATE_NAME)){
-                    stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" alterou o seu nome!");
+                    stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" alterou o seu nome!");
                 }
                 else {
                     if(tipoMsg.equals(UPDATE_USERNAME)){
-                        stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" alterou o seu username para ").append(novoUsernameUser).append("!");
+                        stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" alterou o seu username para ").append(novoUsernameUser).append("!");
                     }
                     else {
                         if(tipoMsg.equals(UPDATE_PASSWORD)){
-                            stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append("  a sua password!");
+                            stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append("  a sua password!");
                         }
                         else {
                             if(tipoMsg.equals(LOGOUT)){
-                                stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" efetuou logout!");
+                                stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" efetuou logout!");
                             }
                             else {
                                 if(tipoMsg.equals(NOVO_GRUPO)){
-                                    stringBuilder.append("INFORMAÇÃO GRDS: O utilizador ").append(usernameUser).append(" criou o grupo ").append(idGrupo).append("!");
+                                    stringBuilder.append("NOTIFICAÇÃO: O utilizador ").append(usernameUser).append(" criou o grupo ").append(idGrupo).append("!");
                                 }
                                 else {
                                     if(tipoMsg.equals(UPDATE_NOME_GRUPO)){
-                                        stringBuilder.append("INFORMAÇÃO GRDS: O administrador do grupo ").append(usernameUser).append(" alterou o nome do mesmo para ").append(novoNomeGrupo).append("!");
+                                        stringBuilder.append("NOTIFICAÇÃO: O administrador do grupo ").append(usernameUser).append(" alterou o nome do mesmo para ").append(novoNomeGrupo).append("!");
                                     }
                                     else {
                                         if(tipoMsg.equals(ADERE_A_GRUPO)){
-                                            stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" pediu para aderir ao grupo ").append(idGrupo).append("!");
+                                            stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" pediu para aderir ao grupo ").append(idGrupo).append("!");
                                         }
                                         else {
                                             if(tipoMsg.equals(SAI_DE_GRUPO)){
-                                                stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" saiu do grupo ").append(idGrupo).append("!");;
+                                                stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" saiu do grupo ").append(idGrupo).append("!");;
                                             }
                                             else {
                                                 if(tipoMsg.equals(ACEITA_MEMBRO)){
-                                                    stringBuilder.append("INFORMAÇÃO GRDS: O administrador do grupo ").append(idGrupo).append(" aceitou o user ").append(usernameUser).append("!");
+                                                    stringBuilder.append("NOTIFICAÇÃO: O administrador do grupo ").append(idGrupo).append(" aceitou o user ").append(usernameUser).append("!");
                                                 }
                                                 else {
                                                     if(tipoMsg.equals(REJEITA_MEMBRO)){
-                                                        stringBuilder.append("INFORMAÇÃO GRDS: O administrador do grupo ").append(idGrupo).append(" rejeitou o user ").append(usernameUser).append("!");
+                                                        stringBuilder.append("NOTIFICAÇÃO: O administrador do grupo ").append(idGrupo).append(" rejeitou o seu pedido de adesão!");
                                                     }
                                                     else {
                                                         if(tipoMsg.equals(KICK_MEMBRO_GRUPO)){
-                                                            stringBuilder.append("INFORMAÇÃO GRDS: O administrador do grupo ").append(idGrupo).append(" expulsou o user ").append(usernameUser).append("!");
+                                                            stringBuilder.append("NOTIFICAÇÃO: O administrador do grupo ").append(idGrupo).append(" excluiu o user ").append(usernameUser).append(" do mesmo!");
                                                         }
                                                         else {
                                                             if(tipoMsg.equals(ELIMINA_GRUPO)){
-                                                                stringBuilder.append("INFORMAÇÃO GRDS: O grupo ").append(idGrupo).append(" foi eliminado pelo administrador!");
+                                                                stringBuilder.append("NOTIFICAÇÃO: O grupo ").append(idGrupo).append(" foi eliminado pelo administrador!");
                                                             }
                                                             else {
                                                                 if(tipoMsg.equals(NOVO_CONTACTO)){
-                                                                    stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" enviou um pedido de contacto ao user ").append(friend).append("!");
+                                                                    stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" enviou-lhe um pedido de contacto!");
                                                                 }
                                                                 else {
                                                                     if(tipoMsg.equals(ACEITA_CONTACTO)){
-                                                                        stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" aceitou o pedido de contacto do user ").append(friend).append("!");
+                                                                        stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" aceitou o seu pedido de contacto!");
                                                                     }
                                                                     else {
                                                                         if(tipoMsg.equals(REJEITA_CONTACTO)){
-                                                                            stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" rejeitou o pedido de contacto do user ").append(friend).append("!");
+                                                                            stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" rejeitou o seu pedido de contacto!");
                                                                         }
                                                                         else {
                                                                             if(tipoMsg.equals(ELIMINA_CONTACTO)){
-                                                                                stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" eliminou o contacto ").append(friend).append("!");
+                                                                                stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" eliminou o seu contacto!");
                                                                             }
                                                                             else {
                                                                                 if(tipoMsg.equals(MENSAGEM)){
                                                                                     try{
                                                                                         Integer idGrupo = Integer.parseInt(receiver);
-                                                                                        stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" enviou a mensagem ").append(idMsg).append(" para o grupo ").append(idGrupo).append("!");
+                                                                                        stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" enviou a mensagem ").append(idMsg).append(" para o grupo ").append(idGrupo).append("!");
                                                                                     }catch (NumberFormatException e){
-                                                                                        stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" enviou a mensagem ").append(idMsg).append(" para o user ").append(receiver).append("!");
+                                                                                        stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" enviou-lhe a mensagem ").append(idMsg).append("!");
                                                                                     }
                                                                                 }
                                                                                 else {
                                                                                     if(tipoMsg.equals(ELIMINA_MENSAGEM)){
-                                                                                        stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(usernameUser).append(" apagou a mensagem ").append(idMsg).append("!");
+                                                                                        stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" apagou a mensagem ").append(idMsg).append("!");
                                                                                     }
                                                                                 }
                                                                             }

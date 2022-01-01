@@ -646,8 +646,11 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
             novidade.setUsernameUser(username);
             comBD.verificaAfetadosEliminaMensagem(idMsg, username, novidade);
             String resultado = comBD.eliminaMsg(idMsg, username);
-            if(resultado.equals(SUCESSO))
+            if(resultado.equals(SUCESSO)){
                 System.out.println("A mensagem " + idMsg + " do user " + username + "foi eliminada com sucesso");
+                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
+                threadEnviaAtualizacaoGRDS.start();
+            }
             synchronized (out){
                 out.writeUnshared(resultado);
                 out.flush();
