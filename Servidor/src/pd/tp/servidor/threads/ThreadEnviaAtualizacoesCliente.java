@@ -22,23 +22,39 @@ public class ThreadEnviaAtualizacoesCliente extends Thread{
     @Override
     public void run() {
         while (true){
-            atualizacoesServidor = clientes.getNovidadesCli(username);
-            if(atualizacoesServidor != null){
-                for (AtualizacaoServidor at : atualizacoesServidor){
-                    try {
-                        out.writeUnshared(at);
-                        out.flush();
-                    }catch (IOException e) {
-                        e.printStackTrace();
+            atualizacoesServidor = clientes.getNovidadesCli(getUsername());
+            if (atualizacoesServidor != null) {
+                for (AtualizacaoServidor at : atualizacoesServidor) {
+                    if(at.isEnviada()){
+                        try {
+                            synchronized (out){
+                                out.writeUnshared(at);
+                                out.flush();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
-            clientes.removeNovidadesCli(username);
+            clientes.removeNovidadesCli(getUsername());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private String getUsername(){
+        synchronized (this.username){
+            return this.username;
+        }
+    }
+
+    public void setUsername(String username) {
+        synchronized (this.username) {
+            this.username = username;
         }
     }
 }

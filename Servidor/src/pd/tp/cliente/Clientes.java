@@ -13,35 +13,47 @@ public class Clientes {
     }
 
     public void addCli(String username){
-        clientes.add(new Cliente(username));
+        synchronized (this.clientes) {
+            clientes.add(new Cliente(username));
+        }
     }
 
     public void addNovidadeCli(String username, NovidadeGRDS novidade){
-        for (Cliente cli : clientes){
-            if(cli.getUsername().equals(username))
-                cli.addNovidade(novidade);
+        synchronized (this.clientes) {
+            for (Cliente cli : clientes) {
+                if (cli.getUsername().equals(username))
+                    cli.addNovidade(novidade);
+            }
         }
     }
 
     public void removeNovidadesCli(String username){
-        for (Cliente cli : clientes){
-            if(cli.getUsername().equals(username))
-                cli.clearNovidades();
+        synchronized (this.clientes) {
+            for (Cliente cli : clientes) {
+                if (cli.getUsername().equals(username)){
+                    cli.clearNovidades();
+                    break;
+                }
+            }
         }
     }
 
     public ArrayList<AtualizacaoServidor> getNovidadesCli(String username){
-        for (Cliente cli : clientes){
-            if(cli.getUsername().equals(username))
-                return cli.getNovidades();
+        synchronized (this.clientes) {
+            for (Cliente cli : clientes) {
+                if (cli.getUsername().equals(username))
+                    return cli.getNovidades();
+            }
         }
         return null;
     }
 
     public void updateUsernameCli(String username){
-        for (Cliente cli : clientes){
-            if(cli.getUsername().equals(username))
-                cli.setUsername(username);
+        synchronized (this.clientes){
+            for (Cliente cli : clientes){
+                if(cli.getUsername().equals(username))
+                    cli.setUsername(username);
+            }
         }
     }
 }

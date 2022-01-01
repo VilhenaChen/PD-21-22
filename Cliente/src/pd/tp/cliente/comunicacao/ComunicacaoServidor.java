@@ -70,18 +70,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch(IOException e) {
@@ -97,18 +91,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch(IOException e) {
@@ -124,18 +112,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch(IOException e) {
@@ -152,18 +134,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException  e) {
@@ -180,18 +156,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -209,18 +179,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -237,18 +201,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -265,18 +223,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -293,18 +245,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -321,20 +267,13 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
-
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -349,18 +288,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -381,18 +314,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
 
                 if(!resultado.equals(SUCESSO)){
@@ -423,18 +350,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -465,18 +386,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -502,18 +417,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -527,18 +436,12 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(GET_MEMBROS_GRUPO + "," + escolha);
             out.flush();
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         }catch (IOException e) {
             e.printStackTrace();
@@ -556,18 +459,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -584,18 +481,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -613,18 +504,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -645,18 +530,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -686,17 +565,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
-                    }  /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
+                    }
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -726,18 +600,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -763,18 +631,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -791,20 +653,13 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
-
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -821,18 +676,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -853,18 +702,12 @@ public class ComunicacaoServidor implements Utils {
                 out.flush();
 
                 while(true){
-                    synchronized (user){
-                        if(!user.getResultadoComando().equals("")){
-                            resultado = user.getResultadoComando();
-                            user.eraseResultadoComando();
-                            break;
-                        }
+                    if (user.isRecebiResultado()){
+                        resultado = user.getResultadoComando();
+                        user.eraseResultadoComando();
+                        user.setRecebiResultado(false);
+                        break;
                     }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 }
                 if(!resultado.equals(SUCESSO)){
                     falhas = falhas + "," + array[i];
@@ -890,18 +733,12 @@ public class ComunicacaoServidor implements Utils {
             out.flush();
 
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
 
         }catch (IOException e) {
@@ -917,18 +754,12 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(LISTA_PARA_ELIMINAR_MSG + "," + user.getUsername());
             out.flush();
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         }catch (IOException e) {
             e.printStackTrace();
@@ -943,18 +774,12 @@ public class ComunicacaoServidor implements Utils {
             out.writeObject(GET_CORPO + "," + escolha + "," + user.getUsername());
             out.flush();
             while(true){
-                synchronized (user){
-                    if(!user.getResultadoComando().equals("")){
-                        resultado = user.getResultadoComando();
-                        user.eraseResultadoComando();
-                        break;
-                    }
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
                 }
-                /*try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
             }
         }catch (IOException e) {
             e.printStackTrace();

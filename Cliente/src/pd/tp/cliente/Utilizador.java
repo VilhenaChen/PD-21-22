@@ -9,6 +9,7 @@ public class Utilizador implements Serializable, Utils {
     private String password;
     private Boolean logged;
     private String resultadoComando;
+    private Boolean recebiResultado;
 
     public Utilizador(String username, String password, String nome) {
         this.username = username;
@@ -16,12 +17,14 @@ public class Utilizador implements Serializable, Utils {
         this.nome = nome;
         this.logged = false;
         this.resultadoComando = "";
+        this.recebiResultado = false;
     }
 
     public Utilizador(String username, String password) {
         this.username = username;
         this.password = password;
         this.resultadoComando = "";
+        this.recebiResultado = false;
     }
 
     public String getUsername() {
@@ -57,15 +60,31 @@ public class Utilizador implements Serializable, Utils {
     }
 
     public String getResultadoComando() {
-        return this.resultadoComando;
+        synchronized (this.resultadoComando){
+            return this.resultadoComando;
+        }
     }
 
     public void setResultadoComando(String resultadoComando) {
-        this.resultadoComando = resultadoComando;
+        synchronized (this.resultadoComando){
+            this.resultadoComando = resultadoComando;
+        }
     }
 
     public void eraseResultadoComando(){
         this.resultadoComando="";
+    }
+
+    public boolean isRecebiResultado() {
+        synchronized (this.recebiResultado){
+           return this.recebiResultado;
+        }
+    }
+
+    public void setRecebiResultado(boolean recebiResultado) {
+        synchronized (this.recebiResultado){
+            this.recebiResultado = recebiResultado;
+        }
     }
 
     @Override

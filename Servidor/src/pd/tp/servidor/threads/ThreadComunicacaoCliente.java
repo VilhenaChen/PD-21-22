@@ -22,6 +22,7 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     private Clientes clientes;
     DatagramSocket ds;
     DatagramPacket dp;
+    ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente;
     int id;
 
     public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes) {
@@ -99,8 +100,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out) {
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -119,14 +122,16 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
             String resultado = comBD.updateUserUsername(new_username, old_username);
             if(resultado.equals(SUCESSO)){
                 dadosUser.replace("username", new_username);
+                threadEnviaAtualizacoesCliente.setUsername(new_username);
                 System.out.println("O Utilizador '" + old_username + "' alterou o seu username para '" + new_username + "'");
                 clientes.updateUsernameCli(new_username); //Ve se esta bem que isto apaga demasiadas coisas
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -147,8 +152,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -189,8 +196,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
             String resultado = comBD.createGroup(nomeGrupo, username, novidade);
             if(resultado.equals(SUCESSO))
                 System.out.println("O Utilizador " + username + " criou o grupo " + nomeGrupo);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -214,8 +223,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         }catch (IOException | SQLException e){
             e.printStackTrace();
         }
@@ -238,8 +249,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -262,8 +275,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -275,8 +290,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
 
         try {
             String resultado = comBD.listaMembrosGrupos(idGrupo);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -288,8 +305,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
 
         try {
             String resultado = comBD.listaMembrosGrupoPorAceitar(idGrupo);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -300,8 +319,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.listaGruposAdmin(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -310,8 +331,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     private void listaGrupos(ObjectOutputStream out, String msgRecebida) {
         try {
             String resultado = comBD.listaGrupos();
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -334,8 +357,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch(IOException | SQLException e){
             e.printStackTrace();
@@ -358,8 +383,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch(IOException | SQLException e){
             e.printStackTrace();
@@ -383,8 +410,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch(IOException | SQLException e){
             e.printStackTrace();
@@ -405,8 +434,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch(IOException | SQLException e){
             e.printStackTrace();
@@ -441,8 +472,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch (IOException | SQLException e) {
             e.printStackTrace();
@@ -465,8 +498,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch (IOException | SQLException e) {
             e.printStackTrace();
@@ -489,8 +524,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
 
         } catch (IOException | SQLException e) {
             e.printStackTrace();
@@ -502,8 +539,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.listarContactos(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -514,8 +553,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.listarContactosPorAceitar(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -537,8 +578,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -549,8 +592,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.pesquisaeListaUsers(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -559,8 +604,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     private void listaUsers(ObjectOutputStream out, String msgRecebida) {
         try {
             String resultado = comBD.pesquisaeListaUsers("");
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -579,8 +626,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
                 threadEnviaAtualizacaoGRDS.start();
             }
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -599,8 +648,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
             String resultado = comBD.eliminaMsg(idMsg, username);
             if(resultado.equals(SUCESSO))
                 System.out.println("A mensagem " + idMsg + " do user " + username + "foi eliminada com sucesso");
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -611,8 +662,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.listaMensagens(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -624,8 +677,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[2];
         try {
             String resultado = comBD.getCorpoMsg(idMsg,username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -636,8 +691,10 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         String username = array[1];
         try {
             String resultado = comBD.listaMensagensParaEliminar(username);
-            out.writeUnshared(resultado);
-            out.flush();
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
@@ -662,7 +719,7 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
 
                     if (msgRecebida.startsWith(LOGIN)) {
                         login(out, msgRecebida);
-                        ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente = new ThreadEnviaAtualizacoesCliente(out,clientes,dadosUser.get("username"));
+                        threadEnviaAtualizacoesCliente = new ThreadEnviaAtualizacoesCliente(out,clientes,dadosUser.get("username"));
                         threadEnviaAtualizacoesCliente.start();
                     } else {
                         if (msgRecebida.startsWith(REGISTO)) {
@@ -793,10 +850,11 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 }
             }while (!msgRecebida.startsWith("LOGOUT"));
             logoutUser(msgRecebida);
+            threadEnviaAtualizacoesCliente.join();
             out.close();
             in.close();
             sCli.close();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
         }
 

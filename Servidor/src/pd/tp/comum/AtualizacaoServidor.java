@@ -15,6 +15,7 @@ public class AtualizacaoServidor implements Serializable, Utils{
     private String friend;
     private String receiver;
     private int idMsg;
+    private boolean enviada;
 
     public String getTipoMsg() {
         return tipoMsg;
@@ -86,6 +87,14 @@ public class AtualizacaoServidor implements Serializable, Utils{
 
     public void setIdMsg(int idMsg) {
         this.idMsg = idMsg;
+    }
+
+    public boolean isEnviada() {
+        return enviada;
+    }
+
+    public void setEnviada(boolean enviada) {
+        this.enviada = enviada;
     }
 
     @Override

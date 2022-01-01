@@ -34,14 +34,18 @@ public class Cliente {
         atualizacaoServidor.setNovoUsernameUser(novidade.getNovoUsernameUser());
         atualizacaoServidor.setReceiver(novidade.getReceiver());
         atualizacaoServidor.setNomeGrupo(novidade.getNomeGrupo());
+        atualizacaoServidor.setEnviada(false);
         novidades.add(atualizacaoServidor);
     }
 
     public void clearNovidades(){
-        novidades.clear();
+        novidades.removeIf(AtualizacaoServidor::isEnviada);
     }
 
     public ArrayList<AtualizacaoServidor> getNovidades(){
+        for (AtualizacaoServidor at : novidades){
+            at.setEnviada(true);
+        }
         return novidades;
     }
 }

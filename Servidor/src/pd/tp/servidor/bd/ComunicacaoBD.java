@@ -315,7 +315,7 @@ public class ComunicacaoBD implements Utils {
         Statement statement = dbConn.createStatement();
         String sqlQuery = "SELECT login FROM User WHERE username='" + username + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
-        if(!resultSet.next()) {
+        if(resultSet.next()) {
             if(resultSet.getInt("login") == 1)
                 return true;
             else
