@@ -5,7 +5,6 @@ import pd.tp.comum.Mensagem;
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,7 +13,6 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Timer;
 
 public class ThreadComunicacaoCliente extends Thread implements Utils {
     private Socket sCli;
@@ -24,8 +22,6 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     DatagramSocket ds;
     DatagramPacket dp;
     ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente;
-    ThreadVerificaClientesAtivosBD threadVerificaClientesAtivosBD;
-    Timer timer;
     int id;
 
     public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes) {
@@ -900,13 +896,16 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                 }
             }while (!msgRecebida.startsWith("LOGOUT"));
             logoutUser(msgRecebida);
-            threadEnviaAtualizacoesCliente.join();
+            threadEnviaAtualizacoesCliente.interrupt();
             out.close();
             in.close();
             sCli.close();
-        } catch (IOException | ClassNotFoundException | InterruptedException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
     }
+
+
 }
+
+

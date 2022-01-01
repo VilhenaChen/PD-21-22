@@ -2,14 +2,12 @@ package pd.tp.cliente.threads;
 
 import pd.tp.cliente.Utilizador;
 import pd.tp.comum.AtualizacaoServidor;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
 public class ThreadRecebeInformacoesServidor extends Thread{
 
     ObjectInputStream in;
-    String mensagemRecebida;
     Utilizador user;
     Object objeto;
 

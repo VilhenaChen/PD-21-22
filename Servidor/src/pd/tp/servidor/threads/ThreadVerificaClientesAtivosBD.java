@@ -18,6 +18,7 @@ public class ThreadVerificaClientesAtivosBD extends TimerTask implements Utils {
     private DatagramSocket ds;
     private DatagramPacket dp;
     private int id;
+    private ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS;
 
 
     public ThreadVerificaClientesAtivosBD(ComunicacaoBD comBD, DatagramPacket dp, DatagramSocket ds, int id){
@@ -37,11 +38,19 @@ public class ThreadVerificaClientesAtivosBD extends TimerTask implements Utils {
                     novidadeGRDS.addUserAfetado(userInativo);
                 }
                 novidadeGRDS.setTipoMsg(UTILIZADORES_INATIVOS);
-                ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds, dp, id, novidadeGRDS);
+                threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds, dp, id, novidadeGRDS);
                 threadEnviaAtualizacaoGRDS.start();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean cancel() {
+        if(threadEnviaAtualizacaoGRDS != null) {
+            threadEnviaAtualizacaoGRDS.interrupt();
+        }
+        return super.cancel();
     }
 }

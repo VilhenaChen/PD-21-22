@@ -799,10 +799,10 @@ public class UiTexto implements Utils {
                             exit = menuSecundario();
                             threadHeartbeat.cancel();
                             timer.cancel();
+                            cs.logout();
                         }
                         break;
                     case 0:
-
                         exit = true;
                         break;
                     default:
@@ -810,7 +810,6 @@ public class UiTexto implements Utils {
                         break;
                 }
         }
-        cs.logout();
         out.close();
         in.close();
         sCli.close();

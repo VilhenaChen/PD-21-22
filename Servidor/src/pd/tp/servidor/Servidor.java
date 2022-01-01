@@ -3,14 +3,11 @@ package pd.tp.servidor;
 import pd.tp.cliente.Clientes;
 import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
-import pd.tp.servidor.threads.ThreadComunicacaoCliente;
-import pd.tp.servidor.threads.ThreadInformaPortoGRDS;
-import pd.tp.servidor.threads.ThreadRecebeAtualizacoesGRDS;
-import pd.tp.servidor.threads.ThreadVerificaClientesAtivosBD;
-
+import pd.tp.servidor.threads.*;
 import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
+import java.util.Scanner;
 import java.util.Timer;
 
 public class Servidor implements Utils {
@@ -50,7 +47,7 @@ public class Servidor implements Utils {
 
     }
 
-    private void recebeIPePortoPorMulticast() throws UnknownHostException {
+    private void recebeIPePortoPorMulticast() {
         int cont = 0;
         try{
             MulticastSocket ms = new MulticastSocket(3030);
@@ -106,6 +103,7 @@ public class Servidor implements Utils {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
         Servidor servidor = new Servidor();
+        Scanner scanner = new Scanner(System.in);
 
         if(args.length <= 0) {
             System.out.println("Falta de IP e Porto do GRDS por parametros! A Procurar por multicast");
@@ -135,19 +133,30 @@ public class Servidor implements Utils {
         ThreadVerificaClientesAtivosBD threadVerificaClientesAtivosBD = new ThreadVerificaClientesAtivosBD(comBD,servidor.dp,servidor.ds, servidor.ID_SERVIDOR);
         Timer timerVerificaAtividade = new Timer("VerifyActive");
         timerVerificaAtividade.schedule(threadVerificaClientesAtivosBD, 0, 1000);
+        ThreadIniciaComunicacaoClientes threadIniciaComunicacaoClientes = new ThreadIniciaComunicacaoClientes(servidor.ss, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);
+        threadIniciaComunicacaoClientes.start();
+
         while(true) {
-            Socket sCli = servidor.ss.accept();
-            ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);
-            tc.start();
+            System.out.println("Insira 'quit' para sair");
+            String comando = scanner.nextLine();
+            if(comando.equals("quit")) {
+                break;
+            }
         }
-        //        try {
-        //            threadRecebeAtualizacoesGRDS.join();
-        //            threadVerificaClientesAtivosBD.cancel();
-        //            timerVerificaAtividade.cancel();
-        //            servidor.informaPortoThread.cancel();
-        //            timerInformaPorto.cancel();
-        //        } catch (InterruptedException e) {
-        //            e.printStackTrace();
-        //        }
+
+
+        threadIniciaComunicacaoClientes.interrupt();
+        threadRecebeAtualizacoesGRDS.interrupt();
+        timerVerificaAtividade.cancel();
+        timerVerificaAtividade.purge();
+        threadVerificaClientesAtivosBD.cancel();
+        servidor.informaPortoThread.cancel();
+        timerInformaPorto.cancel();
+        timerInformaPorto.purge();
+
+        servidor.ds.close();
+        servidor.ss.close();
+
+        System.out.println("Servidor Desligado");
     }
 }

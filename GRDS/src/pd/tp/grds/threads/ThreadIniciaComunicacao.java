@@ -45,7 +45,7 @@ public class ThreadIniciaComunicacao extends Thread implements Utils {
                 in.close();
                 bais.close();
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                return;
             }
         }
     }

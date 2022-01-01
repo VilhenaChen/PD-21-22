@@ -44,7 +44,7 @@ public class ThreadMulticastServidores extends Thread implements Utils {
                     ms.send(dp);
                 }
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                return;
             }
         }
     }

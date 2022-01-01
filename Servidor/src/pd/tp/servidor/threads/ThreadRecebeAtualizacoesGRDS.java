@@ -169,8 +169,9 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                     }
                 }
             }catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                return;
             }
         }
     }
+
 }
