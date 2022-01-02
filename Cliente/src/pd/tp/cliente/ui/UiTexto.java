@@ -324,7 +324,7 @@ public class UiTexto implements Utils {
                         System.out.println("O Utilizador " + ficheiro.getReceiver() + " nao existe" );
                     }
                     else {
-                        System.out.println("Mensagem enviada com sucesso" );
+                        System.out.println("Ficheiro enviado com sucesso" );
                     }
                     break;
                 case 2: //Listar Ficheiros

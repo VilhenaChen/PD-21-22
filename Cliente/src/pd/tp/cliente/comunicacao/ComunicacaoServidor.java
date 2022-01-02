@@ -1,5 +1,6 @@
 package pd.tp.cliente.comunicacao;
 
+import pd.tp.cliente.threads.ThreadEnviaFicheiro;
 import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
@@ -883,26 +884,12 @@ public class ComunicacaoServidor implements Utils {
                     break;
                 }
             }
-            String [] array = resultado.split(",");
-            Socket sCliFile = new Socket(ipServidor, Integer.parseInt(array[1]));
-
             if(!resultado.startsWith(SUCESSO)){
                 return resultado;
             }
 
-            OutputStream outSendFile = sCliFile.getOutputStream();
-            String patch = dir + "\\" + ficheiro.getName();
-            FileInputStream file = new FileInputStream(patch);
-                while (file.available()!=0){
-                    byte [] bytesRead = new byte[4000];
-                    int nBytes = file.read(bytesRead);
-                    outSendFile.write(bytesRead,0,nBytes);
-                    outSendFile.flush();
-                    if(file.available()==0)
-                        break;
-                }
-            outSendFile.close();
-            sCliFile.close();
+            ThreadEnviaFicheiro threadEnviaFicheiro = new ThreadEnviaFicheiro(ipServidor,dir,ficheiro,resultado);
+            threadEnviaFicheiro.start();
 
         }catch (IOException e) {
             e.printStackTrace();
