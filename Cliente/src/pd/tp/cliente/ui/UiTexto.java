@@ -2,6 +2,7 @@ package pd.tp.cliente.ui;
 
 import pd.tp.cliente.threads.ThreadHeartbeat;
 import pd.tp.cliente.threads.ThreadRecebeInformacoesServidor;
+import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.cliente.comunicacao.ComunicacaoServidor;
@@ -12,10 +13,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Timer;
 
@@ -25,11 +24,13 @@ public class UiTexto implements Utils {
     private Utilizador user;
     private Socket sCli;
     private ComunicacaoServidor cs;
+    private String ipServidor;
 
 
 
-    public UiTexto(Socket sCli) {
+    public UiTexto(Socket sCli, String ipServidor) {
         this.sCli = sCli;
+        this.ipServidor = ipServidor;
     }
 
     public void menuInicial() { //Menu chamado quando o User se connecta ao servidor
@@ -231,13 +232,13 @@ public class UiTexto implements Utils {
                     Mensagem msg = new Mensagem(assunto, corpo, user.getUsername(), destino, strDate);
                     resultado = cs.enviaMensagem(msg);
                     if(resultado.equals(GRUPO_INEXISTENTE)) {
-                        System.out.println("O Grupo " + msg.getReceveiver() + " nao existe" );
+                        System.out.println("O Grupo " + msg.getReceiver() + " nao existe" );
                     }
                     else if(resultado.equals(NOT_MEMBRO)) {
-                        System.out.println("Nao faz parte do grupo " + msg.getReceveiver());
+                        System.out.println("Nao faz parte do grupo " + msg.getReceiver());
                     }
                     else if(resultado.equals(UTILIZADOR_INEXISTENTE)) {
-                        System.out.println("O Utilizador " + msg.getReceveiver() + " nao existe" );
+                        System.out.println("O Utilizador " + msg.getReceiver() + " nao existe" );
                     }
                     else {
                         System.out.println("Mensagem enviada com sucesso" );
@@ -295,12 +296,36 @@ public class UiTexto implements Utils {
 
     private void trataMenuFicheiros() {
         int op = 0;
+        String resultado;
         while (true) {
             menuFicheiros();
             op = scanner.nextInt();
             scanner.nextLine();
             switch (op) {
                 case 1: //Enviar ficheiro
+                    Date date = new Date();
+                    Timestamp timestamp = new Timestamp(date.getTime());
+                    String strDate = timestamp.toString();
+                    System.out.println("Insira o diretorio da pasta onde se encontra o ficheiro:");
+                    String dirFicheiro = scanner.nextLine();
+                    System.out.println("Insira o nome do ficheiro:");
+                    String nomeFicheiro = scanner.nextLine();
+                    System.out.println("Insira o destinatário: (Username ou ID do grupo): ");
+                    String destinatario = scanner.nextLine();
+                    Ficheiro ficheiro = new Ficheiro(nomeFicheiro,user.getUsername(),destinatario,strDate);
+                    resultado = cs.enviaFicheiro(ficheiro, dirFicheiro);
+                    if(resultado.equals(GRUPO_INEXISTENTE)) {
+                        System.out.println("O Grupo " + ficheiro.getReceiver() + " nao existe" );
+                    }
+                    else if(resultado.equals(NOT_MEMBRO)) {
+                        System.out.println("Nao faz parte do grupo " + ficheiro.getReceiver());
+                    }
+                    else if(resultado.equals(UTILIZADOR_INEXISTENTE)) {
+                        System.out.println("O Utilizador " + ficheiro.getReceiver() + " nao existe" );
+                    }
+                    else {
+                        System.out.println("Mensagem enviada com sucesso" );
+                    }
                     break;
                 case 2: //Listar Ficheiros
                     break;
@@ -775,7 +800,7 @@ public class UiTexto implements Utils {
         boolean exit = false;
         ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
-        cs = new ComunicacaoServidor(sCli, in, out);
+        cs = new ComunicacaoServidor(sCli, in, out, ipServidor);
         while(!exit) {
             menuInicial();
             op = scanner.nextInt();

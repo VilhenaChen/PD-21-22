@@ -16,8 +16,44 @@ public class NovidadeGRDS implements Serializable {
     private String friend;
     private String receiver;
     private int idMsg;
+    private int idFicheiro;
     private ArrayList<String> usersAfetados = new ArrayList<>();
     private int idServidor;
+    private String ipFicheiro;
+    private int portoFicheiro;
+    private String nomeFicheiro;
+
+    public String getNomeFicheiro() {
+        return nomeFicheiro;
+    }
+
+    public void setNomeFicheiro(String nomeFicheiro) {
+        this.nomeFicheiro = nomeFicheiro;
+    }
+
+    public String getIpFicheiro() {
+        return ipFicheiro;
+    }
+
+    public void setIpFicheiro(String ipFicheiro) {
+        this.ipFicheiro = ipFicheiro;
+    }
+
+    public int getPortoFicheiro() {
+        return portoFicheiro;
+    }
+
+    public void setPortoFicheiro(int portoFicheiro) {
+        this.portoFicheiro = portoFicheiro;
+    }
+
+    public int getIdFicheiro() {
+        return idFicheiro;
+    }
+
+    public void setIdFicheiro(int idFicheiro) {
+        this.idFicheiro = idFicheiro;
+    }
 
     public int getIdServidor() {
         return idServidor;

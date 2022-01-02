@@ -1,24 +1,25 @@
 package pd.tp.cliente.comunicacao;
 
+import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
 import pd.tp.comum.Utils;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class ComunicacaoServidor implements Utils {
-    Socket sCli;
-    ObjectOutputStream out;
-    ObjectInputStream in;
-    Utilizador user;
+    private Socket sCli;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private Utilizador user;
+    private String ipServidor;
 
-    public ComunicacaoServidor(Socket sCli, ObjectInputStream in, ObjectOutputStream out) {
+    public ComunicacaoServidor(Socket sCli, ObjectInputStream in, ObjectOutputStream out, String ipServidor) {
         this.sCli = sCli;
         this.in = in;
         this.out = out;
+        this.ipServidor = ipServidor;
     }
 
     public void setUser(Utilizador user){
@@ -862,5 +863,51 @@ public class ComunicacaoServidor implements Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //Ficheiros
+
+    public String enviaFicheiro(Ficheiro ficheiro, String dir) {
+        String resultado = "";
+        try {
+            synchronized (out){
+                out.writeUnshared(ficheiro);
+                out.flush();
+            }
+
+            while(true){
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
+                }
+            }
+            String [] array = resultado.split(",");
+            Socket sCliFile = new Socket(ipServidor, Integer.parseInt(array[1]));
+
+            if(!resultado.startsWith(SUCESSO)){
+                return resultado;
+            }
+
+            OutputStream outSendFile = sCliFile.getOutputStream();
+            String patch = dir + "\\" + ficheiro.getName();
+            FileInputStream file = new FileInputStream(patch);
+                while (file.available()!=0){
+                    byte [] bytesRead = new byte[4000];
+                    int nBytes = file.read(bytesRead);
+                    outSendFile.write(bytesRead,0,nBytes);
+                    outSendFile.flush();
+                    if(file.available()==0)
+                        break;
+                }
+            outSendFile.close();
+            sCliFile.close();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
     }
 }

@@ -66,7 +66,7 @@ public class Cliente implements Utils{
 
         Socket sCli = new Socket(cli.infoServidor.get("IP"), Integer.parseInt(cli.infoServidor.get("PORTO")));
 
-        UiTexto ui = new UiTexto(sCli);
+        UiTexto ui = new UiTexto(sCli, cli.infoServidor.get("IP"));
         ui.start();
         System.exit(0);
     }

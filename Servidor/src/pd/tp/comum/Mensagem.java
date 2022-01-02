@@ -9,14 +9,14 @@ public class Mensagem implements Serializable {
     String assunto;
     String corpo;
     String sender;
-    String receveiver;
+    String receiver;
     String date;
 
-    public Mensagem(String assunto, String corpo, String sender, String receveiver, String date) {
+    public Mensagem(String assunto, String corpo, String sender, String receiver, String date) {
         this.assunto = assunto;
         this.corpo = corpo;
         this.sender = sender;
-        this.receveiver = receveiver;
+        this.receiver = receiver;
         this.date = date;
     }
 
@@ -32,8 +32,8 @@ public class Mensagem implements Serializable {
         return sender;
     }
 
-    public String getReceveiver() {
-        return receveiver;
+    public String getReceiver() {
+        return receiver;
     }
 
     public String getDate() {
@@ -42,6 +42,6 @@ public class Mensagem implements Serializable {
 
     @Override
     public String toString() {
-        return "Mensagem de " + sender + " para " + receveiver + " data: " + date +"\n" + assunto + "\n\t" + corpo;
+        return "Mensagem de " + sender + " para " + receiver + " data: " + date +"\n" + assunto + "\n\t" + corpo;
     }
 }

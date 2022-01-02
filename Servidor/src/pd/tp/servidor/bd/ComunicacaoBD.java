@@ -1,5 +1,6 @@
 package pd.tp.servidor.bd;
 
+import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
@@ -234,7 +235,7 @@ public class ComunicacaoBD implements Utils {
 
                 if(DBPassword.equals(password)) {
                     int login = 1;
-                    sqlQuery = "UPDATE User SET login='" + login + "' WHERE username='" + username + "'";
+                    sqlQuery = "UPDATE `User` SET login='" + login + "' AND lastInteraction=NOW() WHERE username='" + username + "'";
                     statement.executeUpdate(sqlQuery);
                     sqlQuery = "SELECT name FROM User WHERE username='" + username + "'";
 
@@ -974,7 +975,7 @@ public class ComunicacaoBD implements Utils {
                 Statement statement = dbConn.createStatement();
                 int idMsg = getNextIdMsg();
                 try{
-                    idGrupo = Integer.parseInt(msg.getReceveiver());
+                    idGrupo = Integer.parseInt(msg.getReceiver());
                     if(!verificaExistenciaGrupo(idGrupo))
                         return GRUPO_INEXISTENTE;
                     if(!verificaMembroGrupo(idGrupo,msg.getSender())){
@@ -983,7 +984,7 @@ public class ComunicacaoBD implements Utils {
                     sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,group_receiver) VALUES ('" +  idMsg +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + idGrupo + "')";
                     statement.executeUpdate(sqlQuery);
                 }catch (NumberFormatException e){
-                    username = msg.getReceveiver();
+                    username = msg.getReceiver();
                     if(!verificaExistenciaUser(username))
                         return UTILIZADOR_INEXISTENTE;
                     sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,user_receiver) VALUES ('" +  idMsg +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + username + "')";
@@ -1484,4 +1485,97 @@ public class ComunicacaoBD implements Utils {
         }
         return usersInativos;
     }
- }
+
+    // FICHEIROS
+
+    public void verificaAfetadosFicheiro(String sender, String receiver, NovidadeGRDS novidade) throws SQLException{
+        boolean worked=true;
+        do{
+            worked = true;
+            try {
+                dbConn.setAutoCommit(false);
+                Statement statement = dbConn.createStatement();
+                String sqlQuery;
+                ResultSet resultSet;
+                try{
+                    int idGrupo = Integer.parseInt(receiver);
+
+                    sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user!='" + sender + "'";
+                    resultSet = statement.executeQuery(sqlQuery);
+
+                    while (resultSet.next()){
+                        novidade.addUserAfetado(resultSet.getString("user"));
+                    }
+
+                    sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND admin!='" + sender + "'";
+                    resultSet = statement.executeQuery(sqlQuery);
+
+                    while (resultSet.next()){
+                        novidade.addUserAfetado(resultSet.getString("admin"));
+                    }
+                    resultSet.close();
+                }catch (NumberFormatException e){
+                    novidade.addUserAfetado(receiver);
+                }
+                statement.close();
+                dbConn.commit();
+            }catch (Exception e){
+                dbConn.rollback();
+                worked = false;
+            }
+        }while (!worked);
+    }
+
+    private int getNextIdFile() throws SQLException{
+        int idAtribuir = -1;
+        Statement statement = dbConn.createStatement();
+        ResultSet resultSet;
+        do{
+            idAtribuir++;
+            String sqlQuery = "SELECT name FROM `File` WHERE idFile='" + idAtribuir + "'";
+            resultSet = statement.executeQuery(sqlQuery);
+        }while (resultSet.next());
+
+        resultSet.close();
+        statement.close();
+        return idAtribuir;
+    }
+
+    public String recebeFicheiro(Ficheiro ficheiro, NovidadeGRDS novidade) throws SQLException{
+        int idGrupo;
+        String username;
+        String sqlQuery;
+        boolean worked=true;
+        do{
+            worked = true;
+            try {
+                dbConn.setAutoCommit(false);
+                Statement statement = dbConn.createStatement();
+                int idFile = getNextIdFile();
+                try{
+                    idGrupo = Integer.parseInt(ficheiro.getReceiver());
+                    if(!verificaExistenciaGrupo(idGrupo))
+                        return GRUPO_INEXISTENTE;
+                    if(!verificaMembroGrupo(idGrupo,ficheiro.getSender())){
+                        return NOT_MEMBRO;
+                    }
+                    sqlQuery = "INSERT INTO `File` (idFile,name,date,viewed,sender,group_receiver) VALUES ('" +  idFile +  "','" + ficheiro.getName() + "','" + Timestamp.valueOf(ficheiro.getDate()) + "','" + 0 + "','" + ficheiro.getSender() + "','" + idGrupo + "')";
+                    statement.executeUpdate(sqlQuery);
+                }catch (NumberFormatException e){
+                    username = ficheiro.getReceiver();
+                    if(!verificaExistenciaUser(username))
+                        return UTILIZADOR_INEXISTENTE;
+                    sqlQuery = "INSERT INTO `File` (idFile,name,date,viewed,sender,user_receiver) VALUES ('" +  idFile +  "','" + ficheiro.getName() + "','" + Timestamp.valueOf(ficheiro.getDate()) + "','" + 0 + "','" + ficheiro.getSender() + "','" + username + "')";
+                    statement.executeUpdate(sqlQuery);
+                }
+                statement.close();
+                novidade.setIdFicheiro(idFile);
+                dbConn.commit();
+            }catch (Exception e){
+                dbConn.rollback();
+                worked = false;
+            }
+        }while (!worked);
+        return SUCESSO;
+    }
+}
