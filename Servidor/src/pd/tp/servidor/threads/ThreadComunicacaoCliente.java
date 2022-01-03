@@ -724,6 +724,29 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         threadRecebeFicheiroCli.start();
     }
 
+    private void listaFicheiros(ObjectOutputStream out,String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        String username = array[1];
+        try {
+            String resultado = comBD.listaFicheiros(username);
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void enviaFicheiroCli (ObjectOutputStream out, String msgRecebida) {
+        String[] array = msgRecebida.split(",");
+        int idFile = Integer.parseInt(array[1]);
+        String username = array[2];
+        ThreadEnviaFicheiroCli threadEnviaFicheiroCli = new ThreadEnviaFicheiroCli(out,id,idFile,comBD,ficheiros,username);
+        threadEnviaFicheiroCli.start();
+    }
+
+
     @Override
     public void run() {
         dadosUser = new HashMap<>();
@@ -877,6 +900,18 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
                                                                                                                                                 else{
                                                                                                                                                     if(msgRecebida.equals(HEARTBEAT_CLI)){
                                                                                                                                                         novaInteracao();
+                                                                                                                                                    }
+                                                                                                                                                    else {
+                                                                                                                                                        if(msgRecebida.startsWith(LISTA_FICHEIROS)) {
+                                                                                                                                                          novaInteracao();
+                                                                                                                                                          listaFicheiros(out,msgRecebida);
+                                                                                                                                                        }
+                                                                                                                                                        else {
+                                                                                                                                                            if(msgRecebida.startsWith(GET_FICHEIRO)) {
+                                                                                                                                                                novaInteracao();
+                                                                                                                                                                enviaFicheiroCli(out, msgRecebida);
+                                                                                                                                                            }
+                                                                                                                                                        }
                                                                                                                                                     }
                                                                                                                                                 }
                                                                                                                                             }

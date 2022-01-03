@@ -16,6 +16,24 @@ public class AtualizacaoServidor implements Serializable, Utils{
     private String receiver;
     private int idMsg;
     private boolean enviada;
+    private String nomeFicheiro;
+    private int idFicheiro;
+
+    public String getNomeFicheiro() {
+        return nomeFicheiro;
+    }
+
+    public void setNomeFicheiro(String nomeFicheiro) {
+        this.nomeFicheiro = nomeFicheiro;
+    }
+
+    public int getIdFicheiro() {
+        return idFicheiro;
+    }
+
+    public void setIdFicheiro(int idFicheiro) {
+        this.idFicheiro = idFicheiro;
+    }
 
     public String getTipoMsg() {
         return tipoMsg;
@@ -187,6 +205,16 @@ public class AtualizacaoServidor implements Serializable, Utils{
                                                                                     else {
                                                                                         if (tipoMsg.equals(UTILIZADORES_INATIVOS)){
                                                                                             stringBuilder.append("NOTIFICAÇÃO: Foi dado como desconectado por inatividade!");
+                                                                                        }
+                                                                                        else{
+                                                                                            if(tipoMsg.equals(FICHEIRO)){
+                                                                                                try{
+                                                                                                    Integer idGrupo = Integer.parseInt(receiver);
+                                                                                                    stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" enviou o ficheiro ").append(idFicheiro).append("-").append(nomeFicheiro).append(" para o grupo ").append(idGrupo).append("!");
+                                                                                                }catch (NumberFormatException e){
+                                                                                                    stringBuilder.append("NOTIFICAÇÃO: O user ").append(usernameUser).append(" enviou-lhe a o ficheiro ").append(idFicheiro).append("-").append(nomeFicheiro).append("!");
+                                                                                                }
+                                                                                            }
                                                                                         }
                                                                                     }
                                                                                 }

@@ -1,6 +1,7 @@
 package pd.tp.cliente.comunicacao;
 
 import pd.tp.cliente.threads.ThreadEnviaFicheiro;
+import pd.tp.cliente.threads.ThreadRecebeFicheiroServ;
 import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.cliente.Utilizador;
@@ -890,6 +891,61 @@ public class ComunicacaoServidor implements Utils {
 
             ThreadEnviaFicheiro threadEnviaFicheiro = new ThreadEnviaFicheiro(ipServidor,dir,ficheiro,resultado);
             threadEnviaFicheiro.start();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String listaFicheiros() {
+        String resultado = "";
+        try {
+            synchronized (out){
+                out.writeUnshared(LISTA_FICHEIROS + "," + user.getUsername());
+                out.flush();
+            }
+
+            while(true){
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
+                }
+            }
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
+    public String getFicheiro(int escolha) {
+        String resultado = "";
+        try {
+            synchronized (out){
+                out.writeUnshared(GET_FICHEIRO + "," + escolha + "," + user.getUsername());
+                out.flush();
+            }
+
+            while(true){
+                if (user.isRecebiResultado()){
+                    resultado = user.getResultadoComando();
+                    user.eraseResultadoComando();
+                    user.setRecebiResultado(false);
+                    break;
+                }
+            }
+
+            if(!resultado.startsWith(SUCESSO)){
+                return resultado;
+            }
+
+            ThreadRecebeFicheiroServ threadRecebeFicheiroServ = new ThreadRecebeFicheiroServ(ipServidor,resultado,user.getUsername());
+            threadRecebeFicheiroServ.start();
 
         }catch (IOException e) {
             e.printStackTrace();

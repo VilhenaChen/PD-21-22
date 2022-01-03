@@ -35,6 +35,7 @@ public class Cliente {
         atualizacaoServidor.setReceiver(novidade.getReceiver());
         atualizacaoServidor.setNomeGrupo(novidade.getNomeGrupo());
         atualizacaoServidor.setEnviada(false);
+
         novidades.add(atualizacaoServidor);
     }
 

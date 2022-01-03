@@ -251,13 +251,16 @@ public class UiTexto implements Utils {
                 case 2: //Listar msg
                     resultado = cs.listaMensagens();
                     if(resultado.length() == 0)
-                        System.out.println("Nao existem mensagens!");
+                        System.out.println("Nao existem mensagens trocadas!");
                     else {
                         System.out.println("---- LISTA DE MENSAGENS----");
                         System.out.println(resultado);
-                        System.out.println("Escolha uma mensagem: ");
+                        System.out.println("Escolha uma mensagem para ver o corpo(-1 para voltar ao menu): ");
                         int escolha = scanner.nextInt();
                         scanner.nextLine();
+                        if(escolha == -1) {
+                            break;
+                        }
                         resultado = cs.getCorpoMensagem(escolha);
                         if(resultado.length() == 0)
                             System.out.println("A Mensagem " + escolha + " nao existe ou nao e sua");
@@ -334,13 +337,31 @@ public class UiTexto implements Utils {
                     }
                     break;
                 case 2: //Listar Ficheiros
+                    resultado = cs.listaFicheiros();
+                    if(resultado.length() == 0)
+                        System.out.println("Não existem ficheiros trocados!");
+                    else {
+                        System.out.println("---- LISTA DE FICHEIROS----");
+                        System.out.println(resultado);
+                        System.out.println("Escolha um ficheiro para fazer download(-1 para voltar ao menu): ");
+                        int escolha = scanner.nextInt();
+                        scanner.nextLine();
+                        if(escolha == -1) {
+                            break;
+                        }
+                        resultado = cs.getFicheiro(escolha);
+                        if(resultado.equals(FICHEIRO_INEXISTENTE))
+                            System.out.println("O Ficheiro " + escolha + " não existe");
+                        if(resultado.equals(NOT_YOUR_FILE))
+                            System.out.println("O Ficheiro " + escolha + " não é seu");
+                    }
                     break;
                 case 3: //Elininar ficheiro historico
                     break;
                 case 0: //Back
                     return;
                 default:
-                    System.out.println("Opcao Invalida!! Insira uma opcao valida");
+                    System.out.println("Opção Inválida!! Insira uma opção válida");
                     break;
             }
         }

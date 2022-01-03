@@ -1592,4 +1592,82 @@ public class ComunicacaoBD implements Utils {
         statement.executeUpdate(sqlQuery);
         statement.close();
     }
+
+    public String listaFicheiros(String username) throws SQLException {
+
+        StringBuilder resultado = new StringBuilder();
+        boolean worked=true;
+        do{
+            worked = true;
+            try {
+                dbConn.setAutoCommit(false);
+                ArrayList<Integer> grupos = arrayDeGruposUser(username);
+                Statement statement = dbConn.createStatement();
+                String sqlQuery = "SELECT idFile,name,`date`,viewed,sender,group_receiver,user_receiver FROM `File`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
+                ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+                while(resultSet.next()) {
+                    if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
+                        if(resultSet.getString("user_receiver") != null)
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" (Visto)").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
+                        else
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" (Visto)").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                    }
+                    else {
+                        if(resultSet.getString("user_receiver") != null)
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" (Nao Visto)").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
+                        else
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" (Nao Visto)").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                    }
+                }
+
+                for(Integer i : grupos) {
+                    sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver FROM `Msg`  WHERE group_receiver='" + i + "'AND sender!='" + username + "'";
+                    resultSet = statement.executeQuery(sqlQuery);
+                    while (resultSet.next()) {
+                        if (Integer.parseInt(resultSet.getString("viewed")) == 1) {
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" Visto").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                        } else {
+                            resultado.append(resultSet.getString("idFile")).append(" - ").append(resultSet.getString("name")).append(" Nao Visto").append("\n\tenvidado as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                        }
+                    }
+                }
+
+                resultSet.close();
+                statement.close();
+                dbConn.commit();
+            }catch (Exception e){
+                dbConn.rollback();
+                worked = false;
+            }
+        }while (!worked);
+
+        return resultado.toString();
+    }
+
+    public boolean verificaSenderOrReceiverFile(int idFile, String username) throws SQLException {
+        boolean worked=true;
+        do {
+            try{
+                dbConn.setAutoCommit(false);
+                Statement statement = dbConn.createStatement();
+                ResultSet resultSet;
+                String sqlQuery = "SELECT sender, user_receiver, group_receiver FROM `File` WHERE idFile='" + idFile + "'";
+                resultSet = statement.executeQuery(sqlQuery);
+                while (resultSet.next()) {
+                    if (!resultSet.getString("sender").equals(username) && !resultSet.getString("user_receiver").equals(username) && !verificaMembroGrupo(Integer.parseInt(resultSet.getString("group_receiver")), username)){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                dbConn.commit();
+            }catch (Exception e){
+                dbConn.rollback();
+                worked = false;
+            }
+        }while (!worked);
+        return false;
+    }
 }
