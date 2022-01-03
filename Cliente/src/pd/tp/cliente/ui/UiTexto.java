@@ -836,7 +836,6 @@ public class UiTexto implements Utils {
                     case 1: //Registo do User
                         uiRegisto();
                         RegistoComSucesso(cs.efetuaRegisto(user));
-                        System.out.println(user);
                         break;
                     case 2: //Login do User
                         uiLogin();
