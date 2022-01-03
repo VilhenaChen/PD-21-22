@@ -1,6 +1,7 @@
 package pd.tp.servidor;
 
 import pd.tp.cliente.Clientes;
+import pd.tp.cliente.Ficheiros;
 import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
 import pd.tp.servidor.threads.*;
@@ -128,13 +129,19 @@ public class Servidor implements Utils {
         Timer timerInformaPorto = new Timer("InformaPorto");
         timerInformaPorto.schedule(servidor.informaPortoThread, 0, 20000); //Mudar para 20secondos
         servidor.clientes = new Clientes();
-        ThreadRecebeAtualizacoesGRDS threadRecebeAtualizacoesGRDS = new ThreadRecebeAtualizacoesGRDS(servidor.ds,servidor.clientes);
+        ServerSocket ssFiles = new ServerSocket(0);
+        Ficheiros ficheiros = new Ficheiros(ssFiles.getLocalPort());
+        ThreadEscutaPedidosFicheiros threadEscutaPedidosFicheiros = new ThreadEscutaPedidosFicheiros(ssFiles,servidor.ID_SERVIDOR, ficheiros);
+        threadEscutaPedidosFicheiros.start();
+        ThreadRecebeAtualizacoesGRDS threadRecebeAtualizacoesGRDS = new ThreadRecebeAtualizacoesGRDS(servidor.ds,servidor.clientes,ficheiros,servidor.ID_SERVIDOR);
         threadRecebeAtualizacoesGRDS.start();
         ThreadVerificaClientesAtivosBD threadVerificaClientesAtivosBD = new ThreadVerificaClientesAtivosBD(comBD,servidor.dp,servidor.ds, servidor.ID_SERVIDOR);
         Timer timerVerificaAtividade = new Timer("VerifyActive");
         timerVerificaAtividade.schedule(threadVerificaClientesAtivosBD, 0, 1000);
-        ThreadIniciaComunicacaoClientes threadIniciaComunicacaoClientes = new ThreadIniciaComunicacaoClientes(servidor.ss, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes);
+
+        ThreadIniciaComunicacaoClientes threadIniciaComunicacaoClientes = new ThreadIniciaComunicacaoClientes(servidor.ss, comBD, servidor.ds, servidor.dp, servidor.ID_SERVIDOR, servidor.clientes,ficheiros);
         threadIniciaComunicacaoClientes.start();
+
 
         while(true) {
             System.out.println("Insira 'quit' para sair");

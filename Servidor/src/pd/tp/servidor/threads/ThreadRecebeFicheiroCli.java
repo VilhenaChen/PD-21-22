@@ -1,15 +1,13 @@
 package pd.tp.servidor.threads;
 
+import pd.tp.cliente.Ficheiros;
 import pd.tp.comum.Ficheiro;
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
 import pd.tp.servidor.bd.ComunicacaoBD;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.sql.SQLException;
 
 public class ThreadRecebeFicheiroCli extends Thread implements Utils {
@@ -22,7 +20,8 @@ public class ThreadRecebeFicheiroCli extends Thread implements Utils {
     int id;
     ComunicacaoBD comBD;
     ServerSocket ss;
-    public ThreadRecebeFicheiroCli(ObjectOutputStream out, Ficheiro ficheiro, DatagramSocket ds, DatagramPacket dp, int id, ComunicacaoBD comBD) {
+    Ficheiros ficheiros;
+    public ThreadRecebeFicheiroCli(ObjectOutputStream out, Ficheiro ficheiro, DatagramSocket ds, DatagramPacket dp, int id, ComunicacaoBD comBD, Ficheiros ficheiros) {
         try {
             this.ss = new ServerSocket(0);
 
@@ -34,7 +33,7 @@ public class ThreadRecebeFicheiroCli extends Thread implements Utils {
         this.ds = ds;
         this.dp = dp;
         this.id = id;
-
+        this.ficheiros = ficheiros;
         this.comBD = comBD;
 
     }
@@ -46,8 +45,9 @@ public class ThreadRecebeFicheiroCli extends Thread implements Utils {
             novidade.setTipoMsg(FICHEIRO);
             novidade.setUsernameUser(ficheiro.getSender());
             novidade.setReceiver(ficheiro.getReceiver());
-            novidade.setIpFicheiro("IPFICHEIRO");
-            novidade.setPortoFicheiro(1998);
+            novidade.setIpFicheiro(InetAddress.getLocalHost().getHostAddress());
+            novidade.setNomeFicheiro(ficheiro.getName());
+            novidade.setPortoFicheiro(ficheiros.getPortoFiles());
             comBD.verificaAfetadosFicheiro(ficheiro.getSender(),ficheiro.getReceiver(),novidade);
             String resultado = comBD.recebeFicheiro(ficheiro, novidade);
 
@@ -58,14 +58,12 @@ public class ThreadRecebeFicheiroCli extends Thread implements Utils {
                 out.writeUnshared(resultado);
                 out.flush();
             }
-            this.sCliFile = ss.accept();
-
-
             if(!resultado.startsWith(SUCESSO)){
                 return;
             }
+            this.sCliFile = ss.accept();
 
-            String patch = "C:\\FicheirosServidor_" + id;
+            String patch = "C:\\Ficheiros_Servidor_" + id;
             File diretorio = new File(patch);
             diretorio.mkdirs();
             FileOutputStream file = new FileOutputStream(patch + "\\" + ficheiro.getName());
@@ -82,6 +80,7 @@ public class ThreadRecebeFicheiroCli extends Thread implements Utils {
             sCliFile.close();
 
             System.out.println("O Utilizador " + ficheiro.getSender() + " enviou um ficheiro para o destinatario " + ficheiro.getReceiver());
+            ficheiros.addFicheiro(new Ficheiro(ficheiro.getIdFicheiro(), ficheiro.getName()));
             ThreadEnviaAtualizacaoGRDS threadEnviaAtualizacaoGRDS = new ThreadEnviaAtualizacaoGRDS(ds,dp,id,novidade);
             threadEnviaAtualizacaoGRDS.start();
 

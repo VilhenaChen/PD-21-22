@@ -1,6 +1,7 @@
 package pd.tp.servidor.threads;
 
 import pd.tp.cliente.Clientes;
+import pd.tp.cliente.Ficheiros;
 import pd.tp.comum.Ficheiro;
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
@@ -16,11 +17,15 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
     private DatagramPacket dp;
     private NovidadeGRDS novidadeGRDS;
     private Clientes clientes;
+    private int idServ;
+    private Ficheiros ficheiros;
 
 
-    public ThreadRecebeAtualizacoesGRDS(DatagramSocket ds, Clientes clientes ){
+    public ThreadRecebeAtualizacoesGRDS(DatagramSocket ds, Clientes clientes, Ficheiros ficheiros, int idServ){
         this.ds=ds;
         this.clientes = clientes;
+        this.ficheiros = ficheiros;
+        this.idServ = idServ;
     }
 
     @Override
@@ -152,6 +157,10 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                                                                                                         }catch (NumberFormatException e){
                                                                                                             stringBuilder.append("INFORMAÇÃO GRDS: O user ").append(novidadeGRDS.getUsernameUser()).append(" enviou o ficheiro ").append(novidadeGRDS.getIdMsg()).append("-").append(novidadeGRDS.getNomeFicheiro()).append(" para o user ").append(novidadeGRDS.getReceiver()).append("!");
                                                                                                             System.out.println(stringBuilder.toString());
+                                                                                                        }
+                                                                                                        if(!ficheiros.verificaExistenciaFicheiro(novidadeGRDS.getIdFicheiro())){
+                                                                                                            ThreadRecebeFicheiroServ threadRecebeFicheiroServ = new ThreadRecebeFicheiroServ(novidadeGRDS.getIpFicheiro(),novidadeGRDS.getPortoFicheiro(),novidadeGRDS.getIdFicheiro(),novidadeGRDS.getNomeFicheiro(),ficheiros, idServ);
+                                                                                                            threadRecebeFicheiroServ.start();
                                                                                                         }
                                                                                                     }
                                                                                                 }

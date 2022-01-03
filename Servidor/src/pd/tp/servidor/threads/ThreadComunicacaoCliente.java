@@ -1,6 +1,7 @@
 package pd.tp.servidor.threads;
 
 import pd.tp.cliente.Clientes;
+import pd.tp.cliente.Ficheiros;
 import pd.tp.comum.Ficheiro;
 import pd.tp.comum.Mensagem;
 import pd.tp.comum.NovidadeGRDS;
@@ -26,14 +27,16 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     DatagramPacket dp;
     ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente;
     int id;
+    Ficheiros ficheiros;
 
-    public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes) {
+    public ThreadComunicacaoCliente(Socket sCli, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int id, Clientes clientes, Ficheiros ficheiros) {
         this.sCli = sCli;
         this.comBD = comBD;
         this.clientes = clientes;
         this.ds = ds;
         this.dp = dp;
         this.id = id;
+        this.ficheiros = ficheiros;
     }
 
 
@@ -717,7 +720,7 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     }
 
     public void recebeFicheiro(ObjectOutputStream out, Ficheiro ficheiro){
-        ThreadRecebeFicheiroCli threadRecebeFicheiroCli = new ThreadRecebeFicheiroCli(out,ficheiro,ds,dp,id,comBD);
+        ThreadRecebeFicheiroCli threadRecebeFicheiroCli = new ThreadRecebeFicheiroCli(out,ficheiro,ds,dp,id,comBD, ficheiros);
         threadRecebeFicheiroCli.start();
     }
 

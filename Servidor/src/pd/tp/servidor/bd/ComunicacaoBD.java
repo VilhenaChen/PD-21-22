@@ -987,6 +987,9 @@ public class ComunicacaoBD implements Utils {
                     username = msg.getReceiver();
                     if(!verificaExistenciaUser(username))
                         return UTILIZADOR_INEXISTENTE;
+                    if(!verificaSeContacto(msg.getReceiver(),msg.getSender())){
+                        return NOT_CONTACT;
+                    }
                     sqlQuery = "INSERT INTO `Msg` (idMsg,subject,body,date,viewed,sender,user_receiver) VALUES ('" +  idMsg +  "','" + msg.getAssunto() + "','" + msg.getCorpo() + "','" + Timestamp.valueOf(msg.getDate()) + "','" + 0 + "','" + msg.getSender() + "','" + username + "')";
                     statement.executeUpdate(sqlQuery);
                 }
@@ -1552,6 +1555,7 @@ public class ComunicacaoBD implements Utils {
                 dbConn.setAutoCommit(false);
                 Statement statement = dbConn.createStatement();
                 int idFile = getNextIdFile();
+                ficheiro.setIdFicheiro(idFile);
                 try{
                     idGrupo = Integer.parseInt(ficheiro.getReceiver());
                     if(!verificaExistenciaGrupo(idGrupo))
@@ -1565,6 +1569,9 @@ public class ComunicacaoBD implements Utils {
                     username = ficheiro.getReceiver();
                     if(!verificaExistenciaUser(username))
                         return UTILIZADOR_INEXISTENTE;
+                    if(!verificaSeContacto(ficheiro.getReceiver(),ficheiro.getSender())){
+                        return NOT_CONTACT;
+                    }
                     sqlQuery = "INSERT INTO `File` (idFile,name,date,viewed,sender,user_receiver) VALUES ('" +  idFile +  "','" + ficheiro.getName() + "','" + Timestamp.valueOf(ficheiro.getDate()) + "','" + 0 + "','" + ficheiro.getSender() + "','" + username + "')";
                     statement.executeUpdate(sqlQuery);
                 }
@@ -1577,5 +1584,12 @@ public class ComunicacaoBD implements Utils {
             }
         }while (!worked);
         return SUCESSO;
+    }
+
+    public void atualizaVisualizacaoFicheiro(int id) throws SQLException {
+        Statement statement = dbConn.createStatement();
+        String sqlQuery = "UPDATE `File` SET viewed=1 WHERE idFile='" + id + "'";
+        statement.executeUpdate(sqlQuery);
+        statement.close();
     }
 }

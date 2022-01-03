@@ -27,8 +27,7 @@ public class ThreadEnviaFicheiro extends Thread implements Utils {
     public void run() {
         try {
             String [] array = resultado.split(",");
-            Socket sCliFile = null;
-            sCliFile = new Socket(ipServidor, Integer.parseInt(array[1]));
+            Socket sCliFile = new Socket(ipServidor, Integer.parseInt(array[1]));
 
             OutputStream outSendFile = sCliFile.getOutputStream();
             String patch = dir + "\\" + ficheiro.getName();

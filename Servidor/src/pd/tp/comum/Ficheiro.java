@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Ficheiro implements Serializable {
     private final static long serialVersionUID = 2L;
 
+    int idFicheiro;
     String name;
     String sender;
     String receiver;
@@ -15,6 +16,19 @@ public class Ficheiro implements Serializable {
         this.sender = sender;
         this.receiver = receiver;
         this.date = date;
+    }
+
+    public Ficheiro( int id,String name){
+        this.name = name;
+        this.idFicheiro = id;
+    }
+
+    public int getIdFicheiro() {
+        return idFicheiro;
+    }
+
+    public void setIdFicheiro(int idFicheiro) {
+        this.idFicheiro = idFicheiro;
     }
 
     public String getName() {

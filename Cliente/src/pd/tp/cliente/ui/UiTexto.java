@@ -240,6 +240,9 @@ public class UiTexto implements Utils {
                     else if(resultado.equals(UTILIZADOR_INEXISTENTE)) {
                         System.out.println("O Utilizador " + msg.getReceiver() + " nao existe" );
                     }
+                    else if(resultado.equals(NOT_CONTACT)) {
+                        System.out.println("O Utilizador " + msg.getReceiver() + " não pertence à sua lista de contactos");
+                    }
                     else {
                         System.out.println("Mensagem enviada com sucesso" );
                     }
@@ -322,6 +325,9 @@ public class UiTexto implements Utils {
                     }
                     else if(resultado.equals(UTILIZADOR_INEXISTENTE)) {
                         System.out.println("O Utilizador " + ficheiro.getReceiver() + " nao existe" );
+                    }
+                    else if(resultado.equals(NOT_CONTACT)) {
+                        System.out.println("O Utilizador " + ficheiro.getReceiver() + " não pertence à sua lista de contactos");
                     }
                     else {
                         System.out.println("Ficheiro enviado com sucesso" );

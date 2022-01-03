@@ -1,6 +1,7 @@
 package pd.tp.servidor.threads;
 
 import pd.tp.cliente.Clientes;
+import pd.tp.cliente.Ficheiros;
 import pd.tp.servidor.bd.ComunicacaoBD;
 
 import java.io.IOException;
@@ -16,8 +17,9 @@ public class ThreadIniciaComunicacaoClientes extends Thread{
     private int ID_SERVIDOR;
     private Clientes clientes;
     private ArrayList<ThreadComunicacaoCliente> threads;
+    private Ficheiros ficheiros;
 
-    public ThreadIniciaComunicacaoClientes(ServerSocket ss, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int ID_SERVIDOR, Clientes clientes) {
+    public ThreadIniciaComunicacaoClientes(ServerSocket ss, ComunicacaoBD comBD, DatagramSocket ds, DatagramPacket dp, int ID_SERVIDOR, Clientes clientes, Ficheiros ficheiros) {
         this.ss = ss;
         this.comBD = comBD;
         this.ds = ds;
@@ -25,6 +27,7 @@ public class ThreadIniciaComunicacaoClientes extends Thread{
         this.ID_SERVIDOR = ID_SERVIDOR;
         this.clientes = clientes;
         this.threads = new ArrayList<>();
+        this.ficheiros = ficheiros;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class ThreadIniciaComunicacaoClientes extends Thread{
         while(true) {
             try {
                 Socket sCli = ss.accept();
-                ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, ds, dp, ID_SERVIDOR, clientes);
+                ThreadComunicacaoCliente tc = new ThreadComunicacaoCliente(sCli, comBD, ds, dp, ID_SERVIDOR, clientes,ficheiros);
                 threads.add(tc);
                 tc.start();
             }catch (IOException e) {
