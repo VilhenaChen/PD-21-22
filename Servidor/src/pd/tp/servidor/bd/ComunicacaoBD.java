@@ -157,7 +157,7 @@ public class ComunicacaoBD implements Utils {
                 sqlQuery = "UPDATE `Msg` SET user_receiver='" + new_username + "'WHERE user_receiver='" + old_username + "'";
                 statement.executeUpdate(sqlQuery);
 
-                sqlQuery = "UPDATE `Group` SET admin='" + new_username + "'WHERE admin='" + old_username + "'";
+                sqlQuery = "UPDATE `Group` SET `admin`='" + new_username + "'WHERE `admin`='" + old_username + "'";
                 statement.executeUpdate(sqlQuery);
                 sqlQuery = "UPDATE `Joins` SET user='" + new_username + "'WHERE user='" + old_username + "'";
                 statement.executeUpdate(sqlQuery);
@@ -219,7 +219,6 @@ public class ComunicacaoBD implements Utils {
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
 
                 if(!resultSet.next()) {
-                    System.out.println("O utilizador não existe!");
                     resultSet.close();
                     statement.close();
                     return UTILIZADOR_INEXISTENTE;
@@ -250,7 +249,6 @@ public class ComunicacaoBD implements Utils {
 
                 }
                 else{
-                    System.out.println("Password errada!");
                     resultSet.close();
                     statement.close();
                     return PASSWORD_ERRADA;
@@ -275,7 +273,6 @@ public class ComunicacaoBD implements Utils {
 
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
                 if(!resultSet.next()) {
-                    System.out.println("O utilizador não existe!");
                     resultSet.close();
                     statement.close();
                     return UTILIZADOR_INEXISTENTE;
@@ -338,7 +335,7 @@ public class ComunicacaoBD implements Utils {
                 if(verificaExistenciaUser(username)) {
                     if (!verificaSeExisteGrupoComNomeEAdmin(name,username)){
                         int idGrupo = getNextIdGroup();
-                        sqlQuery = "INSERT INTO `Group` (idGroup,name,admin) VALUES ('" + idGrupo + "','" + name + "','" + username + "')";
+                        sqlQuery = "INSERT INTO `Group` (idGroup,name,`admin`) VALUES ('" + idGrupo + "','" + name + "','" + username + "')";
                         statement.executeUpdate(sqlQuery);
                         statement.close();
                         novidadeGRDS.setIdGrupo(idGrupo);
@@ -417,16 +414,35 @@ public class ComunicacaoBD implements Utils {
     }
 
     public boolean verificaMembroGrupo(int idGrupo, String username) throws SQLException{
-        Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT user FROM `Joins` WHERE (user='" + username + "'AND `group`='" + idGrupo +"') AND accepted='1'";
-        ResultSet resultSet = statement.executeQuery(sqlQuery);
+        boolean worked=true;
+        do{
+            worked = true;
+            try {
+                dbConn.setAutoCommit(false);
+                Statement statement = dbConn.createStatement();
+                String sqlQuery = "SELECT user FROM `Joins` WHERE (user='" + username + "'AND `group`='" + idGrupo +"') AND accepted='1'";
+                ResultSet resultSet = statement.executeQuery(sqlQuery);
+                if(resultSet.next()) {
+                    resultSet.close();
+                    statement.close();
+                    return true;
+                }
 
-        if(!resultSet.next()) {
-            resultSet.close();
-            statement.close();
-            return false;
-        }
-        return true;
+                sqlQuery = "SELECT `admin` FROM `Group` WHERE `admin`='" + username + "'AND `idGroup`='" + idGrupo +"'";
+                resultSet = statement.executeQuery(sqlQuery);
+                if(resultSet.next()) {
+                    resultSet.close();
+                    statement.close();
+                    return true;
+                }
+                dbConn.commit();
+            }catch (Exception e){
+                dbConn.rollback();
+                worked = false;
+            }
+        }while (!worked);
+
+        return false;
     }
 
     public boolean verificaSePedidoAdesao(int idGrupo, String username) throws SQLException{
@@ -444,7 +460,7 @@ public class ComunicacaoBD implements Utils {
 
     public boolean verificaSeExisteGrupoComNomeEAdmin(String name, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT name FROM `Group` WHERE admin='" + admin + "'";
+        String sqlQuery = "SELECT name FROM `Group` WHERE `admin`='" + admin + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         while (resultSet.next()){
@@ -511,7 +527,7 @@ public class ComunicacaoBD implements Utils {
 
     public String getAdminFromIDGoup(int idGrupo) throws SQLException{
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT admin FROM `Group` WHERE idGroup='" + idGrupo + "'";
+        String sqlQuery = "SELECT `admin` FROM `Group` WHERE idGroup='" + idGrupo + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(resultSet.next()){
@@ -528,7 +544,7 @@ public class ComunicacaoBD implements Utils {
 
     public boolean verificaAdminGrupo(int idGroup, String admin) throws SQLException {
         Statement statement = dbConn.createStatement();
-        String sqlQuery = "SELECT admin FROM `Group` WHERE idGroup='" + idGroup + "'";
+        String sqlQuery = "SELECT `admin` FROM `Group` WHERE idGroup='" + idGroup + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         if(resultSet.getString("admin").equals(admin)) {
@@ -577,7 +593,7 @@ public class ComunicacaoBD implements Utils {
         int count = 0;
         Statement statement = dbConn.createStatement();
         String sqlQuery;
-        sqlQuery = "SELECT name, idGroup FROM `Group` WHERE admin='" +  username + "'" ;
+        sqlQuery = "SELECT name, idGroup FROM `Group` WHERE `admin`='" +  username + "'" ;
         ResultSet resultSet = statement.executeQuery(sqlQuery);
         while(resultSet.next()) {
             count++;
@@ -599,7 +615,7 @@ public class ComunicacaoBD implements Utils {
                 Statement statement = dbConn.createStatement();
                 String sqlQuery;
                 boolean vazio = true;
-                sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
+                sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
                 if(resultSet.next()) {
                     resultado.append(resultSet.getString("admin")).append(" -> Admin\n");
@@ -937,7 +953,6 @@ public class ComunicacaoBD implements Utils {
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         while(resultSet.next()) {
-            System.out.println(resultSet.getString("user"));
             resultado.append(resultSet.getString("user"));
         }
 
@@ -976,8 +991,9 @@ public class ComunicacaoBD implements Utils {
                 int idMsg = getNextIdMsg();
                 try{
                     idGrupo = Integer.parseInt(msg.getReceiver());
-                    if(!verificaExistenciaGrupo(idGrupo))
+                    if(!verificaExistenciaGrupo(idGrupo)){
                         return GRUPO_INEXISTENTE;
+                    }
                     if(!verificaMembroGrupo(idGrupo,msg.getSender())){
                         return NOT_MEMBRO;
                     }
@@ -985,8 +1001,9 @@ public class ComunicacaoBD implements Utils {
                     statement.executeUpdate(sqlQuery);
                 }catch (NumberFormatException e){
                     username = msg.getReceiver();
-                    if(!verificaExistenciaUser(username))
+                    if(!verificaExistenciaUser(username)){
                         return UTILIZADOR_INEXISTENTE;
+                    }
                     if(!verificaSeContacto(msg.getReceiver(),msg.getSender())){
                         return NOT_CONTACT;
                     }
@@ -1011,14 +1028,13 @@ public class ComunicacaoBD implements Utils {
         String sqlQuery = "SELECT `group` FROM `Joins`  WHERE user='" + username + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
         while (resultSet.next()){
-            arrayGrupos.add(Integer.parseInt(resultSet.getString("idGroup")));
+            arrayGrupos.add(Integer.parseInt(resultSet.getString("group")));
         }
         return arrayGrupos;
 
     }
 
     public String listaMensagens(String username) throws SQLException {
-
         StringBuilder resultado = new StringBuilder();
         boolean worked=true;
         do{
@@ -1029,19 +1045,23 @@ public class ComunicacaoBD implements Utils {
                 Statement statement = dbConn.createStatement();
                 String sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver,user_receiver FROM `Msg`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
-
                 while(resultSet.next()) {
                     if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
-                        if(resultSet.getString("user_receiver") != null)
+                        if(resultSet.getString("user_receiver") != null) {
                             resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
-                        else
-                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                        }
+                        else {
+                            int idGrupo = resultSet.getInt("group_receiver");
+                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(idGrupo).append("\n");
+                        }
                     }
                     else {
-                        if(resultSet.getString("user_receiver") != null)
+                        if(resultSet.getString("user_receiver") != null) {
                             resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Nao Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("user_receiver")).append("\n");
-                        else
-                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Nao Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                        }
+                        else {
+                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" (Nao Lida)").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getInt("group_receiver")).append("\n");
+                        }
                     }
                 }
 
@@ -1050,9 +1070,9 @@ public class ComunicacaoBD implements Utils {
                     resultSet = statement.executeQuery(sqlQuery);
                     while (resultSet.next()) {
                         if (Integer.parseInt(resultSet.getString("viewed")) == 1) {
-                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(i).append("\n");
                         } else {
-                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Nao Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(resultSet.getString("group_receiver")).append("\n");
+                            resultado.append(resultSet.getString("idMsg")).append(" - ").append(resultSet.getString("subject")).append(" Nao Lida").append("\n\tenvidada as: ").append(resultSet.getString("date")).append(" por ").append(resultSet.getString("sender")).append(" para ").append(i).append("\n");
                         }
                     }
                 }
@@ -1065,7 +1085,6 @@ public class ComunicacaoBD implements Utils {
                 worked = false;
             }
         }while (!worked);
-
         return resultado.toString();
     }
 
@@ -1073,19 +1092,33 @@ public class ComunicacaoBD implements Utils {
         Statement statement = dbConn.createStatement();
         StringBuilder resultado = new StringBuilder();
 
-        String sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,user_receiver FROM `Msg`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
+        String sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver,user_receiver FROM `Msg`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
         ResultSet resultSet = statement.executeQuery(sqlQuery);
 
         while(resultSet.next()) {
             if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
-                resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Lida"
-                        + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
-                        + resultSet.getString("user_receiver") + "\n");
+                if(resultSet.getString("user_receiver") !=null) {
+                    resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Lida"
+                            + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                            + resultSet.getString("user_receiver") + "\n");
+                }
+                else {
+                    resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Lida"
+                            + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                            + resultSet.getString("group_receiver") + "\n");
+                }
             }
             else {
-                resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Nao Lida"
-                        + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
-                        + resultSet.getString("user_receiver") + "\n");
+                if(resultSet.getString("user_receiver") !=null) {
+                    resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Nao Lida"
+                            + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                            + resultSet.getString("user_receiver") + "\n");
+                }
+                else {
+                    resultado.append(resultSet.getString("idMsg") + " - " + resultSet.getString("subject") + " Nao Lida"
+                            + "\n\tenvidada as: " + resultSet.getString("date") + " por " + resultSet.getString("sender") + " para "
+                            + resultSet.getString("group_receiver") + "\n");
+                }
             }
         }
         resultSet.close();
@@ -1118,10 +1151,12 @@ public class ComunicacaoBD implements Utils {
         String sqlQuery = "SELECT sender, user_receiver FROM `Msg` WHERE idMsg='" + idMsg + "'";
         resultSet = statement.executeQuery(sqlQuery);
         while(resultSet.next()){
-            if(resultSet.getString("sender").equals(username) || resultSet.getString("user_receiver").equals(username))
-                return true;
-            else
+            if(!resultSet.getString("sender").equals(username) && (resultSet.getString("user_receiver") == null || !resultSet.getString("user_receiver").equals(username))) {
                 return false;
+            }
+            else {
+                return true;
+            }
         }
         return false;
     }
@@ -1170,7 +1205,6 @@ public class ComunicacaoBD implements Utils {
                 }
                 String sqlQuery = "SELECT idMsg,subject,body,`date`,viewed,sender,user_receiver, group_receiver FROM `Msg` WHERE `idMsg`='" + idMsg + "'";
                 resultSet = statement.executeQuery(sqlQuery);
-
                 while(resultSet.next()) {
                     if(!verificaSenderOrReceiver(idMsg,username) && !verificaMembroGrupo(Integer.parseInt(resultSet.getString("group_receiver")),username)){
                         resultSet.close();
@@ -1233,7 +1267,7 @@ public class ComunicacaoBD implements Utils {
                     grupos.add(resultSet.getInt("group"));
                 }
 
-                sqlQuery = "SELECT idGroup FROM `Group` WHERE admin='" + old_username + "'";
+                sqlQuery = "SELECT idGroup FROM `Group` WHERE `admin`='" + old_username + "'";
                 resultSet = statement.executeQuery(sqlQuery);
 
                 while (resultSet.next()){
@@ -1248,7 +1282,7 @@ public class ComunicacaoBD implements Utils {
                         novidadeGRDS.addUserAfetado(resultSet.getString("user"));
                     }
 
-                    sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + i + "' AND admin!='" + old_username + "'";
+                    sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + i + "' AND `admin`!='" + old_username + "'";
                     resultSet = statement.executeQuery(sqlQuery);
 
                     while (resultSet.next()){
@@ -1292,7 +1326,7 @@ public class ComunicacaoBD implements Utils {
                     novidadeGRDS.addUserAfetado(resultSet.getString("user"));
                 }
 
-                sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
+                sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
                 resultSet = statement.executeQuery(sqlQuery);
 
                 while (resultSet.next()){
@@ -1323,7 +1357,7 @@ public class ComunicacaoBD implements Utils {
                     novidadeGRDS.addUserAfetado(resultSet.getString("user"));
                 }
 
-                sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
+                sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "'";
                 resultSet = statement.executeQuery(sqlQuery);
 
                 while (resultSet.next()){
@@ -1397,7 +1431,7 @@ public class ComunicacaoBD implements Utils {
                         novidadeGRDS.addUserAfetado(resultSet.getString("user"));
                     }
 
-                    sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND admin!='" + sender + "'";
+                    sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND `admin`!='" + sender + "'";
                     resultSet = statement.executeQuery(sqlQuery);
 
                     while (resultSet.next()){
@@ -1426,23 +1460,25 @@ public class ComunicacaoBD implements Utils {
                 Statement statement = dbConn.createStatement();
                 String sqlQuery = "SELECT sender,user_receiver,group_receiver FROM `Msg` WHERE `idMsg`='" + idMsg + "'";;
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
-
                 while (resultSet.next()){
                     if(resultSet.getString("user_receiver")==null){
-                        sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + resultSet.getInt("group_receiver") + "' AND user!='" + username + "'";
-                        resultSet = statement.executeQuery(sqlQuery);
+                        int idGrupo = resultSet.getInt("group_receiver");
+                        Statement statementB = dbConn.createStatement();
+                        sqlQuery = "SELECT user FROM `Joins` WHERE `group`='" + idGrupo + "' AND user!='" + username + "'";
+                        ResultSet resultSetB = statementB.executeQuery(sqlQuery);
 
-                        while (resultSet.next()){
-                            novidadeGRDS.addUserAfetado(resultSet.getString("user"));
+                        while (resultSetB.next()){
+                            novidadeGRDS.addUserAfetado(resultSetB.getString("user"));
                         }
 
-                        sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + resultSet.getInt("group_receiver") + "' AND admin!='" + username + "'";
-                        resultSet = statement.executeQuery(sqlQuery);
+                        sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND `admin`!='" + username + "'";
+                        resultSetB = statementB.executeQuery(sqlQuery);
 
-                        while (resultSet.next()){
-                            novidadeGRDS.addUserAfetado(resultSet.getString("admin"));
+                        while (resultSetB.next()){
+                            novidadeGRDS.addUserAfetado(resultSetB.getString("admin"));
                         }
-                        resultSet.close();
+                        resultSetB.close();
+                        statementB.close();
                     }
                     else{
                         if(resultSet.getString("sender").equals(username)){
@@ -1453,6 +1489,7 @@ public class ComunicacaoBD implements Utils {
                         }
                     }
                 }
+                resultSet.close();
                 statement.close();
                 dbConn.commit();
             }catch (Exception e){
@@ -1510,7 +1547,7 @@ public class ComunicacaoBD implements Utils {
                         novidade.addUserAfetado(resultSet.getString("user"));
                     }
 
-                    sqlQuery = "SELECT admin FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND admin!='" + sender + "'";
+                    sqlQuery = "SELECT `admin` FROM `Group` WHERE `idGroup`='" + idGrupo + "' AND `admin`!='" + sender + "'";
                     resultSet = statement.executeQuery(sqlQuery);
 
                     while (resultSet.next()){
@@ -1605,7 +1642,6 @@ public class ComunicacaoBD implements Utils {
                 Statement statement = dbConn.createStatement();
                 String sqlQuery = "SELECT idFile,name,`date`,viewed,sender,group_receiver,user_receiver FROM `File`  WHERE sender='" + username + "'OR user_receiver='" + username + "'";
                 ResultSet resultSet = statement.executeQuery(sqlQuery);
-
                 while(resultSet.next()) {
                     if(Integer.parseInt(resultSet.getString("viewed")) == 1) {
                         if(resultSet.getString("user_receiver") != null)
@@ -1622,7 +1658,7 @@ public class ComunicacaoBD implements Utils {
                 }
 
                 for(Integer i : grupos) {
-                    sqlQuery = "SELECT idMsg,subject,`date`,viewed,sender,group_receiver FROM `Msg`  WHERE group_receiver='" + i + "'AND sender!='" + username + "'";
+                    sqlQuery = "SELECT idFile,name,`date`,viewed,sender,group_receiver FROM `File`  WHERE group_receiver='" + i + "'AND sender!='" + username + "'";
                     resultSet = statement.executeQuery(sqlQuery);
                     while (resultSet.next()) {
                         if (Integer.parseInt(resultSet.getString("viewed")) == 1) {
@@ -1655,7 +1691,7 @@ public class ComunicacaoBD implements Utils {
                 String sqlQuery = "SELECT sender, user_receiver, group_receiver FROM `File` WHERE idFile='" + idFile + "'";
                 resultSet = statement.executeQuery(sqlQuery);
                 while (resultSet.next()) {
-                    if (!resultSet.getString("sender").equals(username) && !resultSet.getString("user_receiver").equals(username) && !verificaMembroGrupo(Integer.parseInt(resultSet.getString("group_receiver")), username)){
+                    if (!resultSet.getString("sender").equals(username) && (resultSet.getString("user_receiver") == null || !resultSet.getString("user_receiver").equals(username)) && !verificaMembroGrupo(Integer.parseInt(resultSet.getString("group_receiver")), username)){
                         return false;
                     }
                     else{

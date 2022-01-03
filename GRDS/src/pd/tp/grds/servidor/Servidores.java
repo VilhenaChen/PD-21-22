@@ -1,6 +1,7 @@
 package pd.tp.grds.servidor;
 
 import pd.tp.comum.NovidadeGRDS;
+import pd.tp.comum.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class Servidores {
+public class Servidores implements Utils {
 
     private static final int MAX_INATIVIDADE = 60;
     private static final int MAX_INATIVIDADE_ATRIBUICAO = 20;
@@ -196,4 +197,24 @@ public class Servidores {
         }
     }
 
+
+    public void informaServidoresdoEncerramento(DatagramSocket ds) {
+        DatagramPacket dp;
+        synchronized (this.servidores){
+            for (Servidor serv : servidores){
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = new ObjectOutputStream(baos);
+                    out.writeUnshared(DESLIGA_GRDS);
+                    out.flush();
+                    byte[] msgTipoBytes = baos.toByteArray();
+                    InetAddress ip = InetAddress.getByName(serv.ip);
+                    dp = new DatagramPacket(msgTipoBytes, msgTipoBytes.length, ip, serv.getPorto_serv());
+                    ds.send(dp);
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

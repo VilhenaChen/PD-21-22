@@ -36,7 +36,11 @@ public class ThreadRecebeAtualizacoesGRDS extends Thread implements Utils {
                 ds.receive(dp);
                 ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
                 ObjectInputStream in = new ObjectInputStream(bais);
-                novidadeGRDS = (NovidadeGRDS) in.readObject();
+                Object objeto = in.readObject();
+                if(objeto instanceof String) {
+                    System.out.println("O GRDS vai encerrar!");
+                }
+                novidadeGRDS = (NovidadeGRDS) objeto;
                 StringBuilder stringBuilder = new StringBuilder();
                 if(novidadeGRDS.getTipoMsg().equals(LOGIN)){
                     System.out.println("INFORMAÇÃO GRDS: O utilizador " + novidadeGRDS.getUsernameUser() + " efetuou login!");

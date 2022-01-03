@@ -283,7 +283,7 @@ public class UiTexto implements Utils {
                     if(resultado.startsWith("ERRO")){
                         System.out.println("Erro! As mensagens seguintes não foram eliminadas por não estarem na sua lista de mensagens: ");
                         String[] arrayFalhas = resultado.split(",");
-                        for(int j = 0; j< arrayFalhas.length; j++){
+                        for(int j = 1; j< arrayFalhas.length; j++){
                             System.out.println(arrayFalhas[j]);
                         }
                     }
@@ -389,7 +389,7 @@ public class UiTexto implements Utils {
                         System.out.println("Erro! Já pertence ao grupo ao qual está a tentar aderir");
                     }
                     else
-                        System.out.println("Aderiu com sucesso ao Grupo " + idGrupo);
+                        System.out.println("Enviou com sucesso um pedido de adesão ao grupo " + idGrupo);
                     break;
                 case 2: //Sair grupo
                     System.out.println("Insira o ID do grupo do qual pretende sair: ");

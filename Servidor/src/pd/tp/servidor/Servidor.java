@@ -151,7 +151,6 @@ public class Servidor implements Utils {
             }
         }
 
-
         threadIniciaComunicacaoClientes.interrupt();
         threadRecebeAtualizacoesGRDS.interrupt();
         timerVerificaAtividade.cancel();

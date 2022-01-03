@@ -39,7 +39,7 @@ public class Cliente implements Utils{
         ByteArrayInputStream bais = new ByteArrayInputStream(dp.getData());
         ObjectInputStream in = new ObjectInputStream(bais);
         infoServidor = (HashMap<String,String>) in.readObject();
-        System.out.println(infoServidor.get("IP") + ":" + infoServidor.get("PORTO"));
+        System.out.println("Ligou-se ao servidor: " + infoServidor.get("IP") + ":" + infoServidor.get("PORTO"));
 
         ds.close();
     }
@@ -59,7 +59,7 @@ public class Cliente implements Utils{
             System.exit(1);
         }
 
-        System.out.println("IP = " + cli.IP_GRDS + " PORTO = " + cli.PORTO_GRDS);
+        System.out.println("IP GRDS = " + cli.IP_GRDS + " PORTO = " + cli.PORTO_GRDS);
         System.out.println("--- À ESPERA DE SERVIDOR ----");
         cli.pedeIPGRDS();
         System.out.println("--- A INICIAR ----");

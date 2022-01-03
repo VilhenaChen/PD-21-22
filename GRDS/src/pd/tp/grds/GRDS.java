@@ -54,6 +54,8 @@ public class GRDS {
             }
         }
 
+        servidores.informaServidoresdoEncerramento(ds);
+
         threadIniciaComunicacao.interrupt();
         grds.threadMulticastServidores.interrupt();
         grds.threadHeartbeatServidores.cancel();

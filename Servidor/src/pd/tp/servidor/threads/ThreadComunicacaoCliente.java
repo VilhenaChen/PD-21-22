@@ -23,6 +23,8 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     private ComunicacaoBD comBD;
     private HashMap<String, String> dadosUser;
     private Clientes clientes;
+    ObjectInputStream in;
+    ObjectOutputStream out;
     DatagramSocket ds;
     DatagramPacket dp;
     ThreadEnviaAtualizacoesCliente threadEnviaAtualizacoesCliente;
@@ -751,8 +753,8 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
     public void run() {
         dadosUser = new HashMap<>();
         try {
-            ObjectInputStream in = new ObjectInputStream(sCli.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(sCli.getOutputStream());
+            in = new ObjectInputStream(sCli.getInputStream());
+            out = new ObjectOutputStream(sCli.getOutputStream());
             Object objetoRecebido;
             String msgRecebida = "";
             do {
@@ -958,7 +960,23 @@ public class ThreadComunicacaoCliente extends Thread implements Utils {
         }
     }
 
-
+    @Override
+    public void interrupt() {
+        try {
+            String resultado = DESLIGA_SERVIDOR;
+            synchronized (out){
+                out.writeUnshared(resultado);
+                out.flush();
+            }
+            comBD.logoutUser(dadosUser.get("username"));
+            threadEnviaAtualizacoesCliente.interrupt();
+            in.close();
+            out.close();
+            sCli.close();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

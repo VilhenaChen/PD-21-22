@@ -2,10 +2,12 @@ package pd.tp.cliente.threads;
 
 import pd.tp.cliente.Utilizador;
 import pd.tp.comum.AtualizacaoServidor;
+import pd.tp.comum.Utils;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class ThreadRecebeInformacoesServidor extends Thread{
+public class ThreadRecebeInformacoesServidor extends Thread implements Utils {
 
     ObjectInputStream in;
     Utilizador user;
@@ -22,6 +24,10 @@ public class ThreadRecebeInformacoesServidor extends Thread{
             try {
                 objeto = in.readObject();
                 if(objeto instanceof String){
+                    if(objeto.equals(DESLIGA_SERVIDOR)) {
+                        System.out.println("O Servidor vai encerrar!!!!");
+                        break;
+                    }
                     user.setResultadoComando((String) objeto);
                     user.setRecebiResultado(true);
                 }

@@ -26,7 +26,6 @@ public class ComunicacaoServidor implements Utils {
 
     public void setUser(Utilizador user){
         this.user = user;
-        System.out.println(user.toString());
     }
 
     public String efetuaLogin(Utilizador utilizador) { //Manda o Login do User ao Servidor
@@ -793,7 +792,6 @@ public class ComunicacaoServidor implements Utils {
                 out.writeUnshared(LISTA_MENSAGENS + "," + user.getUsername());
                 out.flush();
             }
-
             while(true){
                 if (user.isRecebiResultado()){
                     resultado = user.getResultadoComando();
@@ -806,7 +804,6 @@ public class ComunicacaoServidor implements Utils {
         }catch (IOException e) {
             e.printStackTrace();
         }
-
         return resultado;
     }
 
