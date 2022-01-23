@@ -217,4 +217,23 @@ public class Servidores implements Utils {
             }
         }
     }
+
+    //RMI
+
+    public ArrayList<String> getServidoresRMI(){
+        ArrayList<String> servidoresRmi = new ArrayList<>();
+        if (!servidores.isEmpty()){
+            for (Servidor serv : servidores){
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Servidor ").append(serv.getId()).append(": ").append(serv.getIp()).append(":").append(serv.getPorto_serv()).append("\n\tTempo desde ultimo datagram: ").append(serv.getHeartbeat());
+                servidoresRmi.add(stringBuilder.toString());
+            }
+        }
+        else{
+            servidoresRmi.add("Não existem servidores");
+        }
+        return servidoresRmi;
+    }
 }
+
+

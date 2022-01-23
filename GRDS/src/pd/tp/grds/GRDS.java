@@ -4,8 +4,15 @@ import pd.tp.grds.servidor.Servidores;
 import pd.tp.grds.threads.ThreadHeartbeatServidores;
 import pd.tp.grds.threads.ThreadIniciaComunicacao;
 import pd.tp.grds.threads.ThreadMulticastServidores;
+import pd.tp.rmi.GestaoRMI;
+import pd.tp.rmi.InterfaceGestaoRMI;
+
 import java.io.IOException;
 import java.net.*;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.Timer;
 
@@ -18,6 +25,7 @@ public class GRDS {
     private NetworkInterface ni;
     private ThreadHeartbeatServidores threadHeartbeatServidores;
     private Timer timer;
+
 
     private void IniciaThreadMulticast(){
         try {
@@ -35,9 +43,23 @@ public class GRDS {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        GRDS grds = new GRDS();
+        //GRDS grds = new GRDS();
         Servidores servidores = new Servidores();
         DatagramSocket ds = new DatagramSocket(PORTO);
+
+        //RMI
+        GRDS grds = new GRDS();
+        try{
+            Registry r = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            GestaoRMI gestaoRMI = new GestaoRMI(servidores);
+            r.rebind("GRDS_Service",gestaoRMI);
+        }catch (RemoteException e){
+            e.printStackTrace();
+        }
+
+        //RMI
+
+
         System.out.println("---- GRDS INICIADO ----");
         grds.threadHeartbeatServidores = new ThreadHeartbeatServidores(servidores);
         grds.timer = new Timer("VerifyHeartbeat");
@@ -68,5 +90,4 @@ public class GRDS {
 
         System.out.println("GRDS terminado");
     }
-
 }
