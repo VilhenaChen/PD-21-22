@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
+    private static InterfaceGestaoRMI interfaceGestaoRMI;
     protected AppRMI() throws RemoteException {
     }
 
@@ -16,8 +17,9 @@ public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
         System.out.println("À procura do RMI do GRDS....");
         try {
             Registry r = LocateRegistry.getRegistry("127.0.0.1", Registry.REGISTRY_PORT);
-            InterfaceGestaoRMI interfaceGestaoRMI = (InterfaceGestaoRMI) r.lookup("GRDS_Service");
+
             AppRMI appRMI = new AppRMI();
+            interfaceGestaoRMI = (InterfaceGestaoRMI) r.lookup("GRDS_Service");
             r.rebind("GRDS_Service",appRMI);
             System.out.println("À espera de um observer....");
             Thread.sleep(10000);
@@ -26,17 +28,25 @@ public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
             do {
                 System.out.println("----------Menu---------");
                 System.out.println("1- Listar servers");
+                System.out.println("2- Subscrever Informações do GRDS");
+                System.out.println("3- Cancelar a Subscrição de Informações do GRDS");
                 System.out.println("0- Sair");
                 op=scanner.nextInt();
-                if(op==1){
-                    interfaceGestaoRMI.pedirInformacaoServidores(appRMI);
+                switch (op){
+                    case 1:
+                        interfaceGestaoRMI.pedirInformacaoServidores(appRMI);
+                        break;
+                    case 2:
+                        interfaceGestaoRMI.addNovoListener(appRMI);
+                        break;
+                    case 3:
+                        interfaceGestaoRMI.removeNovoListener(appRMI);
+                        break;
+                    default:
+                        break;
                 }
             }while (op!=0);
             unexportObject(appRMI,true);
-
-
-
-
 
         } catch (RemoteException | NotBoundException | InterruptedException e) {
             e.printStackTrace();
@@ -49,5 +59,24 @@ public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
         for (String server : servidores){
             System.out.println(server);
         }
+    }
+
+    @Override
+    public void novoCliente() throws RemoteException {
+    }
+
+    @Override
+    public void novoServidor(int id) throws RemoteException {
+        System.out.println("Foi inserido um novo servidor ao GRDS com o ID: " + id);
+    }
+
+    @Override
+    public void eliminacaoServidor(int id) throws RemoteException {
+        System.out.println("Foi eliminado um novo servidor do GRDS com o ID: " + id);
+    }
+
+    @Override
+    public void notificacao() throws RemoteException {
+
     }
 }

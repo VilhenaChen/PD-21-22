@@ -3,6 +3,7 @@ package pd.tp.grds.threads;
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
 import pd.tp.grds.servidor.Servidores;
+import pd.tp.rmi.GestaoRMI;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,9 +14,11 @@ import java.net.DatagramSocket;
 public class ThreadIniciaComunicacao extends Thread implements Utils {
     Servidores servidores;
     DatagramSocket ds;
-    public ThreadIniciaComunicacao(Servidores servidores, DatagramSocket ds){
+    GestaoRMI gestaoRMI;
+    public ThreadIniciaComunicacao(Servidores servidores, DatagramSocket ds, GestaoRMI gestaoRMI){
         this.servidores = servidores;
         this.ds = ds;
+        this.gestaoRMI = gestaoRMI;
     }
     @Override
     public void run() {
@@ -33,7 +36,7 @@ public class ThreadIniciaComunicacao extends Thread implements Utils {
                             servidores.getNovoindiceUltimoServidorAtribuido();
                         }while(!servidores.verificaServidorAtivoParaAtribuir(servidores.getIndiceUltimoServidorAtribuido()));
                     }
-                    ThreadComunicacao tc = new ThreadComunicacao(dp,ds,servidores, tipo);
+                    ThreadComunicacao tc = new ThreadComunicacao(dp,ds,servidores, tipo,gestaoRMI);
                     tc.start();
                 }
                 else {

@@ -5,14 +5,13 @@ import pd.tp.grds.threads.ThreadHeartbeatServidores;
 import pd.tp.grds.threads.ThreadIniciaComunicacao;
 import pd.tp.grds.threads.ThreadMulticastServidores;
 import pd.tp.rmi.GestaoRMI;
-import pd.tp.rmi.InterfaceGestaoRMI;
 
 import java.io.IOException;
 import java.net.*;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.Timer;
 
@@ -53,9 +52,9 @@ public class GRDS {
         //RMI
         GRDS grds = new GRDS();
         try{
-            Registry r = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            Registry rA = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             gestaoRMI = new GestaoRMI(servidores);
-            r.rebind("GRDS_Service",gestaoRMI);
+            rA.rebind("GRDS_Service",gestaoRMI);
         }catch (RemoteException e){
             e.printStackTrace();
         }
@@ -64,10 +63,10 @@ public class GRDS {
 
 
         System.out.println("---- GRDS INICIADO ----");
-        grds.threadHeartbeatServidores = new ThreadHeartbeatServidores(servidores);
+        grds.threadHeartbeatServidores = new ThreadHeartbeatServidores(servidores,gestaoRMI);
         grds.timer = new Timer("VerifyHeartbeat");
         grds.timer.schedule(grds.threadHeartbeatServidores, 0, 1000);
-        ThreadIniciaComunicacao threadIniciaComunicacao = new ThreadIniciaComunicacao(servidores,ds);
+        ThreadIniciaComunicacao threadIniciaComunicacao = new ThreadIniciaComunicacao(servidores,ds,gestaoRMI);
         threadIniciaComunicacao.start();
         grds.IniciaThreadMulticast();
         grds.scanner = new Scanner(System.in);

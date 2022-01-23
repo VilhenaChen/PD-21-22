@@ -3,6 +3,7 @@ package pd.tp.grds.threads;
 import pd.tp.comum.Utils;
 import pd.tp.grds.servidor.Servidor;
 import pd.tp.grds.servidor.Servidores;
+import pd.tp.rmi.GestaoRMI;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -16,17 +17,20 @@ public class ThreadComunicacao extends Thread implements Utils {
     Servidores servidores;
     String tipo;
     int porto;
+    GestaoRMI gestaoRMI;
 
-    public ThreadComunicacao(DatagramPacket dp, DatagramSocket ds, Servidores servidores, String tipo) {
+    public ThreadComunicacao(DatagramPacket dp, DatagramSocket ds, Servidores servidores, String tipo, GestaoRMI gestaoRMI) {
         this.dp = dp;
         this.ds = ds;
         this.servidores = servidores;
         this.tipo = tipo;
+        this.gestaoRMI = gestaoRMI;
     }
 
     @Override
     public void run() {
         if (tipo.equals(NOVO_CLI)){
+            gestaoRMI.novoCliente();
             novoCliente();
             return;
         }
@@ -73,6 +77,7 @@ public class ThreadComunicacao extends Thread implements Utils {
             porto = Integer.parseInt(arrayAux[1]);
             int novoId = servidores.getNovoId();
             servidores.addServidor(new Servidor(novoId, dp.getAddress().getHostAddress(), porto, dp.getPort()));
+            gestaoRMI.novoServidor(novoId);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(baos);

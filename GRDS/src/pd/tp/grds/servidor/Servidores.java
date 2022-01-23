@@ -2,6 +2,7 @@ package pd.tp.grds.servidor;
 
 import pd.tp.comum.NovidadeGRDS;
 import pd.tp.comum.Utils;
+import pd.tp.rmi.GestaoRMI;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class Servidores implements Utils {
         }
     }
 
-    public void removeServidoresInativos(){
+    public void removeServidoresInativos(GestaoRMI gestaoRMI){
         synchronized (this.servidores){
             if(getIndiceUltimoServidorAtribuido()>-1){
                 if (verificaServidoresTodosInativos()) {
@@ -80,6 +81,11 @@ public class Servidores implements Utils {
                     if(servidores.get(getIndiceUltimoServidorAtribuido()).getHeartbeat()>MAX_INATIVIDADE){
                         getNovoIndiceDepoisDeEliminar();
                     }
+                }
+            }
+            for (Servidor serv : servidores){
+                if(serv.getHeartbeat()>MAX_INATIVIDADE){
+                    gestaoRMI.eliminacaoServidor(serv.getId());
                 }
             }
             servidores.removeIf(servidor -> servidor.getHeartbeat()>MAX_INATIVIDADE);
