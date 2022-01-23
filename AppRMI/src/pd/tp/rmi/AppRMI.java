@@ -76,7 +76,7 @@ public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
     }
 
     @Override
-    public void notificacao() throws RemoteException {
-
+    public void notificacao(String notificacao) throws RemoteException {
+        System.out.println("O GRDS recebeu a seguinte notificação: " + notificacao);
     }
 }

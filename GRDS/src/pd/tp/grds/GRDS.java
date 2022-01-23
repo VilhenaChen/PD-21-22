@@ -48,9 +48,9 @@ public class GRDS {
         Servidores servidores = new Servidores();
         DatagramSocket ds = new DatagramSocket(PORTO);
         GestaoRMI gestaoRMI = null;
-
-        //RMI
         GRDS grds = new GRDS();
+        //RMI
+
         try{
             Registry rA = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             gestaoRMI = new GestaoRMI(servidores);

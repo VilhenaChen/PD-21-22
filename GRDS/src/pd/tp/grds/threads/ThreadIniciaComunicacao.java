@@ -41,7 +41,7 @@ public class ThreadIniciaComunicacao extends Thread implements Utils {
                 }
                 else {
                     NovidadeGRDS novidadeGRDS = (NovidadeGRDS) objeto;
-                    ThreadComunicacaoNovidade tcn = new ThreadComunicacaoNovidade(ds,servidores,novidadeGRDS);
+                    ThreadComunicacaoNovidade tcn = new ThreadComunicacaoNovidade(ds,servidores,novidadeGRDS,gestaoRMI);
                     tcn.start();
                 }
 

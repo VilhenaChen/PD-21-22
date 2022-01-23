@@ -85,6 +85,20 @@ public class GestaoRMI extends UnicastRemoteObject implements InterfaceGestaoRMI
         }
     }
 
+    public synchronized void notificacao(String notificacao){
+        this.notificacao = notificacao;
+        notifyListenersNotificacao();
+    }
 
+    public synchronized void notifyListenersNotificacao(){
+        for(int i = 0; i<list.size(); i++){
+            try{
+                list.get(i).notificacao(notificacao);
+            }catch (RemoteException e){
+                System.out.println("A remover listener - " + list.get(i));
+                list.remove(i--);
+            }
+        }
+    }
 
 }

@@ -9,5 +9,5 @@ public interface InterfaceAppRMI extends Remote {
     public void novoCliente() throws RemoteException;
     public void novoServidor(int id) throws RemoteException;
     public void eliminacaoServidor(int id) throws RemoteException;
-    public void notificacao() throws RemoteException;
+    public void notificacao(String notificacao) throws RemoteException;
 }
