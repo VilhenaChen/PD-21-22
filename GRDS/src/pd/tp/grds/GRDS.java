@@ -16,6 +16,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.Timer;
 
+import static java.rmi.server.UnicastRemoteObject.unexportObject;
+
 public class GRDS {
     private static final int PORTO = 9001;
     private ThreadMulticastServidores threadMulticastServidores;
@@ -46,12 +48,13 @@ public class GRDS {
         //GRDS grds = new GRDS();
         Servidores servidores = new Servidores();
         DatagramSocket ds = new DatagramSocket(PORTO);
+        GestaoRMI gestaoRMI = null;
 
         //RMI
         GRDS grds = new GRDS();
         try{
             Registry r = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
-            GestaoRMI gestaoRMI = new GestaoRMI(servidores);
+            gestaoRMI = new GestaoRMI(servidores);
             r.rebind("GRDS_Service",gestaoRMI);
         }catch (RemoteException e){
             e.printStackTrace();
@@ -78,6 +81,9 @@ public class GRDS {
 
         servidores.informaServidoresdoEncerramento(ds);
 
+        if(gestaoRMI!=null){
+            unexportObject(gestaoRMI,true);
+        }
         threadIniciaComunicacao.interrupt();
         grds.threadMulticastServidores.interrupt();
         grds.threadHeartbeatServidores.cancel();
