@@ -8,15 +8,25 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static java.lang.System.exit;
+
 public class AppRMI extends UnicastRemoteObject implements InterfaceAppRMI{
     private static InterfaceGestaoRMI interfaceGestaoRMI;
     protected AppRMI() throws RemoteException {
     }
 
     public static void main(String[] args) {
+        String IP = "";
+        if(args.length>0){
+            IP = args[0];
+        }
+        else {
+            System.out.println("Erro!! Não foram passados argumentos suficientes!");
+            exit(1);
+        }
         System.out.println("À procura do RMI do GRDS....");
         try {
-            Registry r = LocateRegistry.getRegistry("127.0.0.1", Registry.REGISTRY_PORT);
+            Registry r = LocateRegistry.getRegistry(IP, Registry.REGISTRY_PORT);
 
             AppRMI appRMI = new AppRMI();
             interfaceGestaoRMI = (InterfaceGestaoRMI) r.lookup("GRDS_Service");
